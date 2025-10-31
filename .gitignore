@@ -1,0 +1,87 @@
+# =========================
+# General
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.swp
+.env
+.env.local
+*.sqlite3
+*.db
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Python / FastAPI Backend
+# =========================
+backend/.venv/
+backend/venv/
+backend/env/
+backend/.env
+backend/.pytest_cache/
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app.db
+backend/*.sqlite
+backend/*.db
+backend/.mypy_cache/
+backend/.coverage
+backend/htmlcov/
+backend/.ruff_cache/
+backend/.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# =========================
+# Node.js / React Frontend
+# =========================
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/coverage/
+
+# =========================
+# IDEs / Editors
+# =========================
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# OS generated files
+# =========================
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# =========================
+# Logs and temp
+# =========================
+*.log
+logs/
+tmp/
+temp/
+
+# =========================
+# Backup / misc
+# =========================
+*.bak
+*.old
+*.orig
+*.rej
+*.swo
+*.swp
