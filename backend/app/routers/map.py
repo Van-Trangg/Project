@@ -8,4 +8,5 @@ def list_places():
     return [
         {"id": 1, "name": "Eco Park", "eco_score": 88},
         {"id": 2, "name": "Green Cafe", "eco_score": 72},
+        {"id": 3, "name": "Sustainable Shop", "eco_score": 95},
     ]
