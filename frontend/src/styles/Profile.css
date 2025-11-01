@@ -1,0 +1,109 @@
+.profile-page {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(#ffffff, #eaf4e2);
+  min-height: 100vh;
+  color: #344e41;
+}
+
+.loading {
+  padding: 16px;
+}
+
+.profile-header {
+  position: relative;
+  text-align: center;
+}
+
+/* Placeholder cho ảnh bìa */
+.cover-placeholder {
+  width: 100%;
+  height: 160px;
+  background-color: #cfd8cc;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
+
+/* Placeholder cho avatar */
+.avatar-wrapper {
+  position: absolute;
+  left: 50%;
+  bottom: -50px;
+  transform: translateX(-50%);
+}
+
+.avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  background-color: #dfe4dc;
+  border-radius: 24px;
+  border: 3px solid #fff;
+}
+
+.camera-btn {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  background: #718355;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 14px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.profile-info {
+  text-align: center;
+  padding-top: 60px;
+}
+
+.nickname {
+  color: #8aa383;
+  font-size: 14px;
+  margin-top: -4px;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 40px;
+}
+
+.stats div {
+  text-align: center;
+}
+
+.stats strong {
+  font-size: 22px;
+}
+
+.info-fields {
+  text-align: left;
+  width: 80%;
+  margin: 0 auto;
+  background: #f7f7f7;
+  border-radius: 16px;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+/* Phần badge */
+.badges-section {
+  padding: 20px;
+}
+
+.badge-list {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+/* Placeholder cho thẻ badge */
+.badge-card.placeholder {
+  background: #e3e9e1;
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+}
