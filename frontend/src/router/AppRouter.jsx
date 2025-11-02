@@ -7,6 +7,7 @@ import Leaderboard from '../pages/Leaderboard'
 import Journal from '../pages/Journal'
 import Map from '../pages/Map'
 import Profile from '../pages/Profile'
+import EditProfile from '../pages/EditProfile'
 import Reward from '../pages/Reward'
 
 export default function AppRouter(){
@@ -21,6 +22,7 @@ export default function AppRouter(){
           <Route path="/journal" element={<Journal/>} />
           <Route path="/map" element={<Map/>} />
           <Route path="/profile" element={<Profile/>} />
+          <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/reward" element={<Reward/>} />
         </Routes>
       </div>

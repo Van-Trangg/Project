@@ -1,29 +1,52 @@
 .profile-page {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(#ffffff, #eaf4e2);
+  background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
   min-height: 100vh;
   color: #344e41;
+  overflow-x: hidden;
 }
 
-.loading {
-  padding: 16px;
-}
-
+/* Header */
 .profile-header {
   position: relative;
   text-align: center;
 }
 
-/* Placeholder cho ảnh bìa */
 .cover-placeholder {
   width: 100%;
-  height: 160px;
+  height: 180px;
   background-color: #cfd8cc;
-  border-bottom-left-radius: 40px;
-  border-bottom-right-radius: 40px;
+  border-bottom-left-radius: 80px;
+  border-bottom-right-radius: 80px;
+  /* background-image: url('/path/to/cover.jpg'); */
+  background-size: cover;
+  background-position: center;
 }
 
-/* Placeholder cho avatar */
+/* Edit button góc trên phải */
+.edit-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.edit-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+.edit-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Avatar */
 .avatar-wrapper {
   position: absolute;
   left: 50%;
@@ -32,11 +55,11 @@
 }
 
 .avatar-placeholder {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   background-color: #dfe4dc;
-  border-radius: 24px;
-  border: 3px solid #fff;
+  border-radius: 28px;
+  border: 4px solid #fff;
 }
 
 .camera-btn {
@@ -45,52 +68,143 @@
   bottom: -8px;
   background: #718355;
   border: none;
-  border-radius: 50%;
+  border-radius: 6px;
   color: white;
-  font-size: 14px;
+  font-size: 16px;
   padding: 6px;
   cursor: pointer;
 }
 
+/* Thông tin chính */
 .profile-info {
   text-align: center;
-  padding-top: 60px;
+  padding-top: 70px;
+}
+
+.profile-info h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #556B2F;
 }
 
 .nickname {
-  color: #8aa383;
+  color: #A9BC96;
   font-size: 14px;
-  margin-top: -4px;
+}
+
+/* Bio under nickname should match full name color */
+.profile-bio {
+  color: #556B2F;
+  font-size: 14px;
+  margin-top: 6px;
+  opacity: 0.95;
 }
 
 .stats {
   display: flex;
-  justify-content: center;
-  margin: 20px 0;
-  gap: 40px;
+  justify-content: space-evenly; /* phân bố đều các cột */
+  align-items: center;
+  width: 100%;
+  max-width: 720px;
+  margin: 24px auto;
+  color: #556B2F;
 }
 
 .stats div {
+  flex: 1; /* mỗi cột chiếm đều không gian */
   text-align: center;
+  position: relative;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
+/* Đường phân cách giữa các cột */
+.stats div:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1.5px;
+  background-color: #556B2F;
+  opacity: 0.4;
+}
+
+/* Số lớn */
 .stats strong {
-  font-size: 22px;
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #556B2F;
+  text-shadow: 0 1px 0 #C8D6A1;
+  line-height: 1.2;
 }
 
-.info-fields {
-  text-align: left;
-  width: 80%;
+/* Dòng chữ nhỏ bên dưới */
+.stats p {
+  font-size: 18px;
+  font-weight: 700;
+  color: #BAD050; /* màu chữ chính (vàng xanh nhạt) */
+  -webkit-text-stroke: 0.8px #556B2F; /* viền xung quanh chữ */
+  text-stroke: 0.8px #556B2F; /* cho trình duyệt hỗ trợ */
+  text-shadow: none; /* bỏ bóng cũ */
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+
+/* Khung thông tin */
+/* .info-fields {
+  width: 86%;
   margin: 0 auto;
-  background: #f7f7f7;
-  border-radius: 16px;
-  padding: 12px 20px;
+  background: linear-gradient(#edf5e8, #f9fcf5);
+  border-radius: 20px;
+  padding: 14px 18px;
   font-size: 14px;
+  text-align: left;
+  color: #344e41;
+  box-shadow: inset 0 0 3px #d8e0d5;
+} */
+
+/* .info-fields p {
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+}
+.info-fields strong {
+  font-weight: 500;
+  color: #50684a;
+} */
+
+/* Badges section */
+.badges-section {
+  margin-top: 30px;
+  padding: 0 20px 30px;
 }
 
-/* Phần badge */
-.badges-section {
-  padding: 20px;
+.badges-section h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2f4f2f;
+  margin: 18px auto 10px;
+  display: block;
+  width: 92%;
+  max-width: 720px;
+  text-align: left;
+  padding-bottom: 4px;
+  /* border-bottom: 2px solid #556B2F; */
+  position: relative;
+}
+
+.badges-section h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -18px;
+  width: 100%;
+  height: 2px;
+  background: #556B2F;
 }
 
 .badge-list {
@@ -100,10 +214,166 @@
   padding: 10px 0;
 }
 
-/* Placeholder cho thẻ badge */
 .badge-card.placeholder {
   background: #e3e9e1;
   width: 100px;
   height: 100px;
   border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
+
+/* Các khối thông tin cá nhân */
+.info-fields {
+  width: 92%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px 8px 16px;
+  display: block;
+  background: transparent;
+}
+
+/* each row is a block with two columns: label + value */
+.info-block {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 14px;
+  padding: 8px 0;
+}
+
+.info-label {
+  font-size: 16px;
+  color: #A9BC96; /* label color like edit */
+  font-weight: 600;
+  text-align: left;
+}
+
+.info-value {
+  background: transparent; /* no pill for display mode */
+  color: #556B2F; /* darker green for values */
+  padding: 0 0 0 0;
+  border-radius: 0;
+  font-size: 16px;
+  letter-spacing: 0.2px;
+  display: block;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  box-shadow: none;
+  transition: none;
+  text-align: left;
+  width: 100%;
+}
+
+.info-value .value-text {
+  display: inline-block;
+}
+
+
+/* Edit screen styles (full-screen edit page) */
+.edit-screen {
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 40px;
+  color: #344e41;
+  background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
+}
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+.back-btn { background: transparent; border: none; font-size: 20px; cursor: pointer }
+.top-title { font-weight: 600 }
+.save-top { background: transparent; border: none; color: #2f4f2f; font-weight: 600; cursor: pointer }
+.edit-cover {
+  width: 100%;
+  height: 160px;
+  background-image: linear-gradient(#eaf4e2,#ffffff);
+  border-bottom-left-radius: 120px;
+  border-bottom-right-radius: 120px;
+  margin-top: 6px;
+  background-size: cover;
+  background-position: center;
+}
+.edit-avatar-wrapper { display:flex; justify-content:center; position:relative; margin-top:-70px }
+.edit-avatar { width:120px; height:120px; background:#e6e6e6; border-radius:18px; border:6px solid #fff }
+.camera-small { position:absolute; right:calc(50% - 10px); bottom:6px; background:#6aa84f; color:white; border:none; border-radius:6px; padding:6px; cursor:pointer }
+.edit-name { text-align:center; margin-top:10px; display:flex; flex-direction:column; gap:6px; align-items:center; color: #556B2F}
+.edit-name input:first-child{font-size:20px; font-weight:700; text-align:center; border:none; background:transparent; color: #556B2F}
+.edit-name input:last-child{font-size:14px; color:#A9BC96; text-align:center; border:none; background:transparent}
+.section {
+  margin: 32px 16px 20px; /* khoảng cách giữa các khối section */
+}
+
+.section h3 {
+  color: #556B2F;
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0 auto 10px;
+  padding-bottom: 4px;
+  width: 90%;
+  max-width: 720px;
+  text-align: left;
+  border-bottom: 2px solid #556B2F; /* đường gạch dưới */
+}
+
+.section textarea {
+  width: 100%;
+  height: 96px;
+  border-radius: 20px;
+  border: none;
+  background: rgba(85, 107, 47, 0.2); /*đổi màu khung*/
+  padding: 14px;
+  resize: vertical;
+  margin-top: 10px;            
+  color: #ffffff; /*đổi màu chữ trong khung bio, v.v*/
+}
+
+.personal-details {
+  background: transparent;
+  margin-top: 32px;        
+    
+}
+
+.pill-row {
+  display: block;
+  margin: 14px 0;
+}
+
+.pill-row .label {
+  display: block;
+  color: #A9BC96;
+  margin-bottom: 6px;
+}
+
+.pill-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(85, 107, 47, 0.2);
+  padding: 8px 12px;
+  border-radius: 24px;
+  width: 100%;
+}
+
+.pill-input input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.eye {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+
+
