@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
+import backIcon from '../public/back.png'
+import newBackIcon from '../public/new_back.png'
 import '../styles/Profile.css'
 
 export default function EditProfile() {
@@ -10,6 +12,8 @@ export default function EditProfile() {
   const [showLocation, setShowLocation] = useState(true)
   const [showEmail, setShowEmail] = useState(true)
   const navigate = useNavigate()
+  const [backHovering, setBackHovering] = useState(false)
+  const [backActive, setBackActive] = useState(false)
 
   useEffect(() => {
     getProfile().then(r => {
@@ -63,13 +67,27 @@ export default function EditProfile() {
 
   return (
     <div className="edit-screen">
-      <div className="top-bar">
-        <button className="back-btn" type="button" onClick={handleCancel}>←</button>
-        <div className="top-title">Edit profile</div>
-        <button className="save-top btn save" type="button" onClick={handleSave} disabled={saving}>{saving ? 'Saving' : 'Save'}</button>
+      {/* Cover with overlayed action buttons (back/save) */}
+      <div className="edit-cover-wrapper">
+        <div className="edit-cover" />
+        <button
+          className="back-btn"
+          type="button"
+          onClick={() => { setBackActive(true); handleCancel() }}
+          onMouseEnter={() => setBackHovering(true)}
+          onMouseLeave={() => setBackHovering(false)}
+          title="Back">
+          <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
+        </button>
+        <button
+          className="save-top btn save"
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          title="Save">
+          {saving ? 'Saving' : 'Save'}
+        </button>
       </div>
-
-      <div className="edit-cover" />
 
       <div className="edit-avatar-wrapper">
         <div className="edit-avatar" />

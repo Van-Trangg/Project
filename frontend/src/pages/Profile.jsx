@@ -3,12 +3,21 @@ import { useNavigate } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
 import editIcon from '../public/edit.png'
 import newEditIcon from '../public/new_edit.png'
+import exitIcon from '../public/exit.png'
+import newExitIcon from '../public/new_exit.png'
+import backIcon from '../public/back.png'
+import newBackIcon from '../public/new_back.png'
 import '../styles/Profile.css'
 
 export default function Profile() {
   const [user, setUser] = useState(null)
   const [error, setError] = useState(null)
   const [editing, setEditing] = useState(false)
+  const [hoveringEdit, setHoveringEdit] = useState(false)
+  const [backHovering, setBackHovering] = useState(false)
+  const [backActive, setBackActive] = useState(false)
+  const [exitHovering, setExitHovering] = useState(false)
+  const [exitActive, setExitActive] = useState(false)
   const [form, setForm] = useState(null)
   const [saving, setSaving] = useState(false)
   const navigate = useNavigate()
@@ -34,6 +43,7 @@ export default function Profile() {
   const emailVal = user.email || user.mail || user.email_address || ''
 
   const startEdit = () => {
+    setEditing(true)
     navigate('/edit-profile')
   }
 
@@ -71,10 +81,33 @@ export default function Profile() {
     <div className="profile-page">
       {/* HEADER */}
       <div className="profile-header">
+        <button
+          className="back-rect"
+          onClick={() => { setBackActive(true); navigate(-1) }}
+          onMouseEnter={() => setBackHovering(true)}
+          onMouseLeave={() => setBackHovering(false)}
+          title="Back">
+          <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
+        </button>
+
+        <button
+          className="exit-rect"
+          onClick={() => { setExitActive(true); navigate('/') }}
+          onMouseEnter={() => setExitHovering(true)}
+          onMouseLeave={() => setExitHovering(false)}
+          title="Exit">
+          <img src={(exitActive || exitHovering) ? newExitIcon : exitIcon} alt="Exit" />
+        </button>
+
         <div className="cover-placeholder"></div>
 
-        <button className="edit-btn" onClick={startEdit} title="Edit profile">
-          <img src={editing ? newEditIcon : editIcon} alt="Edit" />
+        <button
+          className="edit-btn"
+          onClick={startEdit}
+          onMouseEnter={() => setHoveringEdit(true)}
+          onMouseLeave={() => setHoveringEdit(false)}
+          title="Edit profile">
+          <img src={(editing || hoveringEdit) ? newEditIcon : editIcon} alt="Edit" />
         </button>
 
         <div className="avatar-wrapper">
@@ -87,9 +120,9 @@ export default function Profile() {
       <div className="profile-info">
         {!editing ? (
           <>
-            <h2>{fullName || 'Yến Nhi'}</h2>
-            <p className="nickname">@{nickName || 'nickname'}</p>
-            <p className="profile-bio">{user.bio || user.about || user.description || ''}</p>
+            <h2>{fullName || 'Tên tao đâu'}</h2>
+            <p className="nickname">@{nickName || 'nickname?'}</p>
+            <p className="profile-bio">{user.bio || user.about || user.description || 'đù má code cái này dui hé'}</p>
           </>
         ) : (
           <div className="edit-form">
