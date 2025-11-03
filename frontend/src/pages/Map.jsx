@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { listPlaces } from '../api/map'
-import mapPlaceholder from '../public/map-placeholder.png' // ← add a placeholder image
+import mapPlaceholder from '../public/map-placeholder.png'
 import '../styles/Map.css'
 
 const CITIES = [
-  { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172 },
-  { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817 },
+  { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172, image: '/src/public/Map/hcmc.png'},
+  { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817, image: '/src/public/Map/pq.png'},
 ]
 
 const PINS = [
-  { id: 1, lat: 10.7769, lng: 106.7009, title: 'Thủ Thiêm', desc: 'Eco park & future city center' },
+  { id: 1, lat: 10.7769, lng: 106.7009, image: '/src/public/Map/dkhi.png', checkInRate: '46%', title: 'Đảo Khỉ', desc: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.' },
   { id: 2, lat: 10.7626, lng: 106.6822, title: 'Bến Nghé', desc: 'Historic riverside area' },
   { id: 3, lat: 10.7554, lng: 106.6753, title: 'Mai Chí Thọ', desc: 'Modern boulevard' },
 ]
@@ -34,24 +34,42 @@ export default function Map() {
     setDropdownOpen(false)
   }
 
+  useEffect(() => {
+    if (selectedPin) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedPin]);
+
   return (
   <div className="map-page">
     {/* Top Location Bar */}
     <div className="location-bar">
-      <button
-        className="location-selector"
+      {/* Left Spacer */}
+      <div className="spacer"></div>
+
+      {/* Centered Text */}
+      <span className="location-text">{selectedCity.name}</span>
+
+      {/* Right Arrow */}
+      <button 
+        className="dropdown-toggle"
         onClick={() => setDropdownOpen(prev => !prev)}
       >
-        <span>{selectedCity.name}</span>
         <svg className="dropdown-arrow" viewBox="0 0 24 24">
           <path d="M7 10l5 5 5-5z" />
         </svg>
       </button>
+      <div className="spacer"></div>
     </div>
 
     {/* FULL-SCREEN CITY OVERLAY – COVERS EVERYTHING */}
-    {dropdownOpen && (
-      <div className="city-fullscreen-overlay" onClick={() => setDropdownOpen(false)}>
+    {dropdownOpen && ( 
+      <div className="city-fullscreen-overlay">
         <div 
           className="overlay-inner" 
           onClick={(e) => e.stopPropagation()}
@@ -79,7 +97,6 @@ export default function Map() {
       </div>
     )}
     {/* Map Container */}
-    {/* Map Container – ONLY render when the overlay is closed */}
     {!dropdownOpen && (
       <div className="map-container">
         {loading ? (
@@ -100,7 +117,7 @@ export default function Map() {
                 }}
                 onClick={() => setSelectedPin(pin)}
               >
-                <span className="pin-icon">Pin</span>
+                <span className="pin-icon"></span>
               </button>
             ))}
           </div>
@@ -109,15 +126,36 @@ export default function Map() {
     )}
     {/* Pin Popup */}
     {selectedPin && (
-      <div className="pin-popup" onClick={() => setSelectedPin(null)}>
-        <div className="popup-content" onClick={e => e.stopPropagation()}>
-          <h3>{selectedPin.title}</h3>
-          <p>{selectedPin.desc}</p>
-          <button className="popup-close" onClick={() => setSelectedPin(null)}>
-            x
-          </button>
+    <div className="pin-popup-overlay">
+      <div className="pin-popup-card">
+        {/* Close button */}
+        <button className="popup-close-btn" onClick={() => setSelectedPin(null)}>
+          ×
+        </button>
+        <div
+          className="popup-image"
+          style={{
+            backgroundImage: `url(${selectedPin.image || '/Map/popup-default.jpg'})`,
+          }}
+        />
+
+        {/* Content on green curve */}
+        <div className="popup-content">
+          <h3 className="popup-title">{selectedPin.title}</h3>
+
+          <div className="popup-stat">
+            {selectedPin.checkInRate || '10%'} of users have checked in here
+          </div>
+
+          <p className="popup-desc">
+            {selectedPin.desc}
+          </p>
         </div>
+        <button className="checkin-btn">
+            Check-in
+        </button>
       </div>
+    </div>
     )}
   </div>
 );
