@@ -18,6 +18,7 @@ export default function AppRouter(){
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
+          <Route path="/checkout" element={<Login/>} />
           <Route path="/leaderboard" element={<Leaderboard/>} />
           <Route path="/journal" element={<Journal/>} />
           <Route path="/map" element={<Map/>} />

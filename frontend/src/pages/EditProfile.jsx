@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getProfile, updateProfile } from '../api/profile'
+import { getProfile, updateProfile, updateProfileMultipart } from '../api/profile'
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import camIcon from '../public/camera.png'
@@ -18,6 +18,7 @@ export default function EditProfile() {
   const [showPhotoOptions, setShowPhotoOptions] = useState(false)
   const fileInputRef = useRef(null)
   const cameraInputRef = useRef(null)
+  const [preview, setPreview] = useState(null)
 
   useEffect(() => {
     getProfile().then(r => {
@@ -50,11 +51,36 @@ export default function EditProfile() {
     setForm(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleSelect = (e) => {
+    const f = e.target.files && e.target.files[0]
+    if (f) {
+      const previewUrl = URL.createObjectURL(f)
+      setPreview(previewUrl)
+      console.log('Ảnh mới:', f)
+      // also keep a reference to the file in the form so it can be uploaded on save
+      setForm(prev => ({ ...prev, avatar: f }))
+    }
+  }
+
+  // revoke object URL when preview changes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (preview) {
+        try { URL.revokeObjectURL(preview) } catch (err) { /* ignore */ }
+      }
+    }
+  }, [preview])
+
   const handleSave = async () => {
     if (!form) return
     setSaving(true)
     try {
-      await updateProfile(form)
+      // If an avatar File was selected, send multipart/form-data so backend can receive the file
+      if (form.avatar && form.avatar instanceof File) {
+        await updateProfileMultipart(form)
+      } else {
+        await updateProfile(form)
+      }
       navigate('/profile')
     } catch (err) {
       console.error(err)
@@ -66,6 +92,7 @@ export default function EditProfile() {
   const handleCancel = () => {
     navigate(-1)
   }
+
 
   if (!form) return <div className="loading">Loading...</div>
 
@@ -94,7 +121,10 @@ export default function EditProfile() {
       </div>
 
       <div className="edit-avatar-wrapper">
-        <div className="edit-avatar" />
+        <div
+            className="edit-avatar"
+            style={preview ? { backgroundImage: `url(${preview})` } : undefined}
+          />
         <button
           className="camera-small"
           type="button"
@@ -110,13 +140,7 @@ export default function EditProfile() {
           type="file"
           accept="image/*"
           style={{ display: 'none' }}
-          onChange={(e) => {
-            const f = e.target.files && e.target.files[0]
-            if (f) {
-              console.log('Library photo selected', f)
-              // TODO: upload or preview the selected file
-            }
-          }}
+          onChange={(e) => handleSelect(e)}
         />
         <input
           ref={cameraInputRef}
@@ -124,44 +148,14 @@ export default function EditProfile() {
           accept="image/*"
           capture="environment"
           style={{ display: 'none' }}
-          onChange={(e) => {
-            const f = e.target.files && e.target.files[0]
-            if (f) {
-              console.log('Camera photo captured/selected', f)
-              // TODO: upload or preview the captured file
-            }
-          }}
+          onChange={(e) => handleSelect(e)}
         />
 
         {/* Photo options modal */}
         {showPhotoOptions && (
-          <div
-            className="photo-options-overlay"
-            onClick={() => setShowPhotoOptions(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10000,
-            }}
-          >
-            <div
-              className="photo-options"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: '#fff',
-                padding: 20,
-                borderRadius: 8,
-                minWidth: 260,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-                boxShadow: '0 6px 18px rgba(0,0,0,0.2)'
-              }}
-            >
+          <div className="photo-options-overlay" onClick={() => setShowPhotoOptions(false)}>
+            <div className="photo-options" onClick={(e) => e.stopPropagation()}>
+              <h3 className="photo-options-title">Change Profile Picture</h3>
               <button
                 type="button"
                 onClick={() => {
@@ -191,6 +185,8 @@ export default function EditProfile() {
           </div>
         )}
       </div>
+
+      {/* Avatar preview handling */}
 
       <div className="edit-name">
         <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="Full name" />
