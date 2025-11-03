@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from "react-router-dom";
 import { listPlaces } from '../api/map'
 import mapPlaceholder from '../public/map-placeholder.png'
 import '../styles/Map.css'
@@ -15,11 +16,17 @@ const PINS = [
 ]
 
 export default function Map() {
-  const [selectedCity, setSelectedCity] = useState(CITIES[0])
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [selectedPin, setSelectedPin] = useState(null)
-  const [places, setPlaces] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [selectedCity, setSelectedCity] = useState(CITIES[0]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedPin, setSelectedPin] = useState(null);
+  const [places, setPlaces] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const handleCheckIn = () => {
+    if (selectedPin) {
+      navigate(`/checkin/${selectedPin.id}`); // go to specific check-in page
+    }
+  }
 
   // Fetch places from API (fallback to static if fails)
   useEffect(() => {
@@ -49,13 +56,8 @@ export default function Map() {
   <div className="map-page">
     {/* Top Location Bar */}
     <div className="location-bar">
-      {/* Left Spacer */}
       <div className="spacer"></div>
-
-      {/* Centered Text */}
       <span className="location-text">{selectedCity.name}</span>
-
-      {/* Right Arrow */}
       <button 
         className="dropdown-toggle"
         onClick={() => setDropdownOpen(prev => !prev)}
@@ -74,7 +76,6 @@ export default function Map() {
           className="overlay-inner" 
           onClick={(e) => e.stopPropagation()}
         >
-          {/* City List */}
           <div className="city-grid">
             {CITIES.map((city) => (
               <button
@@ -106,7 +107,6 @@ export default function Map() {
             className="map-placeholder"
             style={{ backgroundImage: `url(${mapPlaceholder})` }}
           >
-            {/* Render Pins */}
             {PINS.map((pin) => (
               <button
                 key={pin.id}
@@ -128,7 +128,6 @@ export default function Map() {
     {selectedPin && (
     <div className="pin-popup-overlay">
       <div className="pin-popup-card">
-        {/* Close button */}
         <button className="popup-close-btn" onClick={() => setSelectedPin(null)}>
           ×
         </button>
@@ -138,22 +137,14 @@ export default function Map() {
             backgroundImage: `url(${selectedPin.image || '/Map/popup-default.jpg'})`,
           }}
         />
-
-        {/* Content on green curve */}
         <div className="popup-content">
           <h3 className="popup-title">{selectedPin.title}</h3>
-
           <div className="popup-stat">
             {selectedPin.checkInRate || '10%'} of users have checked in here
           </div>
-
-          <p className="popup-desc">
-            {selectedPin.desc}
-          </p>
+          <p className="popup-desc">{selectedPin.desc}</p>
         </div>
-        <button className="checkin-btn">
-            Check-in
-        </button>
+        <button className="checkin-btn" onClick={handleCheckIn}> Check-in</button>
       </div>
     </div>
     )}
