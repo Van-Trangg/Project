@@ -1,6 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react'
 import { listPlaces } from '../api/map'
+import '../styles/Map.css'
 
 const PINS = [
   { id: 1, lat: 10.7769, lng: 106.7009, image: '/src/public/Map/dkhi.png', checkInRate: '46%', title: 'Đảo Khỉ', desc: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.' },
@@ -8,13 +9,43 @@ const PINS = [
   { id: 3, lat: 10.7554, lng: 106.6753, title: 'Mai Chí Thọ', desc: 'Modern boulevard' },
 ]
 
+
 export default function CheckIn() {
-  const { locationId } = useParams();  // e.g., "hanoi" or "danang"
+  const { locationId } = useParams();  
   const location = PINS.find(p => p.id === Number(locationId));
+  const navigate = useNavigate();
+  const handleCancel = () => {
+    navigate(-1);
+  }
   return (
-    <div>
-      <h1>Check-In Page</h1>
-      <p>You are checking in at: {location.title}</p>
+    <div className = 'check-in-page'>
+      <div className = 'top-bar'>
+        <button 
+          className = 'back-btn'
+          onClick = {() => handleCancel()}
+          > 
+          <img src = '/src/public/back.png'></img>
+        </button>
+        <span className = 'title'>Check-in Point</span>
+      </div>
+      <div className = 'city-name-prof'>
+        <span> {locationId <= 3 ? 'Ho Chi Minh City' : 'Phu Quoc'}</span>
+        <div className = 'line'></div>
+      </div>
+      <div className = 'location'>
+        <div className = 'location-image'
+        style={{
+          backgroundImage: `url(${location.image || '/Map/popup-default.jpg'})`,
+        }}
+        ></div>
+        <div className = 'location-name'>{location.title}</div>
+        <div className="popup-stat">
+          {location.checkInRate || '10%'} of users have checked in here
+        </div>
+      </div>
+      <div className = 'popup-card'>
+
+      </div>
     </div>
   );
 }
