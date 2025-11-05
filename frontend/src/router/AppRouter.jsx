@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Home from '../pages/Home'
 import Login from '../pages/Login'
+import Signup from '../pages/Signup'
 import Leaderboard from '../pages/Leaderboard'
 import Journal from '../pages/Journal'
 import Map from '../pages/Map'
@@ -19,6 +20,7 @@ export default function AppRouter(){
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/checkout" element={<Login/>} />
+            <Route path="/signup" element={<Signup/>} />
           <Route path="/leaderboard" element={<Leaderboard/>} />
           <Route path="/journal" element={<Journal/>} />
           <Route path="/map" element={<Map/>} />
