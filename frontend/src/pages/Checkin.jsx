@@ -17,6 +17,9 @@ export default function CheckIn() {
   const handleCancel = () => {
     navigate(-1);
   }
+  const handleCheckInProcess = () => {
+  }
+  //sau này check state người dùng đã checkin tại đây chưa => tắt hiển thị expectant bar + làm mờ chữ
   return (
     <div className = 'check-in-page'>
       <div className = 'top-bar'>
@@ -44,7 +47,21 @@ export default function CheckIn() {
         </div>
       </div>
       <div className = 'popup-card'>
-
+        <img src = '/src/public/spark.png' className = 'spark'></img>
+        <span className = 'first-rew'>First Check-in Reward</span>
+        <div className = 'point'>
+          <span>100</span>
+          <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+        </div>
+        <div className = 'progress-bar'>
+          <div className = 'prog-title'>Progress until next title</div>
+          <span className = 'track-bar'>
+            <span className = 'fill-bar'></span>
+            <span className = 'expectant-bar'></span>
+          </span>
+          <div className = 'prog-num'>1600+ 200/2000</div>
+        </div>
+        <button className="checkin-btn" onClick={handleCheckInProcess()}>Confirm</button>
       </div>
     </div>
   );

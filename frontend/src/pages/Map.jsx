@@ -144,7 +144,7 @@ export default function Map() {
           </div>
           <p className="popup-desc">{selectedPin.desc}</p>
         </div>
-        <button className="checkin-btn" onClick={handleCheckIn}> Check-in</button>
+        <button className="checkin-btn" onClick={handleCheckIn}>Check-in</button>
       </div>
     </div>
     )}
