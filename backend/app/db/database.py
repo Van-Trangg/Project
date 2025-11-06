@@ -1,3 +1,4 @@
+import json
 from typing import Annotated
 from fastapi import Depends
 from sqlalchemy import create_engine
@@ -19,7 +20,7 @@ def get_db():
         db.close()
 
 # Create tables
-from app.models import user, journal, leaderboard, reward  # noqa
+from app.models import user, journal, leaderboard, reward, location  # noqa
 
 def init_db():
     Base.metadata.create_all(bind=engine)
