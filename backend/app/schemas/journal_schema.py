@@ -8,6 +8,9 @@ class JournalBase(BaseModel):
 class JournalCreate(JournalBase):
     pass
 
+class JournalUpdate(JournalBase):
+    pass
+
 class JournalOut(JournalBase):
     id: int
 
