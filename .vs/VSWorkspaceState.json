@@ -1,11 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\backend",
+    "\\backend\\app",
+    "\\backend\\app\\core",
+    "\\backend\\app\\schemas",
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\pages",
     "\\frontend\\src\\router",
     "\\frontend\\src\\styles"
   ],
+  "SelectedNode": "\\backend\\app\\core\\security.py",
   "PreviewInSolutionExplorer": false
 }

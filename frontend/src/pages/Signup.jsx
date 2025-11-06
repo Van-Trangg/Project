@@ -1,22 +1,36 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Auth.css'
-
+import { register } from '../api/auth'
 export default function Signup(){
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [msg, setMsg] = useState('')
   const navigate = useNavigate()
+  const submit = async (e) => {
+        e.preventDefault()
+        setMsg('') 
+        if (password !== confirm) {
+            setMsg('Passwords do not match')
+            return 
+        }
+        try {
+            await register({ email, password }) 
+            setMsg('Account created successfully! Redirecting to login...')
+            setTimeout(() => navigate('/login'), 1000)
 
-  const submit = (e) => {
-    e.preventDefault()
-    if (password !== confirm) { setMsg('Passwords do not match'); return }
-    // Placeholder: you can call your signup API here
-    setMsg('Proceeding...')
-    // For now navigate to a next step or back to login
-    setTimeout(() => navigate('/login'), 700)
+        } catch (err) {     
+            console.error(err)
+            const detail = err.response?.data?.detail
+            if (typeof detail === 'string') {            
+                setMsg(detail)
+            } else {
+                setMsg('Invalid data. Please check email or password.')
+            }
+        }
   }
+        
 
   return (
     <div className="auth-root">

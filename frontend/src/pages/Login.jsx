@@ -1,19 +1,29 @@
 import { useState } from 'react'
 import { login } from '../api/auth'
 import '../styles/Auth.css'
+import { useNavigate } from 'react-router-dom'
+export default function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [msg, setMsg] = useState('')
+    const navigate = useNavigate() 
 
-export default function Login(){
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [msg, setMsg] = useState('')
+    const submit = async (e) => {
+        e.preventDefault()
+        setMsg('') 
+        try {      
+            const { data } = await login({ email, password })     
+            if (!data.access_token) {
+                throw new Error('No access token received')
+            }        
+            localStorage.setItem('access_token', data.access_token)
+            navigate('/profile')
 
-  const submit = async (e) => {
-    e.preventDefault()
-    try{
-      const { data } = await login({ email, password })
-      setMsg(`Welcome ${data.user.email}`)
-    }catch(e){ setMsg('Login failed') }
-  }
+        } catch (e) {
+            console.error(e) 
+            setMsg('Login failed. Please check your credentials.')
+        }
+    }
 
   return (
     <div className="auth-root">
