@@ -11,6 +11,6 @@
     "\\frontend\\src\\router",
     "\\frontend\\src\\styles"
   ],
-  "SelectedNode": "\\backend\\app\\core\\security.py",
+  "SelectedNode": "\\frontend\\src\\pages\\Login.jsx",
   "PreviewInSolutionExplorer": false
 }
