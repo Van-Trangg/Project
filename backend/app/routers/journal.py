@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Query
 from app.core.security import TokenDep
-from app.db.database import DbDep, get_db
+from app.db.database import DbDep
 from app.models.journal import Journal
 from app.schemas.journal_schema import JournalCreate, JournalUpdate
 
@@ -10,15 +9,28 @@ router = APIRouter()
 @router.get("")
 def list_journals(
     db: DbDep,
-    user_id: TokenDep,
 ):
-    return db.query(Journal).filter(Journal.author_id == user_id).all()
+    return db.query(Journal).all()
+
+@router.get("/my")
+def list_my_journals(
+    db: DbDep,
+    user_id: TokenDep,
+    location_id: int = Query(None),
+):
+    filters = [Journal.author_id == int(user_id)]
+    if location_id is not None:
+        filters.append(Journal.location_id == location_id)
+    query = db.query(Journal).filter(*filters).order_by(Journal.created_at.desc())
+    return query.all()
 
 @router.post("")
 def create_journal(
-    payload: JournalCreate, db: DbDep, user_id: TokenDep
+    payload: JournalCreate,
+    db: DbDep,
+    user_id: TokenDep,
 ):
-    journal = Journal(**payload.dict(), author_id=user_id)
+    journal = Journal(**payload.dict(), author_id=int(user_id))
     db.add(journal)
     db.commit()
     db.refresh(journal)
