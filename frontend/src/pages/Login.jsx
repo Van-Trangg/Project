@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { login } from '../api/auth'
 import '../styles/Auth.css'
 import { useNavigate } from 'react-router-dom'
@@ -7,7 +8,6 @@ export default function Login() {
     const [password, setPassword] = useState('')
     const [msg, setMsg] = useState('')
     const navigate = useNavigate() 
-
     const submit = async (e) => {
         e.preventDefault()
         setMsg('') 
@@ -24,6 +24,9 @@ export default function Login() {
             setMsg('Login failed. Please check your credentials.')
         }
     }
+
+  // Forgot password state & handler
+  const navigate = useNavigate()
 
   return (
     <div className="auth-root">
@@ -46,12 +49,24 @@ export default function Login() {
           <div className="field-label">Password</div>
           <div className="field-input">
             <span className="field-icon">🔒</span>
-            <input placeholder="Enter your password" type="password" value={password} onChange={e=>setPassword(e.target.value)} />
-            <button type="button" className="icon-eye" aria-hidden>👁</button>
+            <input
+              placeholder="Enter your password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={e=>setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="icon-eye"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPassword(s => !s)}
+            >
+              {showPassword ? '👁' : 'no'}
+            </button>
           </div>
         </label>
 
-        <div className="forgot">Forgot Password</div>
+  <div className="forgot" role="button" tabIndex={0} onClick={() => navigate('/reset-password')}>Forgot Password</div>
 
         <button className="auth-btn" type="submit">Login</button>
 
@@ -59,6 +74,8 @@ export default function Login() {
 
         {msg && <div className="auth-msg">{msg}</div>}
       </form>
+
+      
     </div>
   )
 }
