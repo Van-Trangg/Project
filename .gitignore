@@ -11,6 +11,8 @@ Thumbs.db
 .env.local
 *.sqlite3
 *.db
+*.db-shm
+*.db-wal
 __pycache__/
 *.py[cod]
 *$py.class
@@ -56,6 +58,8 @@ frontend/coverage/
 # IDEs / Editors
 # =========================
 .vscode/
+.vs/
+
 .idea/
 *.code-workspace
 *.sublime-project
