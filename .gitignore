@@ -85,3 +85,5 @@ temp/
 *.rej
 *.swo
 *.swp
+
+/.vs/
