@@ -8,7 +8,8 @@ export default function Signup(){
   const [confirm, setConfirm] = useState('')
   const [msg, setMsg] = useState('')
   const navigate = useNavigate()
-  const submit = async (e) => {
+
+    const submit = async (e) => {
         e.preventDefault()
         setMsg('') 
         if (password !== confirm) {
@@ -30,7 +31,6 @@ export default function Signup(){
             }
         }
   }
-        
 
   return (
     <div className="auth-root">

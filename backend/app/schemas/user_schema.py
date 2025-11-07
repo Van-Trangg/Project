@@ -17,3 +17,14 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class VerifyCodeRequest(BaseModel):
+    email: EmailStr
+    code: str
+
+class SetNewPasswordRequest(BaseModel):
+    email: EmailStr
+    code: str
+    password: str = Field(min_length=8, max_length=72)
