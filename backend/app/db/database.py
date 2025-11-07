@@ -1,7 +1,7 @@
 import json
 from typing import Annotated
-from fastapi import Depends, event
-from sqlalchemy import create_engine
+from fastapi import Depends
+from sqlalchemy import create_engine,event
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Session
 from app.core.config import settings
 
@@ -37,3 +37,5 @@ def init_db():
     print("🛠️ Initializing database...")
     Base.metadata.create_all(bind=engine)
     print("✅ Tables created:", list(Base.metadata.tables.keys()))
+
+DbDep = Annotated[Session, Depends(get_db)]
