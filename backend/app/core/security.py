@@ -1,7 +1,10 @@
 ﻿# app/core/security.py
 
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Annotated, Optional
+from fastapi import Depends, HTTPException
+from fastapi import HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status

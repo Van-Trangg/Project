@@ -1,5 +1,8 @@
+import json
+from typing import Annotated
+from fastapi import Depends
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Session
 from app.core.config import settings
 
 engine = create_engine(settings.DB_URL, connect_args={"check_same_thread": False})
@@ -17,7 +20,9 @@ def get_db():
         db.close()
 
 # Create tables
-from app.models import user, journal, leaderboard, reward  # noqa
+from app.models import user, journal, leaderboard, reward, location  # noqa
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+
+DbDep = Annotated[Session, Depends(get_db)]
