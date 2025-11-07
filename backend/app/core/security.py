@@ -1,3 +1,5 @@
+﻿# app/core/security.py
+
 from datetime import datetime, timedelta
 from typing import Annotated, Optional
 from fastapi import Depends, HTTPException
@@ -5,9 +7,16 @@ from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
 from passlib.context import CryptContext
-from app.core.config import settings
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from app.core.config import settings
+from app.db.database import get_db 
+from app.models.user import User
+
+pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def hash_password(password: str) -> str:
@@ -24,19 +33,27 @@ def create_access_token(subject: str, expires_delta: Optional[timedelta] = None)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
-def decode_access_token(token: str) -> str:
+def get_current_user(
+    db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
+) -> User:
+    """
+    Dependency để lấy user hiện tại từ token.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
-        return payload.get("sub")
-    except jwt.PyJWTError as e:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token",
-        ) from e
-    
-def get_current_user_id(
-    auth_payload: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer(auto_error=True))]
-) -> str:
-    return decode_access_token(auth_payload.credentials)
-
-TokenDep = Annotated[str, Depends(get_current_user_id)]
+        payload = jwt.decode(
+            token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+        )
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+    except jwt.PyJWTError:
+        raise credentials_exception
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    if user is None:
+        raise credentials_exception
+    return user
