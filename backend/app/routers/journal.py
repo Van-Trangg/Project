@@ -1,10 +1,13 @@
-from fastapi import APIRouter, HTTPException, Query
-from app.core.security import TokenDep
+from fastapi import APIRouter, HTTPException, Query, Depends 
 from app.db.database import DbDep
 from app.models.journal import Journal
 from app.schemas.journal_schema import JournalCreate, JournalUpdate
+from app.core.security import get_current_user as TokenDep
+from app.models.user import User
 
 router = APIRouter()
+
+CurrentUser = Depends(TokenDep)
 
 @router.get("")
 def list_journals(
@@ -15,10 +18,10 @@ def list_journals(
 @router.get("/my")
 def list_my_journals(
     db: DbDep,
-    user_id: TokenDep,
+    current_user: User = CurrentUser,
     location_id: int = Query(None),
 ):
-    filters = [Journal.author_id == int(user_id)]
+    filters = [Journal.author_id == current_user.id] 
     if location_id is not None:
         filters.append(Journal.location_id == location_id)
     query = db.query(Journal).filter(*filters).order_by(Journal.created_at.desc())
@@ -28,9 +31,10 @@ def list_my_journals(
 def create_journal(
     payload: JournalCreate,
     db: DbDep,
-    user_id: TokenDep,
+    current_user: User = CurrentUser,
 ):
-    journal = Journal(**payload.dict(), author_id=int(user_id))
+
+    journal = Journal(**payload.dict(), author_id=current_user.id) 
     db.add(journal)
     db.commit()
     db.refresh(journal)
@@ -41,14 +45,14 @@ def update_journal(
     journal_id: int,
     payload: JournalUpdate,
     db: DbDep,
-    user_id: TokenDep,
+    current_user: User = CurrentUser,
 ):
     journal = db.get(Journal, journal_id)
     if not journal:
         raise HTTPException(status_code=404, detail="Journal not found")
-    if str(journal.author_id) != user_id:
+    if journal.author_id != current_user.id: 
         raise HTTPException(status_code=403, detail="Not authorized to update this journal")
-    for key, value in payload.dict().items():
+    for key, value in payload.dict(exclude_unset=True).items():
         setattr(journal, key, value)
     db.commit()
     db.refresh(journal)
@@ -58,12 +62,12 @@ def update_journal(
 def get_journal(
     journal_id: int,
     db: DbDep,
-    user_id: TokenDep,
+    current_user: User = CurrentUser,
 ):
     journal = db.get(Journal, journal_id)
     if not journal:
         raise HTTPException(status_code=404, detail="Journal not found")
-    if str(journal.author_id) != user_id:
+    if journal.author_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to view this journal")
     return journal
 
@@ -71,12 +75,12 @@ def get_journal(
 def delete_journal(
     journal_id: int,
     db: DbDep,
-    user_id: TokenDep,
+    current_user: User = CurrentUser,
 ):
     journal = db.get(Journal, journal_id)
     if not journal:
         raise HTTPException(status_code=404, detail="Journal not found")
-    if str(journal.author_id) != user_id:
+    if journal.author_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this journal")
     db.delete(journal)
     db.commit()

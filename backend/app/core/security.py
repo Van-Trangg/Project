@@ -1,18 +1,12 @@
-﻿# app/core/security.py
-
 from datetime import datetime, timedelta
-from typing import Annotated, Optional
-from fastapi import Depends, HTTPException
-from fastapi import HTTPException
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from typing import Annotated, Optional 
 import jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPAuthorizationCredentials, HTTPBearer 
 from sqlalchemy.orm import Session
-
 from app.core.config import settings
-from app.db.database import get_db 
+from app.db.database import get_db
 from app.models.user import User
 
 pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
@@ -36,9 +30,6 @@ def create_access_token(subject: str, expires_delta: Optional[timedelta] = None)
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> User:
-    """
-    Dependency để lấy user hiện tại từ token.
-    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
