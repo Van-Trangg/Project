@@ -1,6 +1,6 @@
 .map-page {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(#ACC729 100%, #F5F9F0 100%);
+  background: linear-gradient(#ACC729 20%, #F5F9F0 100%);
   min-height: 100vh;
   color: #344e41;
   position: relative;
@@ -12,29 +12,45 @@
 .location-bar {
   position: sticky;
   width: 100%;
-  height: 169px;
+  height: 15dvh;
   top: 0;
   background: linear-gradient(#ACC729 29%, #F5F9F0 100%);
+  display: flex;
   align-items: center;
-  text-align: center;
-  justify-content: center;
   z-index: 1000;
+  padding: 0 16px;
 }
 
-.location-selector {
-  background: transparent;
-  border: none;
+/* Left spacer — takes all available space on the left */
+.spacer {
+  flex: 1;
+}
+
+/* Centered text */
+.location-text {
   color: #000;
-  height: 100%;
   font-size: 25px;
   font-weight: 700;
+  text-align: center;
+  flex-shrink: 0; /* Prevent shrinking */
+  padding-left: 10px;
+}
+
+/* Arrow button — stays right next to text */
+.dropdown-toggle {
+  background: none;
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 auto;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+  flex-shrink: 0;
 }
-
+.dropdown-toggle:hover {
+  transform: translateY(-2px);
+}
 .dropdown-arrow {
   width: 40px;
   height: 40px;
@@ -50,6 +66,7 @@
 }
 
 .map-placeholder {
+  background: transparent;
   width: 100%;
   height: 100%;
   background-size: cover;
@@ -63,14 +80,14 @@
   justify-content: center;
   height: 100%;
   font-size: 18px;
-  color: #556B2F;
+  color: transparent;
 }
 
 /* Pins */
 .map-pin {
   position: absolute;
   transform: translate(-50%, -100%);
-  background: #2d6a4f;
+  background: #7CB342;
   width: 36px;
   height: 36px;
   border-radius: 50% 50% 50% 0;
@@ -93,49 +110,141 @@
 }
 
 /* Popup Overlay */
-.pin-popup {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+/* Overlay (darkens background) */
+.pin-popup-overlay {
+  position: fixed;
   inset: 0;
+  background: rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;     /* ← vertical stack */
+  justify-content: flex-end;  /* ← push card to bottom */
+  align-items: center;
+  z-index: 1000;
+  padding-top: 80px;          /* space for top status bar */
+}
+
+/* Main card */
+.pin-popup-card {
+  position: relative;
+  overflow-y: auto;
+  width: 95%;
+  height: 85%;
+  min-height: 550px;
+  max-width: 360px;
+  border-radius: 30px 30px 0 0;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: #556B2F; /* fallback */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Image at top */
+.popup-image {
+  width: 95%;
+  height: 30%;
+  min-height: 100px;
+  margin-top: 8px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 30px 30px 0 0;
+}
+
+/* Close X */
+.popup-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
   background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 8000;
-  padding: 20px;
+  z-index: 10;
 }
 
+/* Green curved content area */
+/* Content – grows to fill space */
 .popup-content {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  max-width: 90%;
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  flex: 0;                         /* ← takes remaining space */
+  background: #556B2F;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Title */
+.popup-title {
+  text-align: center;
+  padding-top: 15px;
+  padding-bottom: 5px;
+  margin: 0 0 10px;
+  font-size: 35px;
+  color: #F0F9CA;
+  font-weight: 600;
 }
 
-.popup-content h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  color: #2d6a4f;
+/* Check-in stat pill */
+.popup-stat {
+  display: inline-block;
+  text-align: center;
+  
+  width: auto;
+  min-width: 277;
+  background: rgba(143, 153, 132, 0.54);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
 }
 
-.popup-content p {
-  margin: 0;
-  color: #344e41;
-  font-size: 14px;
+/* Description */
+.popup-desc {
+  text-align: justify;
+  font-size: 0.95rem;
+  line-height: 30px;
+  padding-top: 10px;
+  margin-bottom: 24px;
+  margin-left: 20px;
+  margin-right: 20px;
+  opacity: 0.95;
 }
 
-.popup-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: transparent;
+/* Check-in button */
+.checkin-btn {
+  display: fixed;
+  align-self: center;
+  text-align: center;
+  width: 160px;
+  color: white;
+  background: #7CB342;
+  font-weight: 600;
+  font-size: 1.1rem;
   border: none;
-  font-size: 24px;
-  color: #999;
+  border-radius: 30px;
+  padding: 15px 30px;
+  margin-top: auto;
+  margin-bottom: 30px;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.checkin-btn:hover {
+  transform: translateY(-2px);
+}
+
+.checkin-btn:active {
+  transform: translateY(0);
 }
 
 /* FULL-SCREEN OVERLAY – COVERS MAP & NAVBAR */
@@ -174,8 +283,12 @@
   border: none;
   cursor: pointer;
   text-align: center;
+  justify-items: center;
   padding: 0;
   width: 100%;
+}
+.city-card:hover {
+  transform: scale(1.05); /* Slight zoom on hover */
 }
 
 .city-image {
@@ -185,14 +298,15 @@
   background-size: cover;
   background-position: center;
   margin: 0 auto 12px;
-  border: 4px solid white;
+  /* border: 4px solid #C2CD8D; */
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .city-name {
   margin: 0;
   padding-top: 20px;
-  font-size: 20px;
+  padding-bottom: 20px;
+  font-size: 25px;
   font-weight: 600;
   color: #1a3a1a;
 }
@@ -200,4 +314,308 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.check-in-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  /* justify-content: flex-end; */
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(#ACC729 20%, #F5F9F0 100%);
+  overflow-x: hidden;
+  position: relative;
+  text-align: center;
+  overflow-y: scroll;
+}
+
+.top-bar {
+  margin-top: 16px;
+  margin-left: 5dvw;
+  height: 18dvh;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.exit-btn {
+  background: transparent;
+  border: 0px;
+}
+.exit-btn:hover {
+  transform: scale(1.05);
+}
+
+.title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.city-name-prof {
+  padding-top: 40px;
+  padding-bottom: 30px;
+  font-size: 35px;
+  font-weight: bold;
+  color: #F5F9F0;
+}
+.line {
+  position: absolute;
+  left: 22%;
+  width: 56%;
+  height: 3px;
+  margin-top: 40px;
+  background-color:#F0F9CA;
+  position: relative;
+}
+
+.location-image {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin-left: auto;
+  margin-right: auto;
+  border: 6px solid #C2CD8D;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.location-name {
+  position: relative;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  font-size: 35px;
+  font-weight: bold;
+  color: #F5F9F0;
+}
+
+.popup-card {
+  position: relative;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  margin-top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 100%;
+  min-height: 300px;
+  max-width: 360px;
+  border-radius: 30px 30px 0 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: #556B2F; /* fallback */
+}
+.spark {
+  position: absolute;
+  left: 2.8%;
+  padding-top: 30px;
+}
+.first-rew {
+  align-self: flex-start;
+  margin-left: 15%;
+  padding-top: 40px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #F0F9CA;
+}
+.ecopoint-icon {
+  margin-top: 7%;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.point {
+  display:flex;
+  flex-direction: row;
+  align-self: flex-start;
+  margin-left: 15%;
+  font-size: 30px;
+  font-weight: 600;
+  color: #F0F9CA;
+  gap: 8px;
+  margin-top: 10px;
+}
+.progress-bar {
+  margin-top: 20px;
+  width: 100%;
+  margin-left: 20%;
+}
+.prog-title{
+  position: absolute;
+  left: 10%;
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 500;
+  color: #F0F9CA;
+}
+.track-bar {
+  position: relative;
+  display: block;
+  align-self: flex-start;
+  width: 80%;
+  height: 14px;
+  background: #F0F9CA;
+  border-radius: 10px;
+  margin-top: 22px;
+}
+.fill-bar {
+  position: absolute;
+  left: 1%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60%;
+  height: 10px;
+  background: #7CB342;
+  border-radius: 20px;
+}
+.expectant-bar {
+  position: absolute;
+  left: 1%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80%;
+  height: 10px;
+  background: rgba(124, 179, 66, 0.65);
+  border-radius: 20px;
+}
+.prog-num{
+  position: relative;
+  align-self: flex-end;
+  right: 0px;
+  margin-top: 3px;
+  transform: translateX(+19%);
+  font-size: 10px;
+  font-weight: 500;
+  color: #D4A722;
+}
+
+/* survey */
+.back-btn {
+  margin-left:7%;
+  margin-top: 8%;
+}
+.vehicle-message {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-left: 10%;
+}
+.congratulatory {
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 2;
+  text-align: left;
+  margin-bottom: 8px;
+}
+.point-survey {
+  display:flex;
+  flex-direction: row;
+  align-self: flex-start;
+  font-size: 30px;
+  font-weight: 600;
+  color: #F0F9CA;
+  gap: 8px;
+}
+.line-vehicle {
+  width: 200px;
+  height: 3px;
+  margin-top: 30px;
+  background: #F0F9CA;
+}
+.message {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.7;
+  text-align: left;
+  margin-bottom: 8px;
+  margin-right: 50px;
+}
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 50px;
+  padding: 30px 30px;
+  justify-items: center;
+}
+.vehicle-card {
+  cursor: pointer;
+  text-align: center;
+  justify-items: center;
+  background: #EFF5D2;
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  background-position: center;
+  border: 3px solid #556B2F; 
+  margin: 0 auto 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15)
+}
+.vehicle-card.selected {
+  background: #F9E8BC;
+  border: 3px solid #D4A722; 
+}
+.vehicle-card:hover {
+  transform: scale(1.05); /* Slight zoom on hover */
+}
+.vehicle-image {
+  background:transparent;
+  margin-top: 18px;
+  width: 60px;
+  height: 60px;
+}
+.vehicle-name {
+  padding: 15px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.receipt {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  margin-right: 40px;;
+}
+.popup-card-receipt {
+  position: relative;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 50%;
+  min-height: 250px;
+  max-width: 360px;
+  border-radius: 30px 30px 0 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: #556B2F; 
+}
+.popup-stat-receipt {
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  width: auto;
+  min-width: 277;
+  background: rgba(143, 153, 132, 0.54);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+}
+.total-balance {
+  display:flex;
+  flex-direction: row;
+  align-self: center;
+  font-size: 30px;
+  font-weight: 600;
+  color: #F0F9CA;
+  gap: 8px;
 }
