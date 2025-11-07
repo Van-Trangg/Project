@@ -112,7 +112,7 @@ export default function Profile() {
 
         <div className="avatar-wrapper">
           <div className="avatar-placeholder"></div>
-          <button className="camera-btn">📸</button>
+          {/* <button className="camera-btn">📸</button> */}
         </div>
       </div>
 

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
+import camIcon from '../public/camera.png'
 import '../styles/Profile.css'
 
 export default function EditProfile() {
@@ -14,6 +15,9 @@ export default function EditProfile() {
   const navigate = useNavigate()
   const [backHovering, setBackHovering] = useState(false)
   const [backActive, setBackActive] = useState(false)
+  const [showPhotoOptions, setShowPhotoOptions] = useState(false)
+  const fileInputRef = useRef(null)
+  const cameraInputRef = useRef(null)
 
   useEffect(() => {
     getProfile().then(r => {
@@ -91,7 +95,101 @@ export default function EditProfile() {
 
       <div className="edit-avatar-wrapper">
         <div className="edit-avatar" />
-        <button className="camera-small" type="button">📷</button>
+        <button
+          className="camera-small"
+          type="button"
+          onClick={() => setShowPhotoOptions(true)}
+          title="Change photo"
+        >
+          <img src={camIcon} alt="Camera" />
+        </button>
+
+        {/* Hidden file inputs: one for library, one with capture for camera */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const f = e.target.files && e.target.files[0]
+            if (f) {
+              console.log('Library photo selected', f)
+              // TODO: upload or preview the selected file
+            }
+          }}
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const f = e.target.files && e.target.files[0]
+            if (f) {
+              console.log('Camera photo captured/selected', f)
+              // TODO: upload or preview the captured file
+            }
+          }}
+        />
+
+        {/* Photo options modal */}
+        {showPhotoOptions && (
+          <div
+            className="photo-options-overlay"
+            onClick={() => setShowPhotoOptions(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10000,
+            }}
+          >
+            <div
+              className="photo-options"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: '#fff',
+                padding: 20,
+                borderRadius: 8,
+                minWidth: 260,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                boxShadow: '0 6px 18px rgba(0,0,0,0.2)'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPhotoOptions(false)
+                  fileInputRef.current && fileInputRef.current.click()
+                }}
+                className="btn"
+              >
+                Chọn từ thư viện
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPhotoOptions(false)
+                  cameraInputRef.current && cameraInputRef.current.click()
+                }}
+                className="btn"
+              >
+                Chụp ảnh
+              </button>
+
+              <button type="button" onClick={() => setShowPhotoOptions(false)} className="btn btn-secondary">
+                Hủy
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="edit-name">

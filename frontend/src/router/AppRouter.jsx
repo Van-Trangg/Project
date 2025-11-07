@@ -6,6 +6,7 @@ import Login from '../pages/Login'
 import Leaderboard from '../pages/Leaderboard'
 import Journal from '../pages/Journal'
 import Map from '../pages/Map'
+import CheckIn from '../pages/Checkin.jsx'
 import Profile from '../pages/Profile'
 import EditProfile from '../pages/EditProfile'
 import Reward from '../pages/Reward'
@@ -21,6 +22,7 @@ export default function AppRouter(){
           <Route path="/leaderboard" element={<Leaderboard/>} />
           <Route path="/journal" element={<Journal/>} />
           <Route path="/map" element={<Map/>} />
+          <Route path="/checkin/:locationId" element={<CheckIn/>} />
           <Route path="/profile" element={<Profile/>} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/reward" element={<Reward/>} />

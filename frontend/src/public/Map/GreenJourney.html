@@ -1,4 +1,219 @@
-.profile-page {
+<!DOCTYPE html>
+<!-- saved from url=(0025)http://localhost:5173/map -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="./GreenJourney_files/client"></script>
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GreenJourney</title>
+  <style type="text/css" data-vite-dev-id="/Users/Anhkhoi/Documents/CS252_PROJECT/Project/frontend/src/styles/Map.css">.map-page {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(#ACC729 100%, #F5F9F0 100%);
+  min-height: 100vh;
+  color: #344e41;
+  position: relative;
+  /* padding-bottom: 70px; */
+  overflow: hidden;
+}
+
+/* Top Location Bar */
+.location-bar {
+  position: sticky;
+  width: 100%;
+  height: 169px;
+  top: 0;
+  background: linear-gradient(#ACC729 29%, #F5F9F0 100%);
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.location-selector {
+  background: transparent;
+  border: none;
+  color: #000;
+  height: 100%;
+  font-size: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+}
+
+.dropdown-arrow {
+  width: 40px;
+  height: 40px;
+  fill: #000;
+  transition: transform 0.2s;
+}
+
+/* Map Container */
+.map-container {
+  /* position: sticky; */
+  height: 100vh;
+  width: 100%;
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 18px;
+  color: #556B2F;
+}
+
+/* Pins */
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: #2d6a4f;
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+  z-index: 10;
+}
+
+.map-pin:hover {
+  transform: translate(-50%, -100%) scale(1.2);
+}
+
+.pin-icon {
+  color: white;
+  font-size: 18px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Popup Overlay */
+.pin-popup {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 8000;
+  padding: 20px;
+}
+
+.popup-content {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.popup-content h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #2d6a4f;
+}
+
+.popup-content p {
+  margin: 0;
+  color: #344e41;
+  font-size: 14px;
+}
+
+.popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+}
+
+/* FULL-SCREEN OVERLAY – COVERS MAP & NAVBAR */
+.city-fullscreen-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100dvh;
+  background: linear-gradient(#F5F9F0 25%, #C6D870 100%);
+  z-index: 9999; /* Above everything */
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+  overflow: hidden; /* Prevent double scroll */
+  position: relative;
+}
+.overlay-inner {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Add this to ensure it fills */
+  min-height: 100%;
+}
+.city-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 50px;
+  padding: 70px 70px;
+  justify-items: center;
+}
+
+.city-card {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  padding: 0;
+  width: 100%;
+}
+
+.city-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto 12px;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.city-name {
+  margin: 0;
+  padding-top: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a3a1a;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}</style><style type="text/css" data-vite-dev-id="/Users/Anhkhoi/Documents/CS252_PROJECT/Project/frontend/src/styles/Profile.css">.profile-page {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
   min-height: 100vh;
@@ -381,45 +596,9 @@
 /* smaller back button while keeping save button larger */
 .edit-cover-wrapper .back-btn { left: 14px; width: 20px; height: 20px }
 .edit-cover-wrapper .save-top { right: 14px; width: 44px; height: 36px }
-
-.edit-avatar-wrapper {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  margin-top: 20px;
-}
-
-.edit-avatar {
-  width: 110px;
-  height: 110px;
-  background-color: #dfe4dc;
-  border-radius: 28px;       
-  border: 4px solid #fff;    
-}
-
-.camera-small {
-  position: absolute;
-  left: 50%;
-  transform: translateX(38px); 
-  bottom: 6px;
-  width: 20px;
-  height: 20px;
-  background: none;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.camera-small img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
+.edit-avatar-wrapper { display:flex; justify-content:center; position:relative; margin-top:-70px }
+.edit-avatar { width:120px; height:120px; background:#e6e6e6; border-radius:18px; border:6px solid #fff }
+.camera-small { position:absolute; right:calc(50% - 10px); bottom:6px; background:#6aa84f; color:white; border:none; border-radius:6px; padding:6px; cursor:pointer }
 .edit-name { text-align:center; margin-top:10px; display:flex; flex-direction:column; gap:6px; align-items:center; color: #556B2F}
 .edit-name input:first-child{font-size:20px; font-weight:700; text-align:center; border:none; background:transparent; color: #556B2F}
 .edit-name input:last-child{font-size:14px; color:#A9BC96; text-align:center; border:none; background:transparent}
@@ -495,3 +674,35 @@
 
 
 
+</style><style type="text/css" data-vite-dev-id="/Users/Anhkhoi/Documents/CS252_PROJECT/Project/frontend/src/styles/global.css">html, body, #root { height: 100%; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+* { box-sizing: border-box; }
+
+/* Mobile-first tweaks */
+img { max-width: 100%; height: auto; }
+button { cursor: pointer; }</style></head>
+  <body data-new-gr-c-s-check-loaded="14.1126.0" data-gr-ext-installed="">
+    <div id="root"><nav style="position: sticky; top: 0px; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgb(229, 231, 235); background: rgb(255, 255, 255); z-index: 100000;"><a href="http://localhost:5173/" style="font-weight: 700; text-decoration: none; color: rgb(17, 24, 39);">🌿 GreenJourney</a><div style="display: flex; gap: 12px;"><a class="" href="http://localhost:5173/" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Home</a><a class="" href="http://localhost:5173/journal" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Journal</a><a class="active" href="http://localhost:5173/map" style="text-decoration: none; font-size: 14px; color: rgb(6, 95, 70);" aria-current="page">Map</a><a class="" href="http://localhost:5173/leaderboard" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Top</a><a class="" href="http://localhost:5173/reward" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Rewards</a></div></nav><div style="max-width: 720px; margin: 0px auto;"><div class="map-page"><div class="location-bar"><button class="location-selector"><span>Phu Quoc</span><svg class="dropdown-arrow" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></path></svg></button></div><div class="city-fullscreen-overlay"><div class="overlay-inner"><div class="city-grid"><button class="city-card"><div class="city-image" style="background-image: url(&quot;/public/Map/hcmc.png&quot;);"></div><p class="city-name">Ho Chi Minh City</p></button><button class="city-card"><div class="city-image" style="background-image: url(&quot;/public/Map/pq.png&quot;);"></div><p class="city-name">Phu Quoc</p></button></div></div></div></div></div><footer style="padding: 16px; text-align: center; font-size: 12px; color: rgb(107, 114, 128);">© 2025 GreenJourney</footer></div>
+    <script type="module" src="./GreenJourney_files/main.jsx"></script>
+  
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>
