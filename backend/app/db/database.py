@@ -17,7 +17,7 @@ def get_db():
         db.close()
 
 # Create tables
-from app.models import user, journal, leaderboard, reward  # noqa
+from app.models import user, journal, leaderboard, reward, map, location  # noqa
 
 def init_db():
     Base.metadata.create_all(bind=engine)
