@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<!-- saved from url=(0025)http://localhost:5173/map -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="./GreenJourney_files/client"></script>
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GreenJourney</title>
+  <style type="text/css" data-vite-dev-id="/Users/Anhkhoi/Documents/CS252_PROJECT/Project/frontend/src/styles/Map.css">.map-page {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(#ACC729 100%, #F5F9F0 100%);
+  min-height: 100vh;
+  color: #344e41;
+  position: relative;
+  /* padding-bottom: 70px; */
+  overflow: hidden;
+}
+
+/* Top Location Bar */
+.location-bar {
+  position: sticky;
+  width: 100%;
+  height: 169px;
+  top: 0;
+  background: linear-gradient(#ACC729 29%, #F5F9F0 100%);
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.location-selector {
+  background: transparent;
+  border: none;
+  color: #000;
+  height: 100%;
+  font-size: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+}
+
+.dropdown-arrow {
+  width: 40px;
+  height: 40px;
+  fill: #000;
+  transition: transform 0.2s;
+}
+
+/* Map Container */
+.map-container {
+  /* position: sticky; */
+  height: 100vh;
+  width: 100%;
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 18px;
+  color: #556B2F;
+}
+
+/* Pins */
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: #2d6a4f;
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+  z-index: 10;
+}
+
+.map-pin:hover {
+  transform: translate(-50%, -100%) scale(1.2);
+}
+
+.pin-icon {
+  color: white;
+  font-size: 18px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Popup Overlay */
+.pin-popup {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 8000;
+  padding: 20px;
+}
+
+.popup-content {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.popup-content h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #2d6a4f;
+}
+
+.popup-content p {
+  margin: 0;
+  color: #344e41;
+  font-size: 14px;
+}
+
+.popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+}
+
+/* FULL-SCREEN OVERLAY – COVERS MAP & NAVBAR */
+.city-fullscreen-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100dvh;
+  background: linear-gradient(#F5F9F0 25%, #C6D870 100%);
+  z-index: 9999; /* Above everything */
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+  overflow: hidden; /* Prevent double scroll */
+  position: relative;
+}
+.overlay-inner {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Add this to ensure it fills */
+  min-height: 100%;
+}
+.city-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 50px;
+  padding: 70px 70px;
+  justify-items: center;
+}
+
+.city-card {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  padding: 0;
+  width: 100%;
+}
+
+.city-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto 12px;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.city-name {
+  margin: 0;
+  padding-top: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a3a1a;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}</style><style type="text/css" data-vite-dev-id="/Users/Anhkhoi/Documents/CS252_PROJECT/Project/frontend/src/styles/Profile.css">.profile-page {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
+  min-height: 100vh;
+  color: #344e41;
+  overflow-x: hidden;
+}
+
+/* Header */
+.profile-header {
+  position: relative;
+  text-align: center;
+}
+
+.cover-placeholder {
+  width: 100%;
+  height: 180px;
+  background-color: #cfd8cc;
+  border-bottom-left-radius: 80px;
+  border-bottom-right-radius: 80px;
+  /* background-image: url('/path/to/cover.jpg'); */
+  background-size: cover;
+  background-position: center;
+}
+
+/* Edit button góc trên phải */
+.edit-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+}
+.edit-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.back-rect, .exit-rect {
+  position: absolute;
+  top: 22px;
+  width: 20px;
+  height: 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  /* box-shadow: 0 2px 6px rgba(0,0,0,0.12); */
+  transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+  background: transparent; /* use image inside */
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* unified hover effect for header buttons */
+.edit-btn:hover, .back-rect:hover, .exit-rect:hover, .back-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  opacity: 0.95;
+  filter: brightness(1.05);
+}
+
+.back-rect { left: 14px; }
+.exit-rect { right: 64px; }
+
+.back-rect img, .exit-rect img, .edit-btn img, .back-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+/**/
+
+
+/* Avatar */
+.avatar-wrapper {
+  position: absolute;
+  left: 50%;
+  bottom: -50px;
+  transform: translateX(-50%);
+}
+
+.avatar-placeholder {
+  width: 110px;
+  height: 110px;
+  background-color: #dfe4dc;
+  border-radius: 28px;
+  border: 4px solid #fff;
+}
+
+.camera-btn {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  background: #718355;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+/* Thông tin chính */
+.profile-info {
+  text-align: center;
+  padding-top: 70px;
+}
+
+.profile-info h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #556B2F;
+}
+
+.nickname {
+  color: #A9BC96;
+  font-size: 14px;
+}
+
+/* Bio under nickname should match full name color */
+.profile-bio {
+  color: #556B2F;
+  font-size: 14px;
+  margin-top: 6px;
+  opacity: 0.95;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-evenly; /* phân bố đều các cột */
+  align-items: center;
+  width: 100%;
+  max-width: 720px;
+  margin: 24px auto;
+  color: #556B2F;
+}
+
+.stats div {
+  flex: 1; /* mỗi cột chiếm đều không gian */
+  text-align: center;
+  position: relative;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+/* Đường phân cách giữa các cột */
+.stats div:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1.5px;
+  background-color: #556B2F;
+  opacity: 0.4;
+}
+
+/* Số lớn */
+.stats strong {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #556B2F;
+  text-shadow: 0 1px 0 #C8D6A1;
+  line-height: 1.2;
+}
+
+/* Dòng chữ nhỏ bên dưới */
+.stats p {
+  font-size: 18px;
+  font-weight: 700;
+  color: #BAD050; /* màu chữ chính (vàng xanh nhạt) */
+  -webkit-text-stroke: 0.8px #556B2F; /* viền xung quanh chữ */
+  text-stroke: 0.8px #556B2F; /* cho trình duyệt hỗ trợ */
+  text-shadow: none; /* bỏ bóng cũ */
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+
+/* Khung thông tin */
+/* .info-fields {
+  width: 86%;
+  margin: 0 auto;
+  background: linear-gradient(#edf5e8, #f9fcf5);
+  border-radius: 20px;
+  padding: 14px 18px;
+  font-size: 14px;
+  text-align: left;
+  color: #344e41;
+  box-shadow: inset 0 0 3px #d8e0d5;
+} */
+
+/* .info-fields p {
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+}
+.info-fields strong {
+  font-weight: 500;
+  color: #50684a;
+} */
+
+/* Badges section */
+.badges-section {
+  margin-top: 30px;
+  padding: 0 20px 30px;
+}
+
+.badges-section h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2f4f2f;
+  margin: 18px auto 10px;
+  display: block;
+  width: 92%;
+  max-width: 720px;
+  text-align: left;
+  padding-bottom: 4px;
+  /* border-bottom: 2px solid #556B2F; */
+  position: relative;
+}
+
+.badges-section h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -18px;
+  width: 100%;
+  height: 2px;
+  background: #556B2F;
+}
+
+.badge-list {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.badge-card.placeholder {
+  background: #e3e9e1;
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* Các khối thông tin cá nhân */
+.info-fields {
+  width: 92%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px 8px 16px;
+  display: block;
+  background: transparent;
+}
+
+/* each row is a block with two columns: label + value */
+.info-block {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 14px;
+  padding: 8px 0;
+}
+
+.info-label {
+  font-size: 16px;
+  color: #A9BC96; /* label color like edit */
+  font-weight: 600;
+  text-align: left;
+}
+
+.info-value {
+  background: transparent; /* no pill for display mode */
+  color: #556B2F; /* darker green for values */
+  padding: 0 0 0 0;
+  border-radius: 0;
+  font-size: 16px;
+  letter-spacing: 0.2px;
+  display: block;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  box-shadow: none;
+  transition: none;
+  text-align: left;
+  width: 100%;
+}
+
+.info-value .value-text {
+  display: inline-block;
+}
+
+
+/* Edit screen styles (full-screen edit page) */
+.edit-screen {
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  /* padding-bottom: 40px; */
+  color: #344e41;
+  margin: 0;           
+  padding: 0;   
+  background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
+}
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* padding: 12px 16px; */
+  padding: 0 16px;     /* bỏ padding top/bottom để dính sát lên */
+  height: 56px; 
+}
+.back-btn {
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+}
+
+.save-top {
+  background: transparent;
+  border: none;
+  color: #000000;      
+  font-weight: 800;    
+  font-size: 18px;     
+  cursor: pointer;
+}
+
+.save-top:hover {
+  color: #7CB342;         
+}
+
+.edit-cover {
+  width: 100%;
+  height: 160px;
+  background-image: linear-gradient(#eaf4e2,#ffffff);
+  border-bottom-left-radius: 120px;
+  border-bottom-right-radius: 120px;
+  margin-top: 6px;
+  background-size: cover;
+  background-position: center;
+}
+.edit-cover-wrapper { position: relative; }
+
+/* overlay back/save buttons on top of the cover in edit screen */
+.edit-cover-wrapper .back-btn,
+.edit-cover-wrapper .save-top {
+  position: absolute;
+  top: 14px;
+  z-index: 9999; /* keep on top of everything */
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+}
+/* smaller back button while keeping save button larger */
+.edit-cover-wrapper .back-btn { left: 14px; width: 20px; height: 20px }
+.edit-cover-wrapper .save-top { right: 14px; width: 44px; height: 36px }
+.edit-avatar-wrapper { display:flex; justify-content:center; position:relative; margin-top:-70px }
+.edit-avatar { width:120px; height:120px; background:#e6e6e6; border-radius:18px; border:6px solid #fff }
+.camera-small { position:absolute; right:calc(50% - 10px); bottom:6px; background:#6aa84f; color:white; border:none; border-radius:6px; padding:6px; cursor:pointer }
+.edit-name { text-align:center; margin-top:10px; display:flex; flex-direction:column; gap:6px; align-items:center; color: #556B2F}
+.edit-name input:first-child{font-size:20px; font-weight:700; text-align:center; border:none; background:transparent; color: #556B2F}
+.edit-name input:last-child{font-size:14px; color:#A9BC96; text-align:center; border:none; background:transparent}
+.section {
+  margin: 32px 16px 20px; /* khoảng cách giữa các khối section */
+}
+
+.section h3 {
+  color: #556B2F;
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0 auto 10px;
+  padding-bottom: 4px;
+  width: 90%;
+  max-width: 720px;
+  text-align: left;
+  border-bottom: 2px solid #556B2F; /* đường gạch dưới */
+}
+
+.section textarea {
+  width: 100%;
+  height: 96px;
+  border-radius: 20px;
+  border: none;
+  background: rgba(85, 107, 47, 0.2); /*đổi màu khung*/
+  padding: 14px;
+  resize: vertical;
+  margin-top: 10px;            
+  color: #ffffff; /*đổi màu chữ trong khung bio, v.v*/
+}
+
+.personal-details {
+  background: transparent;
+  margin-top: 32px;        
+    
+}
+
+.pill-row {
+  display: block;
+  margin: 14px 0;
+}
+
+.pill-row .label {
+  display: block;
+  color: #A9BC96;
+  margin-bottom: 6px;
+}
+
+.pill-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(85, 107, 47, 0.2);
+  padding: 8px 12px;
+  border-radius: 24px;
+  width: 100%;
+}
+
+.pill-input input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.eye {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+
+
+</style><style type="text/css" data-vite-dev-id="/Users/Anhkhoi/Documents/CS252_PROJECT/Project/frontend/src/styles/global.css">html, body, #root { height: 100%; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+* { box-sizing: border-box; }
+
+/* Mobile-first tweaks */
+img { max-width: 100%; height: auto; }
+button { cursor: pointer; }</style></head>
+  <body data-new-gr-c-s-check-loaded="14.1126.0" data-gr-ext-installed="">
+    <div id="root"><nav style="position: sticky; top: 0px; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgb(229, 231, 235); background: rgb(255, 255, 255); z-index: 100000;"><a href="http://localhost:5173/" style="font-weight: 700; text-decoration: none; color: rgb(17, 24, 39);">🌿 GreenJourney</a><div style="display: flex; gap: 12px;"><a class="" href="http://localhost:5173/" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Home</a><a class="" href="http://localhost:5173/journal" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Journal</a><a class="active" href="http://localhost:5173/map" style="text-decoration: none; font-size: 14px; color: rgb(6, 95, 70);" aria-current="page">Map</a><a class="" href="http://localhost:5173/leaderboard" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Top</a><a class="" href="http://localhost:5173/reward" style="text-decoration: none; font-size: 14px; color: rgb(55, 65, 81);">Rewards</a></div></nav><div style="max-width: 720px; margin: 0px auto;"><div class="map-page"><div class="location-bar"><button class="location-selector"><span>Phu Quoc</span><svg class="dropdown-arrow" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></path></svg></button></div><div class="city-fullscreen-overlay"><div class="overlay-inner"><div class="city-grid"><button class="city-card"><div class="city-image" style="background-image: url(&quot;/public/Map/hcmc.png&quot;);"></div><p class="city-name">Ho Chi Minh City</p></button><button class="city-card"><div class="city-image" style="background-image: url(&quot;/public/Map/pq.png&quot;);"></div><p class="city-name">Phu Quoc</p></button></div></div></div></div></div><footer style="padding: 16px; text-align: center; font-size: 12px; color: rgb(107, 114, 128);">© 2025 GreenJourney</footer></div>
+    <script type="module" src="./GreenJourney_files/main.jsx"></script>
+  
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>

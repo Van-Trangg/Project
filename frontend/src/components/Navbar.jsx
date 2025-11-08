@@ -16,7 +16,7 @@ export default function Navbar() {
 }
 
 const styles = {
-  nav: { position: 'sticky', top: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', background: '#fff', zIndex: 10 },
+  nav: { position: 'sticky', top: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', background: '#fff', zIndex: 100000 },
   brand: { fontWeight: 700, textDecoration: 'none', color: '#111827' },
   tabs: { display: 'flex', gap: 12 },
   link: ({ isActive }) => ({ textDecoration: 'none', fontSize: 14, color: isActive ? '#065f46' : '#374151' }),

@@ -1,0 +1,180 @@
+/* ============================
+   AUTH LAYOUT BASE
+============================ */
+.auth-root {
+  font-family: 'Poppins', sans-serif;
+  background: #FEF6EF;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* ============================
+   TOP HALF-CIRCLE
+============================ */
+.auth-top {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+}
+
+.auth-circle {
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  border-radius: 50%;
+  background: #C6D870;
+  top: -540px; /* để chỉ thấy nửa dưới */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 120px;
+  box-shadow: inset 0 -30px 40px rgba(0, 0, 0, 0.06);
+}
+
+.auth-title {
+  color: #556B2F;
+  font-size: 56px;
+  font-weight: 800;
+  margin: 0;
+}
+
+/* ============================
+   FORM
+============================ */
+.auth-form {
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 40px;
+}
+
+/* Label + Input fields */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  color: #757575;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.field-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* background: #fff; */
+  border: 1.5px solid #ccc;
+  border-radius: 40px;
+  padding: 14px 20px;
+}
+
+.field-input input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 15px;
+  color: #3E4E2F;
+  background: transparent;
+}
+
+.field-input input::placeholder {
+  color: #bdb3ac;
+}
+
+.field-icon {
+  font-size: 18px;
+  opacity: 0.6;
+}
+
+.icon-eye {
+  background: transparent;
+  border: none;
+  opacity: 0.6;
+  font-size: 18px;
+}
+
+/* Forgot password */
+.forgot {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 600;
+  color: #616161;
+  margin-top: -6px;
+}
+
+/* ============================
+   BUTTON
+============================ */
+.auth-btn {
+  background: #C9E265;
+  border: none;
+  border-radius: 40px;
+  padding: 14px 26px;
+  font-weight: 700;
+  font-size: 18px;
+  color: #3E4E2F;
+  width: 100%;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.auth-btn:hover {
+  background: #BFD858;
+  transform: translateY(-2px);
+}
+
+/* ============================
+   FOOTER TEXT
+============================ */
+.signup {
+  text-align: center;
+  font-size: 14px;
+  color: #9E9E9E;
+  margin-top: 30px;
+}
+
+.signup a {
+  color: #C76B2A;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ============================
+   MESSAGE
+============================ */
+.auth-msg {
+  text-align: center;
+  color: #C3824E;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* ============================
+   RESPONSIVE
+============================ */
+@media (max-width: 480px) {
+  .auth-circle {
+    width: 500px;
+    height: 500px;
+    top: -340px;
+    padding-bottom: 80px;
+  }
+
+  .auth-title {
+    font-size: 42px;
+  }
+}
