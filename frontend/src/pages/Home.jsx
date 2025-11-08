@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 // Import CSS cho trang Home
 import '../styles/Home.css'; 
 
-// === BẠN CHƯA IMPORT CÁC ICON NÀY ===
+// (Các icon nội dung vẫn đang bị comment)
 // import leafIcon from '../public/icons/leaf.png';
 // import treeIcon from '../public/icons/tree-heart.png';
 // import sunIcon from '../public/icons/sun.png';
@@ -35,22 +35,20 @@ const mockData = {
 
 export default function Home() {
   const [data, setData] = useState(null);
-  const [error, setError] = useState(null); // Tạm thời không dùng
-  const navigate = useNavigate();
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate(); // Đảm bảo navigate đã được gọi ở đây
 
   // Dùng Mock Data thay vì gọi API
   useEffect(() => {
     console.log("Đang dùng mock data!");
     const timer = setTimeout(() => {
       setData(mockData);
-    }, 500); // Tải nhanh hơn
+    }, 500); 
     return () => clearTimeout(timer);
   }, []);
 
-  // [CHECK LỖI] Đặt check "null" lên trước là ĐÚNG
   if (!data) return <div className="loading">Loading...</div>;
 
-  // [AN TOÀN] Bây giờ data chắc chắn có
   const {
     userName,
     ecopoints,
@@ -74,37 +72,41 @@ export default function Home() {
         <p>Up for a new adventure today?</p>
       </div>
 
-      {/* === LƯỚI THỐNG KÊ 2x2 === */}
+      {/* === LƯỚI THỐNG KÊ 2x2 (ĐÃ THÊM onClick) === */}
       <div className="stats-grid">
-        <div className="stat-card">
+        
+        {/* 1. Ecopoints -> /rewards */}
+        <div className="stat-card" onClick={() => navigate('/rewards')}>
           <div className="stat-card-header">
             <span className="title">Ecopoints</span>
-            {/* [LỖI Ở ĐÂY 1] Biến "leafIcon" không tồn tại 
-              Bạn phải comment (vô hiệu hóa) nó đi
-            */}
             {/* <img src={leafIcon} alt="Ecopoints" /> */}
           </div>
           <div className="value">{ecopoints.toLocaleString('de-DE')}</div>
         </div>
-        <div className="stat-card">
+        
+        {/* 2. Badges -> /profile */}
+        <div className="stat-card" onClick={() => navigate('/profile')}>
           <div className="stat-card-header"><span className="title">Badges</span></div>
           <div className="value">{badges}</div>
         </div>
-        <div className="stat-card">
+        
+        {/* 3. Rank -> /leaderboard */}
+        <div className="stat-card" onClick={() => navigate('/leaderboard')}>
           <div className="stat-card-header"><span className="title">Rank</span></div>
           <div className="value">#{rank}</div>
         </div>
-        <div className="stat-card">
+        
+        {/* 4. Check-ins -> /journal */}
+        <div className="stat-card" onClick={() => navigate('/journal')}>
           <div className="stat-card-header"><span className="title">Check-ins</span></div>
           <div className="value">{String(checkIns).padStart(2, '0')}</div>
         </div>
+
       </div>
 
       {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
       <div className="home-section">
         <div className="section-header">
-          {/* [LỖI Ở ĐÂY 2] Biến "treeIcon" không tồn tại
-          */}
           {/* <img src={treeIcon} alt="Title" /> */}
           <div className="text-content">
             <h3>{currentTitle}</h3>
@@ -125,8 +127,6 @@ export default function Home() {
       {/* === PHẦN THƯỞNG HÀNG NGÀY === */}
       <div className="home-section">
         <div className="section-header">
-          {/* [LỖI Ở ĐÂY 3] Biến "sunIcon" không tồn tại
-          */}
           {/* <img src={sunIcon} alt="Rewards" /> */}
           <div className="text-content">
             <h3>Daily Rewards</h3>
@@ -145,15 +145,13 @@ export default function Home() {
             >
               <span className="points">{reward.points}</span>
               <span className="date">{reward.date}</span>
-              {/* [LỖI Ở ĐÂY 4] Biến "leafIcon" không tồn tại
-              */}
               {/* <img src={leafIcon} alt="leaf" className="leaf-icon" /> */}
             </div>
           ))}
         </div>
       </div>
 
-      {/* === THANH ĐIỀU HƯỚNG DƯỚI CÙNG (ĐÃ BỎ ICON) === */}
+      {/* === THANH ĐIỀU HƯỚNG DƯỚI CÙNG === */}
       <nav className="bottom-nav">
         <button className="nav-item" onClick={() => navigate('/rewards')}>
           <span>Rewards</span>
