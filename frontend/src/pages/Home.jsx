@@ -145,7 +145,7 @@ export default function Home() {
 
       {/* === THANH ĐIỀU HƯỚNG DƯỚI CÙNG (ĐÃ BỎ ICON) === */}
       <nav className="bottom-nav">
-        <button className="nav-item" onClick={() => navigate('/rewards')}>
+        <button className="nav-item" onClick={() => navigate('/reward')}>
           <span>Rewards</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/journal')}>

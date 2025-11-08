@@ -21,7 +21,7 @@ def get_home_data():
         "badges": 54,
         "rank": 1,
         "checkIns": 3, # Đã đổi
-        "currentTitle": "Chú Phó", # Đã đổi
+        "currentTitle": "Friend of the Trees", # Đã đổi
         "progressCurrent": 1600, # Đã đổi
         "progressMax": 1000, # Đã đổi
         "dailyStreak": 13, # Đã đổi
