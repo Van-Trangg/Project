@@ -27,22 +27,19 @@ export default function EditProfile() {
       const bioVal = user.bio || user.about || user.description || ''
       const fullNameVal = user.full_name || user.name || user.display_name || ''
       const nicknameVal = user.nickname || user.username || user.handle || ''
-      const birthdateVal = user.birthdate || user.dob || user.birthday || ''
       const phoneVal = user.phone || user.phone_number || user.mobile || ''
       const addressVal = user.address || user.location || user.place || ''
       const emailVal = user.email || user.mail || user.email_address || ''
-
       setForm({
         full_name: fullNameVal,
         nickname: nicknameVal,
         bio: bioVal,
-        birthdate: birthdateVal,
         phone: phoneVal,
         address: addressVal,
         email: emailVal,
       })
     }).catch(() => setForm({
-      full_name: '', nickname: '', bio: '', birthdate: '', phone: '', address: '', email: ''
+      full_name: '', nickname: '', bio: '', phone: '', address: '', email: ''
     }))
   }, [])
 

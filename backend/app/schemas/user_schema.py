@@ -13,8 +13,14 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
     full_name: str | None = None
+    nickname: str | None = None
+    bio: str | None = None
+    phone: str | None = None
+    address: str | None = None
+    check_ins: int
+    badges_count: int
     eco_points: int
-
+    total_eco_points: int
     class Config:
         from_attributes = True
 class ForgotPasswordRequest(BaseModel):
@@ -28,3 +34,11 @@ class SetNewPasswordRequest(BaseModel):
     email: EmailStr
     code: str
     password: str = Field(min_length=8, max_length=72)
+
+class UserUpdate(BaseModel):
+    full_name: str | None = None
+    nickname: str | None = None
+    bio: str | None = None
+    phone: str | None = None
+    address: str | None = None
+    email: EmailStr | None = None
