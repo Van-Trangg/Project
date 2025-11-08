@@ -11,7 +11,7 @@ import '../styles/Home.css';
 // import leafIcon from '../public/icons/leaf.png';
 // import treeIcon from '../public/icons/tree-heart.png';
 // import sunIcon from '../public/icons/sun.png';
-
+  
 
 // --- Thêm Mock Data ---
 const mockData = {
@@ -39,13 +39,32 @@ export default function Home() {
   const navigate = useNavigate();
 
   // Dùng Mock Data thay vì gọi API
-  useEffect(() => {
-    console.log("Đang dùng mock data!");
-    const timer = setTimeout(() => {
-      setData(mockData);
-    }, 500); // Tải nhanh hơn
-    return () => clearTimeout(timer);
-  }, []);
+ // Gọi API thật từ Backend
+useEffect(() => {
+  const fetchHomeData = async () => {
+    try {
+      // 1. Gọi đến API backend của bạn
+      // (Dùng 127.0.0.1 thay vì localhost để tránh lỗi)
+      const response = await fetch('http://127.0.0.1:8000/home'); 
+
+      if (!response.ok) {
+        throw new Error('Lỗi mạng hoặc server (Backend sập?)');
+      }
+
+      // 2. Lấy dữ liệu JSON (đã là camelCase)
+      const data = await response.json();
+
+      // 3. Set dữ liệu vào state để "vẽ" ra giao diện
+      setData(data); // <--- DÙNG DATA TỪ BACKEND
+
+    } catch (error) {
+      console.error("Không thể gọi API backend:", error);
+      setError(error.message); // Báo lỗi nếu backend sập
+    }
+  };
+
+  fetchHomeData();
+}, []); // Mảng rỗng [] nghĩa là "chỉ chạy 1 lần khi trang được tải"
 
   // [CHECK LỖI] Đặt check "null" lên trước là ĐÚNG
   if (!data) return <div className="loading">Loading...</div>;
