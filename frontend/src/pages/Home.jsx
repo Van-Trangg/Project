@@ -2,72 +2,52 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { api } from '../api/apiClient'; // Tắt API thật
-
-// Import CSS cho trang Home
 import '../styles/Home.css'; 
-
-// === BẠN CHƯA IMPORT CÁC ICON NÀY ===
-// import leafIcon from '../public/icons/leaf.png';
-// import treeIcon from '../public/icons/tree-heart.png';
-// import sunIcon from '../public/icons/sun.png';
-  
-
-// --- Thêm Mock Data ---
-const mockData = {
-  userName: "Your Name",
-  ecopoints: 3123,
-  badges: 54,
-  rank: 100,
-  checkIns: 3,
-  currentTitle: "Friend of the Trees",
-  progressCurrent: 1670,
-  progressMax: 2000,
-  dailyStreak: 23,
-  dailyRewards: [
-    { date: "25/10", points: 10, claimed: true, isToday: false },
-    { date: "26/10", points: 10, claimed: false, isToday: true },
-    { date: "27/10", points: 10, claimed: false, isToday: false },
-    { date: "28/10", points: 10, claimed: false, isToday: false },
-  ]
-};
-// --- Hết Mock Data ---
 
 export default function Home() {
   const [data, setData] = useState(null);
-  const [error, setError] = useState(null); // Tạm thời không dùng
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // <-- 1. THÊM STATE LOADING
   const navigate = useNavigate();
 
-  // Dùng Mock Data thay vì gọi API
- // Gọi API thật từ Backend
-useEffect(() => {
-  const fetchHomeData = async () => {
-    try {
-      // 1. Gọi đến API backend của bạn
-      // (Dùng 127.0.0.1 thay vì localhost để tránh lỗi)
-      const response = await fetch('http://127.0.0.1:8000/home'); 
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      setLoading(true); // 2. BẮT ĐẦU LOADING
+      setError(null);   // Xóa lỗi cũ
+      
+      try {
+        const response = await fetch('http://127.0.0.1:8000/home'); 
 
-      if (!response.ok) {
-        throw new Error('Lỗi mạng hoặc server (Backend sập?)');
+        if (!response.ok) {
+          throw new Error('Lỗi mạng hoặc server (Backend sập?)');
+        }
+
+        const data = await response.json();
+        setData(data); // 3. SET DATA (THÀNH CÔNG)
+
+      } catch (error) {
+        console.error("Không thể gọi API backend:", error);
+        setError(error.message); // 4. SET LỖI (THẤT BẠI)
+      } finally {
+        setLoading(false); // 5. LUÔN TẮT LOADING (Dù thành công hay lỗi)
       }
+    };
 
-      // 2. Lấy dữ liệu JSON (đã là camelCase)
-      const data = await response.json();
+    fetchHomeData();
+  }, []); // Chỉ chạy 1 lần
 
-      // 3. Set dữ liệu vào state để "vẽ" ra giao diện
-      setData(data); // <--- DÙNG DATA TỪ BACKEND
+  // --- SỬA LẠI THỨ TỰ CHECK ---
 
-    } catch (error) {
-      console.error("Không thể gọi API backend:", error);
-      setError(error.message); // Báo lỗi nếu backend sập
-    }
-  };
+  // 1. Check Loading (Luôn check đầu tiên)
+  if (loading) return <div className="loading">Loading...</div>;
 
-  fetchHomeData();
-}, []); // Mảng rỗng [] nghĩa là "chỉ chạy 1 lần khi trang được tải"
+  // 2. Check Lỗi (Check thứ 2)
+  if (error) return <div className="loading">Lỗi: {error} (Backend của bạn đã chạy chưa?)</div>;
 
-  // [CHECK LỖI] Đặt check "null" lên trước là ĐÚNG
-  if (!data) return <div className="loading">Loading...</div>;
+  // 3. Check Data (Check cuối cùng)
+  // (Nếu không loading, không lỗi, mà vẫn không có data thì là lỗi)
+  if (!data) return <div className="loading">Không có dữ liệu.</div>;
+
 
   // [AN TOÀN] Bây giờ data chắc chắn có
   const {
@@ -95,25 +75,22 @@ useEffect(() => {
 
       {/* === LƯỚI THỐNG KÊ 2x2 === */}
       <div className="stats-grid">
-        <div className="stat-card">
+        <div className="stat-card" onClick={() => navigate('/rewards')}>
           <div className="stat-card-header">
             <span className="title">Ecopoints</span>
-            {/* [LỖI Ở ĐÂY 1] Biến "leafIcon" không tồn tại 
-              Bạn phải comment (vô hiệu hóa) nó đi
-            */}
             {/* <img src={leafIcon} alt="Ecopoints" /> */}
           </div>
           <div className="value">{ecopoints.toLocaleString('de-DE')}</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card" onClick={() => navigate('/profile')}>
           <div className="stat-card-header"><span className="title">Badges</span></div>
           <div className="value">{badges}</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card" onClick={() => navigate('/leaderboard')}>
           <div className="stat-card-header"><span className="title">Rank</span></div>
           <div className="value">#{rank}</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card" onClick={() => navigate('/journal')}>
           <div className="stat-card-header"><span className="title">Check-ins</span></div>
           <div className="value">{String(checkIns).padStart(2, '0')}</div>
         </div>
@@ -122,8 +99,6 @@ useEffect(() => {
       {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
       <div className="home-section">
         <div className="section-header">
-          {/* [LỖI Ở ĐÂY 2] Biến "treeIcon" không tồn tại
-          */}
           {/* <img src={treeIcon} alt="Title" /> */}
           <div className="text-content">
             <h3>{currentTitle}</h3>
@@ -144,8 +119,6 @@ useEffect(() => {
       {/* === PHẦN THƯỞNG HÀNG NGÀY === */}
       <div className="home-section">
         <div className="section-header">
-          {/* [LỖI Ở ĐÂY 3] Biến "sunIcon" không tồn tại
-          */}
           {/* <img src={sunIcon} alt="Rewards" /> */}
           <div className="text-content">
             <h3>Daily Rewards</h3>
@@ -164,8 +137,6 @@ useEffect(() => {
             >
               <span className="points">{reward.points}</span>
               <span className="date">{reward.date}</span>
-              {/* [LỖI Ở ĐÂY 4] Biến "leafIcon" không tồn tại
-              */}
               {/* <img src={leafIcon} alt="leaf" className="leaf-icon" /> */}
             </div>
           ))}
