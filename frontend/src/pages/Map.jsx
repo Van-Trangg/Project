@@ -4,24 +4,12 @@ import { listPlaces, getPois } from '../api/map'
 import mapPlaceholder from '../public/map-placeholder.png'
 import '../styles/Map.css'
 
-// const CITIES = [
-//   { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172, image: '/src/public/Map/hcmc.png'},
-//   { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817, image: '/src/public/Map/pq.png'},
-// ]
-
-// const PINS = [
-//   { id: 1, lat: 10.7769, lng: 106.7009, image: '/src/public/Map/dkhi.png', checkInRate: '46%', title: 'Đảo Khỉ', desc: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.' },
-//   { id: 2, lat: 10.7626, lng: 106.6822, title: 'Bến Nghé', desc: 'Historic riverside area' },
-//   { id: 3, lat: 10.7554, lng: 106.6753, title: 'Mai Chí Thọ', desc: 'Modern boulevard' },
-// ]
-
 export default function Map() {
   const [maps, setMaps] = useState([])
   const [selectedMap, setSelectedMap] = useState(null)
   const [pois, setPois] = useState([])
   const [loading, setLoading] = useState(true);
   const [userId] = useState(1) // TODO: get from auth context
-  //const [selectedCity, setSelectedCity] = useState(CITIES[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
   
@@ -61,35 +49,35 @@ export default function Map() {
 
   // Convert lat/lng to % on static map (HCM bounds)
   const latLngToPercent = (lat, lng, map) => {
-  if (!map?.center_lat || !map?.center_lng || !map?.radius_m) {
-    return { top: '50%', left: '50%' };
-  }
+    if (!map?.center_lat || !map?.center_lng || !map?.radius_m) {
+      return { top: '50%', left: '50%' };
+    }
 
-  const { center_lat, center_lng, radius_m } = map;
+    const { center_lat, center_lng, radius_m } = map;
 
-  // 1. Approximate meters per degree
-  const METERS_PER_DEG_LAT = 111194; // more accurate than 111000
-  const METERS_PER_DEG_LNG = METERS_PER_DEG_LAT * Math.cos((center_lat * Math.PI) / 180);
+    // 1. Approximate meters per degree
+    const METERS_PER_DEG_LAT = 111194; // more accurate than 111000
+    const METERS_PER_DEG_LNG = METERS_PER_DEG_LAT * Math.cos((center_lat * Math.PI) / 180);
 
-  // 2. Distance from center (in meters)
-  const dLat = (lat - center_lat) * METERS_PER_DEG_LAT;
-  const dLng = (lng - center_lng) * METERS_PER_DEG_LNG;
+    // 2. Distance from center (in meters)
+    const dLat = (lat - center_lat) * METERS_PER_DEG_LAT;
+    const dLng = (lng - center_lng) * METERS_PER_DEG_LNG;
 
-  const scaleFactor = 0.5;
-  // 4. Convert to fraction of map size (-1 to +1)
-  const fracY = dLat / (scaleFactor*radius_m); // -1 (top) to +1 (bottom)
-  const fracX = dLng / (scaleFactor*radius_m); // -1 (left) to +1 (right)
+    const scaleFactor = 0.5;
+    // 4. Convert to fraction of map size (-1 to +1)
+    const fracY = dLat / (scaleFactor*radius_m); // -1 (top) to +1 (bottom)
+    const fracX = dLng / (scaleFactor*radius_m); // -1 (left) to +1 (right)
 
-  // 5. Convert to percentage (0% = top-left, 100% = bottom-right)
-  let top = 50 + fracY * 50;  // 50% = center vertically
-  let left = 50 + fracX * 50; // 50% = center horizontally
+    // 5. Convert to percentage (0% = top-left, 100% = bottom-right)
+    let top = 50 + fracY * 50;  // 50% = center vertically
+    let left = 50 + fracX * 50; // 50% = center horizontally
 
-  // 7. Clamp to image bounds (0–100%)
-  top = Math.max(0, Math.min(100, top));
-  left = Math.max(0, Math.min(100, left));
+    // 7. Clamp to image bounds (0–100%)
+    top = Math.max(0, Math.min(100, top));
+    left = Math.max(0, Math.min(100, left));
 
-  return { top: `${top}%`, left: `${left}%` };
-};
+    return { top: `${top}%`, left: `${left}%` };
+  };
 
   useEffect(() => {
     if (selectedPin) {
@@ -104,7 +92,6 @@ export default function Map() {
 
   return (
   <div className="map-page">
-    {/* Top Location Bar */}
     <div className="location-bar">
       <div className="spacer"></div>
       <span className="location-text">{selectedMap?.name || 'Loading...'}</span>
@@ -118,14 +105,9 @@ export default function Map() {
       </button>
       <div className="spacer"></div>
     </div>
-
-    {/* FULL-SCREEN CITY OVERLAY – COVERS EVERYTHING */}
     {dropdownOpen && ( 
       <div className="city-fullscreen-overlay">
-        <div 
-          className="overlay-inner" 
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="overlay-inner" onClick={(e) => e.stopPropagation()}>
           <div className="city-grid">
             {maps.map((city) => (
               <button
@@ -133,8 +115,7 @@ export default function Map() {
                 className="city-card"
                 onClick={() => {handleCityChange(city);}}
               >
-                <div 
-                  className="city-image"
+                <div className="city-image"
                   style={{ backgroundImage: `url(${city.image || '/default-city.jpg'})` }}
                 />
                 <p className="city-name">{city.name}</p>
@@ -144,7 +125,6 @@ export default function Map() {
         </div>
       </div>
     )}
-    {/* Map Container */}
     {!dropdownOpen && (
       <div className="map-container">
         {loading ? (
