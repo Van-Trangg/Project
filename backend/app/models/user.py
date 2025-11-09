@@ -16,5 +16,6 @@ class User(Base):
     badges_count: Mapped[int] = mapped_column(Integer, default=0)    
     eco_points: Mapped[int] = mapped_column(Integer, default=0) 
     total_eco_points: Mapped[int] = mapped_column(Integer, default=0, index=True) 
+    avatar_url: Mapped[str] = mapped_column(String, default="")
 
     journals = relationship("Journal", back_populates="author")

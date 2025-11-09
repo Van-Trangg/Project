@@ -11,6 +11,8 @@ Thumbs.db
 .env.local
 *.sqlite3
 *.db
+*.db-wal
+*.db-shm
 __pycache__/
 *.py[cod]
 *$py.class

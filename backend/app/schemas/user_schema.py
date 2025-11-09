@@ -21,6 +21,7 @@ class UserOut(BaseModel):
     badges_count: int
     eco_points: int
     total_eco_points: int
+    avatar_url: str | None = None
     class Config:
         from_attributes = True
 class ForgotPasswordRequest(BaseModel):

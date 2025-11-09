@@ -91,7 +91,16 @@ export default function Profile() {
                 </button>
 
                 <div className="avatar-wrapper">
-                    <div className="avatar-placeholder"></div>
+                    {}
+                    <div
+                        className="avatar-placeholder"
+                        style={user.avatar_url ? {
+                            backgroundImage: `url(${user.avatar_url})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        } : {}}
+                    >
+                    </div>
                 </div>
             </div>
 

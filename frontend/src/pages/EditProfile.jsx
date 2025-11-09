@@ -37,9 +37,11 @@ export default function EditProfile() {
         phone: phoneVal,
         address: addressVal,
         email: emailVal,
+        avatar_url: user.avatar_url || null, 
+        avatar: null, 
       })
     }).catch(() => setForm({
-      full_name: '', nickname: '', bio: '', phone: '', address: '', email: ''
+        full_name: '', nickname: '', bio: '', phone: '', address: '', email: '', avatar_url: null, avatar: null
     }))
   }, [])
 
@@ -72,12 +74,7 @@ export default function EditProfile() {
     if (!form) return
     setSaving(true)
     try {
-      // If an avatar File was selected, send multipart/form-data so backend can receive the file
-      if (form.avatar && form.avatar instanceof File) {
-        await updateProfileMultipart(form)
-      } else {
-        await updateProfile(form)
-      }
+      await updateProfileMultipart(form)
       navigate('/profile')
     } catch (err) {
       console.error(err)
@@ -120,7 +117,11 @@ export default function EditProfile() {
       <div className="edit-avatar-wrapper">
         <div
             className="edit-avatar"
-            style={preview ? { backgroundImage: `url(${preview})` } : undefined}
+            style={{ 
+              backgroundImage: `url(${preview || form.avatar_url || ''})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
           />
         <button
           className="camera-small"
