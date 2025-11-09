@@ -31,7 +31,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 # ⚠️ Import tất cả models ở đây
-from app.models import user, journal, leaderboard, reward, location, map, poi, checkin  # noqa
+from app.models import user, journal, reward, map, poi, checkin  # noqa
 
 def init_db():
     print("🛠️ Initializing database...")

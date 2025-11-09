@@ -10,7 +10,7 @@ class JournalBase(BaseModel):
     eco_score: int = 0
 
 class JournalCreate(JournalBase):
-    location_id: int
+    poi_id: int
     pass
 
 class JournalUpdate(JournalBase):
