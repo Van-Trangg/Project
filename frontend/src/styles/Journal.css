@@ -1,0 +1,118 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+#title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.journal-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to bottom, #acc729, #f5f9f0 80%);
+}
+
+.location_box {
+    display: flex;
+    flex-direction: row;
+}
+
+.city_name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.jn_des {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* Main content area */
+.location_region {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 20px;
+}
+
+/* Horizontal scrolling container with snap-to-center */
+.place_pad {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+  margin-top: 10%;
+}
+
+.place_pad::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, Opera */
+}
+
+.horizontal-scroll-container {
+  display: flex;
+  gap: 15px;
+  padding: 20px 15px;
+  /* Add scroll-snap for smooth centering */
+  scroll-snap-type: x mandatory;
+}
+
+.journal-card {
+  flex: 0 0 auto;
+  width: 280px;
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  /* This element will be the snap target */
+  scroll-snap-align: center;
+}
+
+/* Style for inactive (non-centered) cards */
+.journal-card.inactive {
+  opacity: 0.6;
+  transform: scale(0.9);
+}
+
+.journal-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.journal-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 15px auto;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.journal-button:hover {
+  background-color: #45a049;
+}
+
+.journal-description {
+  font-size: 14px;
+  color: #333;
+  margin: 0 15px 15px;
+  text-align: center;
+}
