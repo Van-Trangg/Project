@@ -60,13 +60,37 @@ export default function Map() {
   }
 
   // Convert lat/lng to % on static map (HCM bounds)
-  const latLngToPercent = (lat, lng) => {
-    const minLat = 10.70, maxLat = 10.85
-    const minLng = 106.60, maxLng = 106.75
-    const top = ((lat - minLat) / (maxLat - minLat)) * 100
-    const left = ((lng - minLng) / (maxLng - minLng)) * 100
-    return { top: `${top}%`, left: `${left}%` }
+  const latLngToPercent = (lat, lng, map) => {
+  if (!map?.center_lat || !map?.center_lng || !map?.radius_m) {
+    return { top: '50%', left: '50%' };
   }
+
+  const { center_lat, center_lng, radius_m } = map;
+
+  // 1. Approximate meters per degree
+  const METERS_PER_DEG_LAT = 111194; // more accurate than 111000
+  const METERS_PER_DEG_LNG = METERS_PER_DEG_LAT * Math.cos((center_lat * Math.PI) / 180);
+
+  // 2. Distance from center (in meters)
+  const dLat = (lat - center_lat) * METERS_PER_DEG_LAT;
+  const dLng = (lng - center_lng) * METERS_PER_DEG_LNG;
+
+  const scaleFactor = 0.5;
+  // 4. Convert to fraction of map size (-1 to +1)
+  const fracY = dLat / (scaleFactor*radius_m); // -1 (top) to +1 (bottom)
+  const fracX = dLng / (scaleFactor*radius_m); // -1 (left) to +1 (right)
+
+  // 5. Convert to percentage (0% = top-left, 100% = bottom-right)
+  let top = 50 + fracY * 50;  // 50% = center vertically
+  let left = 50 + fracX * 50; // 50% = center horizontally
+
+  // 7. Clamp to image bounds (0–100%)
+  top = Math.max(0, Math.min(100, top));
+  left = Math.max(0, Math.min(100, left));
+
+  return { top: `${top}%`, left: `${left}%` };
+};
+
   useEffect(() => {
     if (selectedPin) {
       document.body.style.overflow = "hidden";
@@ -131,7 +155,7 @@ export default function Map() {
             style={{ backgroundImage: `url(${mapPlaceholder})` }}
           >
             {pois.map((pin) => {
-              const pos = latLngToPercent(pin.lat, pin.lng)
+              const pos = latLngToPercent(pin.lat, pin.lng, selectedMap)
               return (
                 <button
                   key={pin.id}

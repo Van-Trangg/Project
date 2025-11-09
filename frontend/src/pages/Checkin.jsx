@@ -4,11 +4,11 @@ import { checkin, confirmVehicle } from '../api/map'
 import '../styles/Map.css'
 
 const VEHICLES = {
-  walk: { name: "Walk", bonus: 10, image: '/walk.png' },
-  bike: { name: "Bicycle", bonus: 8, image: '/bike.png' },
-  bus: { name: "Bus", bonus: 5, image: '/bus.png' },
-  ev_scooter: { name: "E-Scooter", bonus: 6, image: '/scooter.png' },
-  car: { name: "Car", bonus: 0, image: '/car.png' }
+  walk: { name: "Walk", bonus: 20, image: 'src/public/Map/walk.png' },
+  bike: { name: "Bicycle", bonus: 20, image: 'src/public/Map/bike.png' },
+  bus: { name: "Bus", bonus: 10, image: 'src/public/Map/bus.png' },
+  ev_scooter: { name: "Motorbike", bonus: 0, image: 'src/public/Map/scooter.png' },
+  car: { name: "Car", bonus: 0, image: 'src/public/Map/car.png' }
 }
 
 export default function CheckIn() {
@@ -22,17 +22,12 @@ export default function CheckIn() {
   const [receipt, setReceipt] = useState(null)
   const [userId] = useState(0) // from auth
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+  
   // Mock GPS
   const mockGps = {
     user_lat: poi.lat + 0.0001,
     user_lng: poi.lng + 0.0001
   }
-
-  // const handleCheckInProcess = () => {
-  //   //if is first check in {setEarnedPoints(100)}
-  //   setShowSurvey(true);
-  // }
-
   const handleCheckIn = async () => {
     if (isCheckingIn) return;
 
@@ -116,8 +111,8 @@ const handleCancel = () => {
             }}
             ></div>
             <div className = 'location-name'>{poi.name}</div>
-            <div className="popup-stat">
-              {poi.score || '10%'} of users have checked in here
+            <div className="popup-stat-checkin">
+              {poi.score + '%' || '20%'} of users have checked in here
             </div>
           </div>
           <div className = 'popup-card'>
