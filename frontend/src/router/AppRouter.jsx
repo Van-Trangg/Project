@@ -15,6 +15,7 @@ import ResetPassword from '../pages/ResetPassword'
 import VerifyCode from '../pages/VerifyCode'
 import ResetComplete from '../pages/ResetComplete'
 import SetNewPassword from '../pages/SetNewPassword'
+import SignupComplete from '../pages/SignupComplete'
 
 export default function AppRouter(){
   return (
@@ -36,6 +37,7 @@ export default function AppRouter(){
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/set-new-password" element={<SetNewPassword />} />
           <Route path="/reset-complete" element={<ResetComplete />} />
+          <Route path="/signup-complete" element={<SignupComplete />} />
           <Route path="/reward" element={<Reward/>} />
         </Routes>
       </div>
