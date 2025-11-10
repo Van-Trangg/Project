@@ -1,8 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends 
+from app.core.security import get_current_user 
+from app.models.user import User
+from app.schemas.user_schema import UserOut
 
 router = APIRouter()
 
-@router.get("/")
-def my_profile():
-    # Stubbed user
-    return {"id": 1, "email": "demo@greenjourney.dev", "full_name": "Eco Traveler", "eco_points": 120}
+@router.get("/", response_model=UserOut)
+def my_profile(current_user: User = Depends(get_current_user)):
+    return current_user

@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { getProfile, updateProfile } from '../api/profile'
 import editIcon from '../public/edit.png'
 import newEditIcon from '../public/new_edit.png'
-import exitIcon from '../public/exit.png'
-import newExitIcon from '../public/new_exit.png'
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
+import exitIcon from '../public/exit.png'
+import newExitIcon from '../public/new_exit.png'
 import '../styles/Profile.css'
 
 export default function Profile() {
@@ -31,7 +31,11 @@ export default function Profile() {
         setError(err)
       })
   }, [])
-
+  const handleLogout = () => {
+      localStorage.removeItem('access_token')
+      setShowExitConfirm(false)
+      navigate('/checkout')
+  }  
   if (error) return <div className="loading">Không tải được profile. Vui lòng thử lại sau.</div>
   if (!user) return <div className="loading">Loading...</div>
 
@@ -196,7 +200,7 @@ export default function Profile() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
               <button
                 type="button"
-                onClick={() => { setShowExitConfirm(false); navigate('/checkout'); }}
+                onClick={handleLogout}
                 className="btn exit-logout-btn"
               >
                 Log out
