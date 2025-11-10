@@ -4,11 +4,11 @@ import { checkin, confirmVehicle } from '../api/map'
 import '../styles/Map.css'
 
 const VEHICLES = {
-  walk: { name: "Walk", bonus: 10, image: '/walk.png' },
-  bike: { name: "Bicycle", bonus: 8, image: '/bike.png' },
-  bus: { name: "Bus", bonus: 5, image: '/bus.png' },
-  ev_scooter: { name: "E-Scooter", bonus: 6, image: '/scooter.png' },
-  car: { name: "Car", bonus: 0, image: '/car.png' }
+  // walk: { name: "Walk", bonus: 20, image: 'src/public/Map/walk.png' },
+  bike: { name: "Bicycle", bonus: 20, image: '/src/public/Map/bike.png' },
+  bus: { name: "Bus", bonus: 10, image: '/src/public/Map/bus.png' },
+  ev_scooter: { name: "Motorbike", bonus: 0, image: '/src/public/Map/scooter.png' },
+  car: { name: "Car", bonus: 0, image: '/src/public/Map/car.png' }
 }
 
 export default function CheckIn() {
@@ -22,17 +22,12 @@ export default function CheckIn() {
   const [receipt, setReceipt] = useState(null)
   const [userId] = useState(0) // from auth
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+  
   // Mock GPS
   const mockGps = {
     user_lat: poi.lat + 0.0001,
     user_lng: poi.lng + 0.0001
   }
-
-  // const handleCheckInProcess = () => {
-  //   //if is first check in {setEarnedPoints(100)}
-  //   setShowSurvey(true);
-  // }
-
   const handleCheckIn = async () => {
     if (isCheckingIn) return;
 
@@ -62,6 +57,10 @@ export default function CheckIn() {
     }
   };
 
+  const handleCheckInTemp = () => {
+    setStep('survey');
+  }
+
   const handleConfirmVehicle = async () => {
     if (!selectedVehicle) return
     try {
@@ -71,6 +70,10 @@ export default function CheckIn() {
     } catch (err) {
       alert('Bonus failed')
     }
+  }
+
+  const handleConfirmVehTemp = () => {
+    setStep('receipt');
   }
 
   if (!poi) return <div>Location not found</div>
@@ -92,6 +95,8 @@ const handleCancel = () => {
 }
 
   //sau này check state người dùng đã checkin tại đây chưa => tắt hiển thị expectant bar + làm mờ chữ
+  const bonusTest = false;
+
   return (
     <div className = 'check-in-page'>
       {step === 'confirm' && (
@@ -116,8 +121,8 @@ const handleCancel = () => {
             }}
             ></div>
             <div className = 'location-name'>{poi.name}</div>
-            <div className="popup-stat">
-              {poi.score || '10%'} of users have checked in here
+            <div className="popup-stat-checkin">
+              {poi.score + '%' || '20%'} of users have checked in here
             </div>
           </div>
           <div className = 'popup-card'>
@@ -135,7 +140,7 @@ const handleCancel = () => {
               </span>
               <div className = 'prog-num'>1600+ 200/2000</div>
             </div>
-            <button className="checkin-btn" onClick={handleCheckIn}>Confirm</button>
+            <button className="checkin-btn" onClick={handleCheckInTemp}>Confirm</button>
           </div>
         </>
       )}
@@ -151,7 +156,7 @@ const handleCancel = () => {
         <div className = 'vehicle-message'>
           <p className = 'congratulatory'>Check-in complete!<br/>You have been awarded</p>
           <div className = 'point-survey'>
-            <span>{receipt.earned_points}</span>
+            <span>receipt.earned_points</span>
             <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
           </div>
           <span className = 'line-vehicle'></span>
@@ -176,8 +181,8 @@ const handleCancel = () => {
             ))}
         </div>
         <button 
-        className={`checkin-btn ${selectedTransport?.id == 0 ? 'inactive' : ''}`}
-        onClick={handleConfirmVehicle}
+        className={`checkin-btn ${selectedVehicle?.id == 0 ? 'inactive' : ''}`}
+        onClick={handleConfirmVehTemp}
         >
           Submit
         </button>
@@ -185,30 +190,37 @@ const handleCancel = () => {
       )}
       {step === 'receipt' && (
         <div className = 'receipt'>
+          <div className = 'spacer'></div>
           <div className = 'vehicle-message'>
-              <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
-              <div className = 'point-survey'>
-                <span>{receipt.vehicle_bonus}</span>
-                <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
-              </div>
-              <span className = 'line-vehicle'></span>
+              {/* sau khi backend them user thi bonusTest doi thanh receipt.vehicle_bonus === 0 */}
+              {bonusTest && (
+                <>
+                  <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
+                  <div className = 'point-survey'>
+                    <span>receipt.vehicle_bonus</span>
+                    <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+                  </div>
+                  <span className = 'line-vehicle'></span>
+                </>
+              )}
               <p className = 'congratulatory'>At this location, you have gained a total of</p>
               <div className = 'point-survey'>
-                <span>{receipt.total_points}</span>
+                <span>receipt.total_points</span>
                 <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
               </div>
               <p className = 'congratulatory'>Impressive!<br/>Thank you for your commitment towards improving our environment.</p>
-              <div className = 'popup-card-receipt'>
-                <div className="popup-stat-receipt">
-                  Your new balance
-                </div>
-              <div className = 'total-balance'>
-                <span>3.150</span> 
-                {/* Cần API lấy balance ở đây */}
-                <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
-              </div>
-              <button className="checkin-btn" onClick={handleCancel}>Confirm</button>
-              </div>
+          </div>
+          <div className = 'spacer'></div>
+          <div className = 'popup-card-receipt'>
+            <div className="popup-stat-receipt">
+              Your new balance
+            </div>
+            <div className = 'total-balance'>
+              <span>user.balance</span> 
+              {/* Cần API lấy balance ở đây */}
+              <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+            </div>
+            <button className="checkin-btn" onClick={handleCancel}>Confirm</button>
           </div>
         </div>
       )}

@@ -1,4 +1,3 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Home from '../pages/Home'
@@ -15,16 +14,17 @@ import ResetPassword from '../pages/ResetPassword'
 import VerifyCode from '../pages/VerifyCode'
 import ResetComplete from '../pages/ResetComplete'
 import SetNewPassword from '../pages/SetNewPassword'
+import LocationJournal from '../pages/LocationJournal.jsx'
 import SignupComplete from '../pages/SignupComplete'
 import ViewProfile from '../pages/ViewProfile'
-
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 export default function AppRouter(){
   return (
     <BrowserRouter>
       <Navbar />
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <Routes>
-          <Route path="/" element={<Home/>} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/checkout" element={<Login/>} />
             <Route path="/signup" element={<Signup/>} />
@@ -41,6 +41,7 @@ export default function AppRouter(){
           <Route path="/reset-complete" element={<ResetComplete />} />
           <Route path="/signup-complete" element={<SignupComplete />} />
           <Route path="/reward" element={<Reward/>} />
+          <Route path="/location/:id" element={<LocationJournal/>} />
         </Routes>
       </div>
       <Footer />
