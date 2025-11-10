@@ -1,11 +1,10 @@
-## Cách chạy lần đầu (setup lần đầu tiên)
-
 ### Frontend - Updated 
 cd frontend
 npm install
 npm install leaflet react-leaflet@4 
 npm run dev -- --host
 
+## Cách chạy lần đầu (setup lần đầu tiên)
 
 ### Backend (FastAPI + SQLite)
 
