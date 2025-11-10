@@ -58,6 +58,8 @@ frontend/coverage/
 # IDEs / Editors
 # =========================
 .vscode/
+.vs/
+
 .idea/
 *.code-workspace
 *.sublime-project

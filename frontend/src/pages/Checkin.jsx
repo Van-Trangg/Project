@@ -1,0 +1,217 @@
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react'
+import { checkin, confirmVehicle } from '../api/map'
+import '../styles/Map.css'
+
+const VEHICLES = {
+  walk: { name: "Walk", bonus: 10, image: '/walk.png' },
+  bike: { name: "Bicycle", bonus: 8, image: '/bike.png' },
+  bus: { name: "Bus", bonus: 5, image: '/bus.png' },
+  ev_scooter: { name: "E-Scooter", bonus: 6, image: '/scooter.png' },
+  car: { name: "Car", bonus: 0, image: '/car.png' }
+}
+
+export default function CheckIn() {
+  const { state } = useLocation();  
+  const { poi, map } = state || {};
+  const navigate = useNavigate();
+
+  const [step, setStep] = useState("confirm");
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [earnedPoints, setEarnedPoints] = useState(0);
+  const [receipt, setReceipt] = useState(null)
+  const [userId] = useState(0) // from auth
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  // Mock GPS
+  const mockGps = {
+    user_lat: poi.lat + 0.0001,
+    user_lng: poi.lng + 0.0001
+  }
+
+  // const handleCheckInProcess = () => {
+  //   //if is first check in {setEarnedPoints(100)}
+  //   setShowSurvey(true);
+  // }
+
+  const handleCheckIn = async () => {
+    if (isCheckingIn) return;
+
+    setIsCheckingIn(true);
+    try {
+      const res = await checkin({
+        user_id: userId,
+        poi_id: poi.id,
+        user_lat: mockGps.user_lat,
+        user_lng: mockGps.user_lng,
+      });
+
+    // Validate response
+    if (!res?.data) {
+      throw new Error("Invalid response from server");
+    }
+
+    setReceipt(res.data);
+    setStep('survey');
+    } catch (err) {
+      // Safely extract error message
+      const message = err.response?.data?.detail || err.message || "Check-in failed. Please try again.";
+      alert(message);
+      console.error("Check-in error:", err);
+    } finally {
+      setIsCheckingIn(false);
+    }
+  };
+
+  const handleConfirmVehicle = async () => {
+    if (!selectedVehicle) return
+    try {
+      const res = await confirmVehicle(receipt.checkin_id, selectedVehicle)
+      setReceipt(res.data)
+      setStep('receipt')
+    } catch (err) {
+      alert('Bonus failed')
+    }
+  }
+
+  if (!poi) return <div>Location not found</div>
+
+// const handleConfirmTransport = () => {
+//     if (selectedTransport == Transports[1] || selectedTransport == Transports[3]) {
+//       setEarnedPoints(150);
+//     }
+//     if (selectedTransport && selectedTransport.id !== 0) {
+//       setShowSurvey(false);
+//       setShowReceipt(true);
+//     }
+//   }
+
+const handleCancel = () => {
+  setSelectedVehicle(null);
+  setEarnedPoints(0);
+  navigate(-1); 
+}
+
+  //sau này check state người dùng đã checkin tại đây chưa => tắt hiển thị expectant bar + làm mờ chữ
+  return (
+    <div className = 'check-in-page'>
+      {step === 'confirm' && (
+        <>
+          <div className = 'top-bar'>
+            <button 
+              className = 'exit-btn'
+              onClick = {() => handleCancel()}
+              > 
+              <img src = '/src/public/x.png'></img>
+            </button>
+            <span className = 'title'>Check-in Point</span>
+          </div>
+          <div className = 'city-name-prof'>
+            <span> {map.name}</span>
+            <div className = 'line'></div>
+          </div>
+          <div className = 'location'>
+            <div className = 'location-image'
+            style={{
+              backgroundImage: `url(${poi.image || '/Map/popup-default.jpg'})`,
+            }}
+            ></div>
+            <div className = 'location-name'>{poi.name}</div>
+            <div className="popup-stat">
+              {poi.score || '10%'} of users have checked in here
+            </div>
+          </div>
+          <div className = 'popup-card'>
+            <img src = '/src/public/spark.png' className = 'spark'></img>
+            <span className = 'first-rew'>First Check-in Reward</span>
+            <div className = 'point'>
+              <span>100</span>
+              <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+            </div>
+            <div className = 'progress-bar'>
+              <div className = 'prog-title'>Progress until next title</div>
+              <span className = 'track-bar'>
+                <span className = 'fill-bar'></span>
+                <span className = 'expectant-bar'></span>
+              </span>
+              <div className = 'prog-num'>1600+ 200/2000</div>
+            </div>
+            <button className="checkin-btn" onClick={handleCheckIn}>Confirm</button>
+          </div>
+        </>
+      )}
+      {step === 'survey' && (
+      <>
+        <button className = 'back-btn' onClick = {() => {
+          setSelectedTransport(null) ; 
+          setStep('confirm')
+          }}
+        >
+          <img src = '/src/public/back.png'/>
+        </button>
+        <div className = 'vehicle-message'>
+          <p className = 'congratulatory'>Check-in complete!<br/>You have been awarded</p>
+          <div className = 'point-survey'>
+            <span>{receipt.earned_points}</span>
+            <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+          </div>
+          <span className = 'line-vehicle'></span>
+          <p className = 'message'>To receive more points, please confirm transportation used during travel.</p>
+        </div>
+        <div className = 'vehicle-grid'>
+          {Object.entries(VEHICLES).map(([key, v]) => (
+              <button
+                key={key}
+                className={`vehicle-card ${selectedVehicle === key ? 'selected' : ''}`}
+                onClick={() => {
+                  if (!selectedVehicle || selectedVehicle !== key) setSelectedVehicle(key);
+                  else setSelectedVehicle(null);
+                }}
+              >
+                <div 
+                  className="vehicle-image"
+                  style={{ backgroundImage: `url(${v.image})` }}
+                />
+                <p className="vehicle-name">{v.name}</p>
+              </button>
+            ))}
+        </div>
+        <button 
+        className={`checkin-btn ${selectedTransport?.id == 0 ? 'inactive' : ''}`}
+        onClick={handleConfirmVehicle}
+        >
+          Submit
+        </button>
+      </>
+      )}
+      {step === 'receipt' && (
+        <div className = 'receipt'>
+          <div className = 'vehicle-message'>
+              <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
+              <div className = 'point-survey'>
+                <span>{receipt.vehicle_bonus}</span>
+                <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+              </div>
+              <span className = 'line-vehicle'></span>
+              <p className = 'congratulatory'>At this location, you have gained a total of</p>
+              <div className = 'point-survey'>
+                <span>{receipt.total_points}</span>
+                <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+              </div>
+              <p className = 'congratulatory'>Impressive!<br/>Thank you for your commitment towards improving our environment.</p>
+              <div className = 'popup-card-receipt'>
+                <div className="popup-stat-receipt">
+                  Your new balance
+                </div>
+              <div className = 'total-balance'>
+                <span>3.150</span> 
+                {/* Cần API lấy balance ở đây */}
+                <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+              </div>
+              <button className="checkin-btn" onClick={handleCancel}>Confirm</button>
+              </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

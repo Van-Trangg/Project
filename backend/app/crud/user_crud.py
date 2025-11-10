@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from ..models.user import User
-from ..core.security import get_password_hash, verify_password
+from ..core.security import verify_password
 
 
 def get_user_by_email(db: Session, email: str) -> User | None:
