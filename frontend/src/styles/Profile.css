@@ -26,10 +26,10 @@
 /* Edit button góc trên phải */
 .edit-btn {
   position: absolute;
-  top: 14px;
+  top: 22px; /* match exit/back vertical position */
   right: 14px;
-  width: 36px;
-  height: 36px;
+  width: 22px; /* same size as .exit-rect/.back-rect */
+  height: 22px;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -67,7 +67,7 @@
   filter: brightness(1.05);
 }
 
-.back-rect { left: 14px; }
+.back-rect { left: 14px; top: 14px; }
 .exit-rect { right: 64px; }
 
 .back-rect img, .exit-rect img, .edit-btn img, .back-btn img {
@@ -284,6 +284,7 @@
   margin: 0;           
   padding: 0;   
   background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
+  position: relative;
 }
 .top-bar {
   display: flex;
@@ -304,6 +305,13 @@
   justify-content: center;
   padding: 0;
   transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+  z-index: 100;
+}
+
+.back-btn {
+  position: absolute;
+  top: 1px; /* moved up 5px */
+  left: 14px;
 }
 
 .save-top {
@@ -333,7 +341,6 @@
 }
 .edit-cover-wrapper { position: relative; }
 
-.edit-cover-wrapper .back-btn,
 .edit-cover-wrapper .save-top {
   position: absolute;
   top: 14px;
@@ -349,7 +356,13 @@
   transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
 }
 
-.edit-cover-wrapper .back-btn { left: 14px; width: 20px; height: 20px }
+.back-btn {
+  position: absolute;
+  top: 1px; /* moved up 5px */
+  left: 14px;
+  width: 20px;  /* <--- Bổ sung */
+  height: 20px; /* <--- Bổ sung */
+}
 .edit-cover-wrapper .save-top { right: 14px; width: 44px; height: 36px }
 
 .edit-avatar-wrapper {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Auth.css'
 import '../styles/Signup.css'
+import backIcon from '../public/back.png'
 import { register } from '../api/auth'
 
 // icons from src/public
@@ -50,10 +51,12 @@ export default function Signup() {
                     <h1 className="auth-title">SIGN UP</h1>
                 </div>
                 {/* Thêm header mới cho trang signup */}
-                <div className="auth-header">
-                    <button className="back-arrow" onClick={() => navigate(-1)}>‹</button>
-                    <h1 className="auth-title-signup">SIGN UP</h1>
-                </div>
+                                <div className="auth-header">
+                                                            <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
+                                                                <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
+                                                            </button>
+                                        <h1 className="auth-title-signup">SIGN UP</h1>
+                                </div>
             </div>
 
             <form className="auth-form" onSubmit={submit}>
