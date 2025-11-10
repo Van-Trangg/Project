@@ -15,6 +15,7 @@ import ResetPassword from '../pages/ResetPassword'
 import VerifyCode from '../pages/VerifyCode'
 import ResetComplete from '../pages/ResetComplete'
 import SetNewPassword from '../pages/SetNewPassword'
+import LocationJournal from '../pages/LocationJournal.jsx'
 import SignupComplete from '../pages/SignupComplete'
 
 export default function AppRouter(){
@@ -39,6 +40,7 @@ export default function AppRouter(){
           <Route path="/reset-complete" element={<ResetComplete />} />
           <Route path="/signup-complete" element={<SignupComplete />} />
           <Route path="/reward" element={<Reward/>} />
+          <Route path="/location/:id" element={<LocationJournal/>} />
         </Routes>
       </div>
       <Footer />

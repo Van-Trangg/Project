@@ -1,86 +1,89 @@
+// Journal.jsx
 import { useEffect, useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom' // Import useNavigate
-import { listJournals } from '../api/journal'
+import { useNavigate } from 'react-router-dom'
+import { listJournals } from '../api/journal' // Assuming this API exists
 import '../styles/Journal.css'
 
 const CITIES = [
   { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172, image: '/src/public/Map/hcmc.png' },
   { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817, image: '/src/public/Map/pq.png' },
-]
+];
 
-// Sample journal entries data
-const SAMPLE_JOURNALS = [
+// ALL DATA: A single source of truth for all locations and their entries.
+const ALL_DATA = [
   {
     id: 1,
     title: 'Đảo Khỉ',
-    description: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Assumenda libero pariatur repellat nam sint, amet architecto fugit saepe?',
-    longDescription: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Assumenda libero pariatur repellat nam sint, amet architecto fugit saepe? Illo voluptate sit dolore officiis cum. Iste, beatae corrupti! Doloribus fugit reprehenderit eaque illum, fuga, quo placeat expedita iusto labore maxime animi! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    image: 'https://static.vinwonders.com/2022/03/dao-khi-nha-trang.jpg'
+    description: 'A pristine island home to hundreds of playful monkeys.',
+    longDescription: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.',
+    image: 'https://static.vinwonders.com/2022/03/dao-khi-nha-trang.jpg',
+    entries: [ // Entries are nested inside the location object
+      { id: 101, date: 'October 25, 2025', title: 'First Visit', content: 'This was my first time visiting this place. The scenery was breathtaking and I enjoyed every moment of my stay here.', image: 'https://picsum.photos/seed/dao-khi-1/300/200.jpg' },
+      { id: 102, date: 'November 5, 2025', title: 'Monkey Feeding', content: 'I had an amazing encounter with the local wildlife today. I saw so many different species and learned a lot about their habitat.', image: 'https://picsum.photos/seed/dao-khi-2/300/200.jpg' }
+    ]
   },
   {
     id: 2,
     title: 'Can Gio Mangrove',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis quaerat ab necessitatibus exercitationem rem veritatis recusandae.',
-    longDescription: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis quaerat ab necessitatibus exercitationem rem veritatis recusandae, eos natus. Maxime officia odit modi reprehenderit. Dicta itaque, corporis maiores exercitationem minus accusantium! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    image: 'https://picsum.photos/seed/mangrove/300/400.jpg'
+    description: 'A vast, serene mangrove forest, a UNESCO Biosphere Reserve.',
+    longDescription: 'Khám phá vẻ đẹp của một trong những khu rừng ngập mặn quan trọng nhất thế giới. Khu dự trữ sinh quyển của UNESCO là nơi sinh sống của đa dạng sinh vật và cung cấp một lối thoát khỏi thành phố ồn ào, yên bình.',
+    image: 'https://picsum.photos/seed/mangrove/800/600.jpg',
+    entries: [ // Entries are nested inside the location object
+      { id: 201, date: 'September 15, 2025', title: 'Kayaking Adventure', content: 'Explored the mangrove forest by kayak. It was so peaceful and beautiful.', image: 'https://picsum.photos/seed/mangrove-1/300/200.jpg' }
+    ]
   },
   {
     id: 3,
     title: 'Wildlife Sanctuary',
-    description: 'Discover diverse wildlife in their natural habitat',
-    longDescription: 'Discover diverse wildlife in their natural habitat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    image: 'https://picsum.photos/seed/wildlife/300/400.jpg'
+    description: 'A protected area for diverse native wildlife.',
+    longDescription: 'Trải nghiệm sự đa dạng sinh vật hoang dã trong môi trường sống tự nhiên của chúng. Đây là một khu bảo tồn phải đến cho những ai yêu thích thiên nhiên, nơi bạn có thể nhìn thấy các loài động vật quý hiếm và tìm hiểu về nỗ lực bảo tồn chúng.',
+    image: 'https://picsum.photos/seed/wildlife/800/600.jpg',
+    entries: [] // This location has no entries yet
   },
   {
     id: 4,
     title: 'River Adventure',
-    description: 'Navigate through the winding rivers of the delta',
-    longDescription: 'Navigate through the winding rivers of the delta. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    image: 'https://picsum.photos/seed/river/300/400.jpg'
+    description: 'A journey through the iconic Mekong Delta.',
+    longDescription: 'Bắt đầu cuộc phiêu lưu qua những con sông uốn lượn của đồng bằng. Trải nghiệm văn hóa địa phương, tham quan các chợ nổi và tận hưởng cảnh quan tuyệt đẹp của khu vực đặc trưng này.',
+    image: 'https://picsum.photos/seed/river/800/600.jpg',
+    entries: [] // This location has no entries yet
   }
-]
+];
 
 export default function Journal() {
-  const [items, setItems] = useState([])
-  useEffect(() => { listJournals().then(r => setItems(r.data)) }, [])
-  
-  // Add navigate hook
-  const navigate = useNavigate();
+  const [items, setItems] = useState([]);
+  useEffect(() => { listJournals().then(r => setItems(r.data)) }, []);
 
+  const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState(CITIES[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  
-  // State to track the ID of the centered card
-  const [centeredCardId, setCenteredCardId] = useState(SAMPLE_JOURNALS[0].id);
-  // State to track the selected location for detailed view
+  const [centeredCardId, setCenteredCardId] = useState(ALL_DATA[0].id);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const scrollContainerRef = useRef(null);
 
   const handleCityChange = (city) => {
-    setSelectedCity(city)
-    setDropdownOpen(false)
-  }
+    setSelectedCity(city);
+    setDropdownOpen(false);
+  };
 
-  // Handler for location click - sets the selected location to show details
-  const handleLocationClick = (journalId) => {
-    const journal = SAMPLE_JOURNALS.find(j => j.id === journalId);
-    if (journal) {
-      setSelectedLocation(journal);
+  const handleLocationClick = (locationId) => {
+    // Find the full location object from our single data source
+    const locationDetails = ALL_DATA.find(l => l.id === locationId);
+    if (locationDetails) {
+      setSelectedLocation(locationDetails);
     }
-  }
+  };
 
-  // Handler to go back to journal view
   const handleBackToJournals = () => {
     setSelectedLocation(null);
-  }
+  };
 
-  // Handler to navigate to location journal page
   const handleLocationJournal = () => {
     if (selectedLocation) {
-      // Navigate to location journal page with location data
+      // Navigate and pass the ENTIRE location object in the state
       navigate(`/location/${selectedLocation.id}`, { state: { location: selectedLocation } });
     }
-  }
+  };
 
   // IntersectionObserver to detect the centered card
   useEffect(() => {
@@ -89,8 +92,8 @@ export default function Journal() {
 
     const options = {
       root: scrollContainer,
-      rootMargin: '-100px 0px -100px 0px', // Adjust to detect when card is in center
-      threshold: 0.5 // Fire when 50% of the element is visible
+      rootMargin: '-100px 0px -100px 0px',
+      threshold: 0.5
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -101,17 +104,14 @@ export default function Journal() {
       });
     }, options);
 
-    // Observe all journal cards
     const cards = scrollContainer.querySelectorAll('.journal-card');
     cards.forEach(card => observer.observe(card));
 
-    // --- THIS IS THE FIX ---
-    // Cleanup observer on component unmount or when dependencies change
     return () => {
       cards.forEach(card => observer.unobserve(card));
       observer.disconnect();
     };
-  }, [dropdownOpen, selectedLocation]); // <-- ADD selectedLocation TO THE DEPENDENCY ARRAY
+  }, [dropdownOpen, selectedLocation]);
 
   // --- CONDITIONAL RENDERING ---
   // If a location is selected, show the location details view
@@ -128,7 +128,7 @@ export default function Journal() {
           <img src={selectedLocation.image} alt={selectedLocation.title} className='journal-location-image' />
            <div id='location-name'>{selectedLocation.title}</div>
           <p className='location-description'>{selectedLocation.longDescription}</p>
-          <button className='location-action-button' onClick={handleLocationJournal}>Test</button>
+          <button className='location-action-button' onClick={handleLocationJournal}>View Journal</button>
         </div>
       </div>
     );
@@ -185,23 +185,23 @@ export default function Journal() {
           <p className='jn_des'>Ready to write down your experience?</p>
           <div className='place_pad' ref={scrollContainerRef}>
             <div className="horizontal-scroll-container">
-              {SAMPLE_JOURNALS.map(journal => (
-                <div 
-                  key={journal.id} 
-                  className={`journal-card ${journal.id !== centeredCardId ? 'inactive' : ''}`}
-                  data-id={journal.id}
+              {ALL_DATA.map(location => (
+                <div
+                  key={location.id}
+                  className={`journal-card ${location.id !== centeredCardId ? 'inactive' : ''}`}
+                  data-id={location.id}
                 >
-                  <img src={journal.image} alt={journal.title} className="journal-image" />
+                  <img src={location.image} alt={location.title} className="journal-image" />
                   {/* Conditionally render button and description only for the centered card */}
-                  {journal.id === centeredCardId && (
+                  {location.id === centeredCardId && (
                     <>
-                      <button 
+                      <button
                         className="journal-button"
-                        onClick={() => handleLocationClick(journal.id)} // <-- CLICK HANDLER
+                        onClick={() => handleLocationClick(location.id)}
                       >
-                        {journal.title}
+                        {location.title}
                       </button>
-                      <p className="journal-description">{journal.description}</p>
+                      <p className="journal-description">{location.description}</p>
                     </>
                   )}
                 </div>
@@ -211,5 +211,5 @@ export default function Journal() {
         </div>
       )}
     </div>
-  )
+  );
 }
