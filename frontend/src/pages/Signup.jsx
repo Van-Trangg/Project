@@ -28,8 +28,6 @@ export default function Signup() {
         }
         try {
             await register({ email, password })
-            // after registering, go to the verification screen so the user can enter the code
-            // pass a flow flag so VerifyCode knows this is an account activation flow
             navigate('/verify-code', { state: { email: email.trim(), flow: 'signup' } })
 
         } catch (err) {
