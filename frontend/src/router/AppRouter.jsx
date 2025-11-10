@@ -1,4 +1,3 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Home from '../pages/Home'
@@ -17,22 +16,25 @@ import ResetComplete from '../pages/ResetComplete'
 import SetNewPassword from '../pages/SetNewPassword'
 import LocationJournal from '../pages/LocationJournal.jsx'
 import SignupComplete from '../pages/SignupComplete'
-
+import ViewProfile from '../pages/ViewProfile'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 export default function AppRouter(){
   return (
     <BrowserRouter>
       <Navbar />
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <Routes>
-          <Route path="/" element={<Home/>} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/home" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/checkout" element={<Login/>} />
-            <Route path="/signup" element={<Signup/>} />
+          <Route path="/signup" element={<Signup/>} />
           <Route path="/leaderboard" element={<Leaderboard/>} />
           <Route path="/journal" element={<Journal/>} />
           <Route path="/map" element={<Map/>} />
           <Route path="/checkin/:locationId" element={<CheckIn/>} />
           <Route path="/profile" element={<Profile/>} />
+          <Route path="/profile/view/:id" element={<ViewProfile/>} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
