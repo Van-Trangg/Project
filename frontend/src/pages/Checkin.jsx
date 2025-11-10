@@ -132,7 +132,7 @@ const handleCancel = () => {
               <span>100</span>
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
-            <div className = 'progress-bar'>
+            <div className = 'checkin-progress-bar'>
               <div className = 'prog-title'>Progress until next title</div>
               <span className = 'track-bar'>
                 <span className = 'fill-bar'></span>
@@ -147,7 +147,7 @@ const handleCancel = () => {
       {step === 'survey' && (
       <>
         <button className = 'back-btn' onClick = {() => {
-          setSelectedTransport(null) ; 
+          setSelectedVehicle(null) ; 
           setStep('confirm')
           }}
         >
