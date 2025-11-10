@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { forgotPassword } from '../api/auth'
 import '../styles/ResetPassword.css'
 
+// icons from src/public
+import emailIcon from '../public/email.png'
+
 export default function ResetPassword(){
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -47,10 +50,10 @@ return (
 
             <label className="field">
                 <div className="field-label">Email</div>
-                <div className="field-input" style={{ borderColor: notFound ? '#d97a3a' : undefined }}>
-                    <span className="field-icon">✉️</span>
-                    <input placeholder="email@gmail.com" value={email} onChange={e=>{ setEmail(e.target.value); setMsg(''); setNotFound(false) }} />
-                </div>
+        <div className="field-input" style={{ borderColor: notFound ? '#d97a3a' : undefined }}>
+                    <img src={emailIcon} alt="email" className="field-icon" />
+          <input placeholder="email@gmail.com" value={email} onChange={e=>{ setEmail(e.target.value); setMsg(''); setNotFound(false) }} />
+        </div>
             </label>
 
             {msg && <div style={{ color: notFound ? '#d97a3a' : '#c3824e', marginTop: 8 }}>{msg}</div>}

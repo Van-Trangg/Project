@@ -4,6 +4,12 @@ import '../styles/Auth.css'
 import '../styles/Signup.css'
 import { register } from '../api/auth'
 
+// icons from src/public
+import emailIcon from '../public/email.png'
+import lockIcon from '../public/lock.png'
+import showIcon from "../public/don't_eye.png"
+import dontEyeIcon from '../public/show.png'
+
 export default function Signup() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -58,7 +64,7 @@ export default function Signup() {
                 <label className="field">
                     <div className="field-label">Email</div>
                     <div className="field-input">
-                        <span className="field-icon">✉️</span>
+                        <img src={emailIcon} alt="email" className="field-icon" />
                         <input placeholder="email@gmail.com" value={email} onChange={e => setEmail(e.target.value)} />
                     </div>
                 </label>
@@ -66,7 +72,7 @@ export default function Signup() {
                 <label className="field">
                     <div className="field-label">Password</div>
                     <div className="field-input">
-                        <span className="field-icon">🔒</span>
+                        <img src={lockIcon} alt="lock" className="field-icon" />
                         <input placeholder="Enter your password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} />
                         <button
                             type="button"
@@ -74,8 +80,7 @@ export default function Signup() {
                             aria-label={showPassword ? 'Hide password' : 'Show password'}
                             onClick={() => setShowPassword(s => !s)}
                         >
-                            {/* Cập nhật icon cho nhất quán */}
-                            {showPassword ? '👁️' : '🙈'}
+                            <img src={showPassword ? dontEyeIcon : showIcon} alt={showPassword ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
                         </button>
                     </div>
                 </label>
@@ -83,7 +88,7 @@ export default function Signup() {
                 <label className="field">
                     <div className="field-label">Confirm Password</div>
                     <div className="field-input">
-                        <span className="field-icon">🔒</span>
+                        <img src={lockIcon} alt="lock" className="field-icon" />
                         <input placeholder="Enter your password" type={showConfirm ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} />
                         <button
                             type="button"
@@ -91,8 +96,7 @@ export default function Signup() {
                             aria-label={showConfirm ? 'Hide password' : 'Show password'}
                             onClick={() => setShowConfirm(s => !s)}
                         >
-                            {/* Cập nhật icon cho nhất quán */}
-                            {showConfirm ? '👁️' : '🙈'}
+                            <img src={showConfirm ? dontEyeIcon : showIcon} alt={showConfirm ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
                         </button>
                     </div>
                 </label>

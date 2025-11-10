@@ -16,6 +16,7 @@ import VerifyCode from '../pages/VerifyCode'
 import ResetComplete from '../pages/ResetComplete'
 import SetNewPassword from '../pages/SetNewPassword'
 import SignupComplete from '../pages/SignupComplete'
+import ViewProfile from '../pages/ViewProfile'
 
 export default function AppRouter(){
   return (
@@ -32,6 +33,7 @@ export default function AppRouter(){
           <Route path="/map" element={<Map/>} />
           <Route path="/checkin/:locationId" element={<CheckIn/>} />
           <Route path="/profile" element={<Profile/>} />
+          <Route path="/profile/view/:id" element={<ViewProfile/>} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
