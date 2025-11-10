@@ -25,8 +25,8 @@ class Journal(Base):
     eco_score: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
 
-    location_id: Mapped[int] = mapped_column(ForeignKey("locations.id"))
-    location = relationship("Location", back_populates="journals")
+    poi_id: Mapped[int] = mapped_column(ForeignKey("pois.id"))
+    poi = relationship("POI", back_populates="journals")
 
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     author = relationship("User", back_populates="journals")

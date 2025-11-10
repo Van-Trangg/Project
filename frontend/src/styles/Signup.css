@@ -1,0 +1,121 @@
+/* Signup page specific styles */
+
+/* Remove the decorative circle for signup and switch to a simple header layout */
+.signup-page .auth-circle { display: none; }
+
+/* top area now contains a back arrow and the page title, left aligned */
+
+.signup-page .auth-top {
+  height: auto;
+  /* keep some padding for the page but allow the title row to visually stick out */
+  padding: 28px 20px 0 20px;
+  display: block;
+}
+
+/* back arrow on its own line */
+.signup-page .auth-header {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.signup-page .back-arrow {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: #3E4E2F;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  /* space below the back button (increased) */
+  margin-bottom: 48px;
+}
+
+/* Title row: Signup + subtitle on the same line and protruding left beyond the form */
+.signup-page .auth-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  /* pull the title row left so it visually extends past the centered form */
+  margin-left: -48px;
+  margin-bottom: 8px;
+  /* make sure long titles wrap nicely on very small screens */
+  flex-wrap: nowrap;
+}
+
+.signup-page .auth-title-signup {
+  margin: 0;
+  color: #48612F;
+  font-weight: 900;
+  font-size: clamp(28px, 6vw, 40px);
+  line-height: 1;
+}
+
+.signup-page .auth-sub {
+  color: #7a7a7a;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+/* center the form and constrain its width so inputs line up like the mock */
+.signup-page .auth-form {
+  gap: 22px;
+  /* set the requested 30px distance between title/subtitle and the form */
+  margin: 30px auto 0 auto;
+  padding: 0 20px 24px 20px;
+  max-width: 420px;
+  width: 100%;
+}
+
+/* make the CTA button sit with generous top spacing and full-form width */
+.signup-page .auth-cta {
+  /* requested 80px gap between the form fields and the Next button */
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+}
+
+/* field spacing inside the form */
+.signup-page .auth-form .field-row {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 420px) {
+  .signup-page .auth-title-row { margin-left: -24px; gap: 10px; }
+  .signup-page .auth-top { padding-left: 16px; }
+  /* slightly smaller spacing on narrow screens */
+  .signup-page .back-arrow { margin-bottom: 30px; }
+  .signup-page .auth-form { padding: 0 16px 24px 16px; margin-top: 30px; }
+  .signup-page .auth-cta { margin-top: 80px; }
+}
+
+.auth-btn{
+  margin-top: 80px;
+  color: #556B2F;
+}
+
+/* Hover & focus states */
+.auth-btn {
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+.auth-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  /* do not change background/text color so original green stays */
+  filter: brightness(0.98);
+}
+.auth-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 6px rgba(71, 143, 71, 0.12);
+}
+
+/* back arrow hover */
+.back-arrow {
+  transition: transform 140ms ease, background-color 140ms ease;
+}
+.back-arrow:hover {
+  background-color: rgba(0,0,0,0.04);
+  transform: translateX(-4px);
+}

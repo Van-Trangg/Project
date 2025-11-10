@@ -7,6 +7,7 @@ export default function VerifyCode(){
   const navigate = useNavigate()
   const { state } = useLocation()
   const email = state?.email || ''
+  const flow = state?.flow || 'reset'
   const [digits, setDigits] = useState(['', '', '', ''])
   const inputs = [useRef(null), useRef(null), useRef(null), useRef(null)]
   const [msg, setMsg] = useState('')
@@ -59,8 +60,14 @@ export default function VerifyCode(){
     setMsg('')
     try{
       await verifyReset({ email, code })
-      // on successful verification, navigate to set-new-password and pass email+code
-      navigate('/set-new-password', { state: { email, code } })
+      // on successful verification, branch based on flow
+      if (flow === 'signup') {
+        // for account activation, show the signup complete screen
+        navigate('/signup-complete')
+      } else {
+        // default: password reset flow -> set new password
+        navigate('/set-new-password', { state: { email, code } })
+      }
     }catch(err){
       setInvalid(true)
       setMsg(err?.response?.data?.message || 'Invalid code')
@@ -80,12 +87,12 @@ export default function VerifyCode(){
     <div className="auth-root">
       <div className="auth-top">
         <div className="reset-title-wrap">
-          <h1 className="auth-title">CHECK YOUR EMAIL</h1>
+          <h1 className="auth-title">{flow === 'signup' ? 'ACCOUNT ACTIVATION' : 'CHECK YOUR EMAIL'}</h1>
         </div>
       </div>
 
       <div className="auth-form" style={{ marginTop: 12 }}>
-        <p style={{ color: '#6b6b6b', marginTop: 0 }}>We sent a reset request to {email}. Enter your 4-digit code</p>
+  <p style={{ color: '#6b6b6b', marginTop: 0 }}>{flow === 'signup' ? `We sent an activation code to ${email}. Enter your 4-digit code` : `We sent a reset request to ${email}. Enter your 4-digit code`}</p>
 
         {invalid && <div style={{ color: '#d97a3a' }}>{msg}</div>}
 

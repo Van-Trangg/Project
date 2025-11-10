@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from app.db.database import Base
+from sqlalchemy.orm import relationship
 
 class POI(Base):
     __tablename__ = "pois"  # ⚠️ đặt tên bảng dạng số nhiều cho thống nhất
@@ -15,3 +16,5 @@ class POI(Base):
     lng = Column(Float, nullable=False)
     score = Column(Integer, default=10)
     category = Column(String, nullable=True)  # cafe xanh, giao thông xanh...
+
+    journals = relationship("Journal", back_populates="poi")
