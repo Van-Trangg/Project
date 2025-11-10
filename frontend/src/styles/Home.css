@@ -1,0 +1,286 @@
+.homepage-body {
+  /* Tái sử dụng font từ .profile-page */
+  font-family: 'Poppins', sans-serif;
+  
+  /* * Homepage dùng gradient xanh lá toàn trang, 
+   * khác với profile (bắt đầu từ màu trắng).
+   * Chúng ta dùng các màu tương đồng với theme.
+   */
+  background: linear-gradient(180deg, #d9e6a3 0%, #ACC729 100%);
+  min-height: 100vh;
+  
+  /* Tái sử dụng màu chữ chính từ .profile-page */
+  color: #344e41; 
+  overflow-x: hidden;
+  
+  /* Thêm padding-bottom để không bị nav-bar che mất */
+  padding-bottom: 90px; 
+}
+
+/* === Header Chào mừng === */
+.home-header {
+  padding: 32px 24px 20px 24px;
+}
+
+.home-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  
+  /* Tái sử dụng màu từ .profile-info h2 */
+  color: #556B2F; 
+  margin: 0;
+}
+
+.home-header p {
+  font-size: 16px;
+  
+  /* Tái sử dụng màu phụ, nhưng làm đậm hơn 1 chút */
+  color: #556B2F;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+/* Đường kẻ phân cách */
+.home-header::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  
+  /* Tái sử dụng màu từ .stats div::after */
+  background-color: #556B2F;
+  opacity: 0.2;
+  margin-top: 16px;
+}
+
+/* === Lưới Thống kê 2x2 === */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 24px;
+  margin-top: 24px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 24px; /* bo góc lớn, tương tự avatar */
+  padding: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+
+  cursor: pointer;
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stat-card-header .title {
+  font-size: 15px;
+  font-weight: 600;
+  
+  /* Tái sử dụng màu .profile-info h2 */
+  color: #556B2F;
+}
+
+.stat-card-header img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+}
+
+.stat-card .value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.1;
+  
+  /* Tái sử dụng màu chữ chính */
+  color: #344e41; 
+  
+  /* Tái sử dụng shadow từ .stats strong */
+  text-shadow: 0 1px 0 #C8D6A1;
+}
+
+/* === Section chung (cho Progress & Daily Rewards) === */
+.home-section {
+  padding: 0 24px;
+  margin-top: 28px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-header img {
+  width: 28px;
+  height: 28px;
+}
+
+.section-header .text-content {
+  flex: 1;
+}
+
+.section-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  
+  /* Tái sử dụng màu từ .badges-section h3 */
+  color: #2f4f2f;
+  margin: 0;
+}
+
+.section-header p {
+  font-size: 13px;
+  
+  /* Tái sử dụng màu từ .nickname */
+  color: #A9BC96;
+  font-weight: 500;
+  margin: 2px 0 0 0;
+}
+
+/* === Progress Bar === */
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #dfe4dc; /* Màu nền từ avatar-placeholder */
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progress-fill {
+  height: 100%;
+  
+  /* Tái sử dụng màu từ .camera-btn */
+  background-color: #718355; 
+  border-radius: 20px;
+  /* width: 83.5%; */ /* (Cái này sẽ được set bằng inline style) */
+}
+
+.progress-text {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  
+  /* Tái sử dụng màu .profile-info h2 */
+  color: #556B2F;
+}
+
+/* === Danh sách cuộn ngang (Daily Rewards) === */
+.horizontal-scroll-list {
+  /* Tái sử dụng phong cách từ .badge-list */
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 0;
+  
+  /* Ẩn thanh cuộn */
+  scrollbar-width: none; /* Firefox */
+}
+.horizontal-scroll-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+
+.reward-card {
+  /* Tái sử dụng từ .badge-card.placeholder */
+  width: 90px;
+  height: 115px;
+  border-radius: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  
+  /* Style riêng */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 10px;
+  text-align: center;
+  transition: all 0.2s ease;
+  
+  /* Style cho thẻ đã nhận (màu tối) */
+  background: #556B2F; /* Màu xanh rêu đậm */
+  color: #ffffff;
+}
+
+.reward-card .points {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.reward-card .date {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.reward-card .leaf-icon {
+  width: 24px;
+  height: 24px;
+  align-self: flex-end;
+  /* (filter: brightness(0) invert(1); nếu là file SVG/PNG 1 màu) */
+}
+
+/* Style cho thẻ ngày hôm nay (màu sáng) */
+.reward-card.today {
+  background: #f1f7ec; /* Màu từ .photo-options */
+  color: #556B2F;
+}
+
+.reward-card.today .date {
+  color: #D98C00; /* Màu cam cho ngày hôm nay */
+  font-weight: 700;
+  opacity: 1;
+}
+
+.reward-card.today .leaf-icon {
+  /* Tắt filter */
+  filter: none;
+}
+
+
+/* === Thanh điều hướng dưới cùng === */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 12px rgba(85, 107, 47, 0.1);
+  border-top: 1px solid #dfe4dc;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  
+  /* Tái sử dụng màu .nickname cho thẻ không active */
+  color: #A9BC96; 
+}
+
+.nav-item img {
+  width: 24px;
+  height: 24px;
+  /* (Cần 2 bộ icon: xám và xanh, hoặc dùng SVG) */
+}
+
+/* Style cho thẻ "Home" (active) */
+.nav-item.active {
+  /* Tái sử dụng màu .profile-info h2 */
+  color: #556B2F;
+}

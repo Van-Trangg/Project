@@ -36,11 +36,12 @@ export default function Login() {
         <div className="auth-root">
             <div className="auth-top">
                 <div className="auth-circle">
-                    <h1 className="auth-title">Login</h1>
+                    {/* public/login-header.png */}
+                    {/* title removed - using a combined header image instead (add to public/) */}
                 </div>
             </div>
 
-            <form className="auth-form" onSubmit={submit}>
+            <form className="auth-form login-form" onSubmit={submit}>
                 <label className="field">
                     <div className="field-label">Email</div>
                     <div className="field-input">

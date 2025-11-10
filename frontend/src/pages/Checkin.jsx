@@ -1,55 +1,105 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react'
-import { listPlaces } from '../api/map'
+import { checkin, confirmVehicle } from '../api/map'
 import '../styles/Map.css'
 
-const PINS = [
-  { id: 1, lat: 10.7769, lng: 106.7009, image: '/src/public/Map/dkhi.png', checkInRate: '46%', title: 'Đảo Khỉ', desc: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.' },
-  { id: 2, lat: 10.7626, lng: 106.6822, title: 'Bến Nghé', desc: 'Historic riverside area' },
-  { id: 3, lat: 10.7554, lng: 106.6753, title: 'Mai Chí Thọ', desc: 'Modern boulevard' },
-]
-const Transports = [
-  {id: 0, name: "None"},
-  {id: 1, name: "Bicycle", image: '/src/public/Map/bike.png'},
-  {id: 2, name: "Bus", image: '/src/public/Map/bus.png'},
-  {id: 3, name: "Motorbike", image: '/src/public/Map/scooter.png'},
-  {id: 4, name: "Car", image: '/src/public/Map/car.png'}
-]
+const VEHICLES = {
+  // walk: { name: "Walk", bonus: 20, image: 'src/public/Map/walk.png' },
+  bike: { name: "Bicycle", bonus: 20, image: '/src/public/Map/bike.png' },
+  bus: { name: "Bus", bonus: 10, image: '/src/public/Map/bus.png' },
+  ev_scooter: { name: "Motorbike", bonus: 0, image: '/src/public/Map/scooter.png' },
+  car: { name: "Car", bonus: 0, image: '/src/public/Map/car.png' }
+}
 
 export default function CheckIn() {
-  const { locationId } = useParams();  
-  const location = PINS.find(p => p.id === Number(locationId));
+  const { state } = useLocation();  
+  const { poi, map } = state || {};
   const navigate = useNavigate();
 
-  const [showSurvey, setShowSurvey] = useState(false);
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [selectedTransport, setSelectedTransport] = useState(Transports[0]);
+  const [step, setStep] = useState("confirm");
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [earnedPoints, setEarnedPoints] = useState(0);
+  const [receipt, setReceipt] = useState(null)
+  const [userId] = useState(0) // from auth
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  
+  // Mock GPS
+  const mockGps = {
+    user_lat: poi.lat + 0.0001,
+    user_lng: poi.lng + 0.0001
+  }
+  const handleCheckIn = async () => {
+    if (isCheckingIn) return;
 
-  const handleCheckInProcess = () => {
-    //if is first check in {setEarnedPoints(100)}
-    setShowSurvey(true);
-  }
-const handleConfirmTransport = () => {
-    if (selectedTransport == Transports[1] || selectedTransport == Transports[3]) {
-      setEarnedPoints(150);
+    setIsCheckingIn(true);
+    try {
+      const res = await checkin({
+        user_id: userId,
+        poi_id: poi.id,
+        user_lat: mockGps.user_lat,
+        user_lng: mockGps.user_lng,
+      });
+
+    // Validate response
+    if (!res?.data) {
+      throw new Error("Invalid response from server");
     }
-    if (selectedTransport && selectedTransport.id !== 0) {
-      setShowSurvey(false);
-      setShowReceipt(true);
+
+    setReceipt(res.data);
+    setStep('survey');
+    } catch (err) {
+      // Safely extract error message
+      const message = err.response?.data?.detail || err.message || "Check-in failed. Please try again.";
+      alert(message);
+      console.error("Check-in error:", err);
+    } finally {
+      setIsCheckingIn(false);
+    }
+  };
+
+  const handleCheckInTemp = () => {
+    setStep('survey');
+  }
+
+  const handleConfirmVehicle = async () => {
+    if (!selectedVehicle) return
+    try {
+      const res = await confirmVehicle(receipt.checkin_id, selectedVehicle)
+      setReceipt(res.data)
+      setStep('receipt')
+    } catch (err) {
+      alert('Bonus failed')
     }
   }
+
+  const handleConfirmVehTemp = () => {
+    setStep('receipt');
+  }
+
+  if (!poi) return <div>Location not found</div>
+
+// const handleConfirmTransport = () => {
+//     if (selectedTransport == Transports[1] || selectedTransport == Transports[3]) {
+//       setEarnedPoints(150);
+//     }
+//     if (selectedTransport && selectedTransport.id !== 0) {
+//       setShowSurvey(false);
+//       setShowReceipt(true);
+//     }
+//   }
 
 const handleCancel = () => {
-  setSelectedTransport(null);
+  setSelectedVehicle(null);
   setEarnedPoints(0);
   navigate(-1); 
 }
 
   //sau này check state người dùng đã checkin tại đây chưa => tắt hiển thị expectant bar + làm mờ chữ
+  const bonusTest = false;
+
   return (
     <div className = 'check-in-page'>
-      {!showSurvey && !showReceipt && (
+      {step === 'confirm' && (
         <>
           <div className = 'top-bar'>
             <button 
@@ -61,18 +111,18 @@ const handleCancel = () => {
             <span className = 'title'>Check-in Point</span>
           </div>
           <div className = 'city-name-prof'>
-            <span> {locationId <= 3 ? 'Ho Chi Minh City' : 'Phu Quoc'}</span>
+            <span> {map.name}</span>
             <div className = 'line'></div>
           </div>
           <div className = 'location'>
             <div className = 'location-image'
             style={{
-              backgroundImage: `url(${location.image || '/Map/popup-default.jpg'})`,
+              backgroundImage: `url(${poi.image || '/Map/popup-default.jpg'})`,
             }}
             ></div>
-            <div className = 'location-name'>{location.title}</div>
-            <div className="popup-stat">
-              {location.checkInRate || '10%'} of users have checked in here
+            <div className = 'location-name'>{poi.name}</div>
+            <div className="popup-stat-checkin">
+              {poi.score + '%' || '20%'} of users have checked in here
             </div>
           </div>
           <div className = 'popup-card'>
@@ -90,15 +140,15 @@ const handleCancel = () => {
               </span>
               <div className = 'prog-num'>1600+ 200/2000</div>
             </div>
-            <button className="checkin-btn" onClick={handleCheckInProcess}>Confirm</button>
+            <button className="checkin-btn" onClick={handleCheckInTemp}>Confirm</button>
           </div>
         </>
       )}
-      {showSurvey && !showReceipt && (
+      {step === 'survey' && (
       <>
         <button className = 'back-btn' onClick = {() => {
           setSelectedTransport(null) ; 
-          setShowSurvey(false)
+          setStep('confirm')
           }}
         >
           <img src = '/src/public/back.png'/>
@@ -106,65 +156,71 @@ const handleCancel = () => {
         <div className = 'vehicle-message'>
           <p className = 'congratulatory'>Check-in complete!<br/>You have been awarded</p>
           <div className = 'point-survey'>
-            <span>100</span>
+            <span>receipt.earned_points</span>
             <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
           </div>
           <span className = 'line-vehicle'></span>
           <p className = 'message'>To receive more points, please confirm transportation used during travel.</p>
         </div>
         <div className = 'vehicle-grid'>
-          {Transports.map((trans) => (
-            trans.id !== 0 && (  
+          {Object.entries(VEHICLES).map(([key, v]) => (
               <button
-                key={trans.id}
-                className={`vehicle-card ${selectedTransport?.id === trans.id ? 'selected' : ''}`}
+                key={key}
+                className={`vehicle-card ${selectedVehicle === key ? 'selected' : ''}`}
                 onClick={() => {
-                  if (!selectedTransport || selectedTransport.id !== trans.id) setSelectedTransport(Transports[trans.id]);
-                  else setSelectedTransport(null);
+                  if (!selectedVehicle || selectedVehicle !== key) setSelectedVehicle(key);
+                  else setSelectedVehicle(null);
                 }}
               >
                 <div 
                   className="vehicle-image"
-                  style={{ backgroundImage: `url(${trans.image})` }}
+                  style={{ backgroundImage: `url(${v.image})` }}
                 />
-                <p className="vehicle-name">{trans.name}</p>
+                <p className="vehicle-name">{v.name}</p>
               </button>
-              )
             ))}
         </div>
         <button 
-        className={`checkin-btn ${selectedTransport?.id == 0 ? 'inactive' : ''}`}
-        onClick={handleConfirmTransport}
+        className={`checkin-btn ${selectedVehicle?.id == 0 ? 'inactive' : ''}`}
+        onClick={handleConfirmVehTemp}
         >
           Submit
         </button>
       </>
       )}
-      {!showSurvey && showReceipt && (
+      {step === 'receipt' && (
         <div className = 'receipt'>
+          <div className = 'spacer'></div>
           <div className = 'vehicle-message'>
-              <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
-              <div className = 'point-survey'>
-                <span>50</span>
-                <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
-              </div>
-              <span className = 'line-vehicle'></span>
+              {/* sau khi backend them user thi bonusTest doi thanh receipt.vehicle_bonus === 0 */}
+              {bonusTest && (
+                <>
+                  <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
+                  <div className = 'point-survey'>
+                    <span>receipt.vehicle_bonus</span>
+                    <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+                  </div>
+                  <span className = 'line-vehicle'></span>
+                </>
+              )}
               <p className = 'congratulatory'>At this location, you have gained a total of</p>
               <div className = 'point-survey'>
-                <span>150</span>
+                <span>receipt.total_points</span>
                 <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
               </div>
               <p className = 'congratulatory'>Impressive!<br/>Thank you for your commitment towards improving our environment.</p>
-              <div className = 'popup-card-receipt'>
-                <div className="popup-stat-receipt">
-                  Your new balance
-                </div>
-              <div className = 'total-balance'>
-                <span>3.150</span>
-                <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
-              </div>
-              <button className="checkin-btn" onClick={handleCancel}>Confirm</button>
-              </div>
+          </div>
+          <div className = 'spacer'></div>
+          <div className = 'popup-card-receipt'>
+            <div className="popup-stat-receipt">
+              Your new balance
+            </div>
+            <div className = 'total-balance'>
+              <span>user.balance</span> 
+              {/* Cần API lấy balance ở đây */}
+              <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+            </div>
+            <button className="checkin-btn" onClick={handleCancel}>Confirm</button>
           </div>
         </div>
       )}
