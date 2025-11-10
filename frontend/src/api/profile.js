@@ -12,9 +12,14 @@ export const updateProfileMultipart = (data) => {
 	Object.keys(data || {}).forEach(key => {
 		const val = data[key]
 		if (val === undefined || val === null) return
-		// For arrays/objects you may need custom handling; for now we append primitives and Files
+
 		if (val instanceof File) {
-			fd.append(key, val)
+			if (key === 'avatar') {
+				fd.append('avatar_file', val)
+			} else {
+
+				fd.append(key, val)
+			}
 		} else {
 			fd.append(key, String(val))
 		}
