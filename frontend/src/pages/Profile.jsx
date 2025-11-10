@@ -55,7 +55,7 @@ export default function Profile() {
             <div className="profile-header">
                 <button
                     className="back-rect"
-                    onClick={() => { setBackActive(true); navigate(-1) }}
+                    onClick={() => { setBackActive(true); navigate('/home') }}
                     onMouseEnter={() => setBackHovering(true)}
                     onMouseLeave={() => setBackHovering(false)}
                     title="Back">

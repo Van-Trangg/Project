@@ -4,6 +4,8 @@ import { getProfile, updateProfile, updateProfileMultipart } from '../api/profil
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import camIcon from '../public/camera.png'
+import showIcon from "../public/don't_eye.png"
+import dontEyeIcon from '../public/show.png'
 import '../styles/Profile.css'
 
 export default function EditProfile() {
@@ -199,11 +201,13 @@ export default function EditProfile() {
       <div className="section personal-details">
         <h3>Personal details</h3>
 
-        <label className="pill-row">
+            <label className="pill-row">
           <span className="label">Phone</span>
           <div className="pill-input">
             <input type={showPhone ? 'text' : 'password'} name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
-            <button className="eye" type="button" onClick={() => setShowPhone(s => !s)}>{showPhone ? '👁' : '👁️‍🗨️'}</button>
+            <button className="eye" type="button" onClick={() => setShowPhone(s => !s)} aria-label={showPhone ? 'Hide' : 'Show'}>
+              <img src={showPhone ? dontEyeIcon : showIcon} alt={showPhone ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
 
@@ -211,7 +215,9 @@ export default function EditProfile() {
           <span className="label">Location</span>
           <div className="pill-input">
             <input type={showLocation ? 'text' : 'password'} name="address" value={form.address} onChange={handleChange} placeholder="Location" />
-            <button className="eye" type="button" onClick={() => setShowLocation(s => !s)}>{showLocation ? '👁' : '👁️‍🗨️'}</button>
+            <button className="eye" type="button" onClick={() => setShowLocation(s => !s)} aria-label={showLocation ? 'Hide' : 'Show'}>
+              <img src={showLocation ? dontEyeIcon : showIcon} alt={showLocation ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
 
@@ -219,7 +225,9 @@ export default function EditProfile() {
           <span className="label">Email</span>
           <div className="pill-input">
             <input type={showEmail ? 'text' : 'password'} name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-            <button className="eye" type="button" onClick={() => setShowEmail(s => !s)}>{showEmail ? '👁' : '👁️‍🗨️'}</button>
+            <button className="eye" type="button" onClick={() => setShowEmail(s => !s)} aria-label={showEmail ? 'Hide' : 'Show'}>
+              <img src={showEmail ? dontEyeIcon : showIcon} alt={showEmail ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
       </div>

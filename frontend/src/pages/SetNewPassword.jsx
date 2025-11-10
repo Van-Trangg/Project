@@ -3,6 +3,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { setNewPassword } from '../api/auth'
 import '../styles/ResetPassword.css'
 
+// icons from src/public
+import lockIcon from '../public/lock.png'
+import showIcon from "../public/don't_eye.png"
+import dontEyeIcon from '../public/show.png'
+
 export default function SetNewPassword(){
   const navigate = useNavigate()
   const { state } = useLocation()
@@ -55,28 +60,32 @@ export default function SetNewPassword(){
         <label className="field">
           <div className="field-label">New Password</div>
           <div className="field-input">
-            <span className="field-icon">🔒</span>
+            <img src={lockIcon} alt="lock" className="field-icon" />
             <input
               placeholder="Enter your password"
               type={show1 ? 'text' : 'password'}
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
-            <button type="button" className="icon-eye" onClick={() => setShow1(s => !s)} aria-label={show1 ? 'Hide password' : 'Show password'}>{show1 ? '🙈' : '👁'}</button>
+            <button type="button" className="icon-eye" onClick={() => setShow1(s => !s)} aria-label={show1 ? 'Hide password' : 'Show password'}>
+              <img src={show1 ? dontEyeIcon : showIcon} alt={show1 ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
 
         <label className="field">
           <div className="field-label">Confirm Password</div>
           <div className="field-input">
-            <span className="field-icon">🔒</span>
+            <img src={lockIcon} alt="lock" className="field-icon" />
             <input
               placeholder="Enter your password"
               type={show2 ? 'text' : 'password'}
               value={confirm}
               onChange={e => setConfirm(e.target.value)}
             />
-            <button type="button" className="icon-eye" onClick={() => setShow2(s => !s)} aria-label={show2 ? 'Hide password' : 'Show password'}>{show2 ? '🙈' : '👁'}</button>
+            <button type="button" className="icon-eye" onClick={() => setShow2(s => !s)} aria-label={show2 ? 'Hide password' : 'Show password'}>
+              <img src={show2 ? dontEyeIcon : showIcon} alt={show2 ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
 

@@ -1,5 +1,6 @@
 // Leaderboard.jsx
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom'
 import "../styles/Leaderboard.css";
 //import { getLeaderboard } from '../api/leaderboard'
 
@@ -80,7 +81,7 @@ export default function Leaderboard() {
       <div className="scroll-section">
         <div className="list">
           {others.map(p => (
-            <div key={p.id} className="row">
+            <Link to={`/profile/view/${p.id}`} key={p.id} className="row link-row">
               <div className="rank">{p.id}</div>
               <div className="user-details">
                 <div className="name">{p.user_name}</div>
@@ -88,7 +89,7 @@ export default function Leaderboard() {
               </div>
 
               <div className="avatar" />
-            </div>
+            </Link>
           ))}
         </div>
       </div>
