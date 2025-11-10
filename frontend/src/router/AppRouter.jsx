@@ -24,9 +24,10 @@ export default function AppRouter(){
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/home" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/checkout" element={<Login/>} />
-            <Route path="/signup" element={<Signup/>} />
+          <Route path="/signup" element={<Signup/>} />
           <Route path="/leaderboard" element={<Leaderboard/>} />
           <Route path="/journal" element={<Journal/>} />
           <Route path="/map" element={<Map/>} />
