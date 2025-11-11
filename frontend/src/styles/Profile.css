@@ -230,6 +230,24 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
+/* small variant used when rendering BadgeCard inside Profile */
+.badge-card.profile-badge-small {
+  width: 88px;
+  height: 88px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.badge-card.profile-badge-small .stamp { width:56px; height:56px }
+.badge-card.profile-badge-small .stamp-inner { font-size:20px }
+.badge-card.profile-badge-small .badge-meta { display:none }
+
 .info-fields {
   width: 92%;
   max-width: 720px;
