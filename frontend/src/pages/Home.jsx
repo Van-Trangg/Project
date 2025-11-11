@@ -96,6 +96,9 @@ export default function Home() {
   return (
     <div className="homepage-body">
       {/* === HEADER CHÀO MỪNG === */}
+      <div className="profile-avatar" onClick={() => navigate('/profile')}>
+          <span className="avatar-placeholder"></span> 
+      </div>
       <div className="home-header">
         <h1>Good morning, {userName}</h1>
         <p>Up for a new adventure today?</p>
