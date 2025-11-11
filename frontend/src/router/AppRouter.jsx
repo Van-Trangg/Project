@@ -10,6 +10,7 @@ import CheckIn from '../pages/Checkin.jsx'
 import Profile from '../pages/Profile'
 import EditProfile from '../pages/EditProfile'
 import Reward from '../pages/Reward'
+import Badges from '../pages/Badges'
 import ResetPassword from '../pages/ResetPassword'
 import VerifyCode from '../pages/VerifyCode'
 import ResetComplete from '../pages/ResetComplete'
@@ -42,6 +43,7 @@ export default function AppRouter(){
           <Route path="/reset-complete" element={<ResetComplete />} />
           <Route path="/signup-complete" element={<SignupComplete />} />
           <Route path="/reward" element={<Reward/>} />
+          <Route path="/badges" element={<Badges/>} />
           <Route path="/location/:id" element={<LocationJournal/>} />
         </Routes>
       </div>
