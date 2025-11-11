@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from "react-router-dom";
-import { MaptilerLayer } from "@maptiler/leaflet-maptilersdk"
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 import { listPlaces, getPois } from '../api/map'

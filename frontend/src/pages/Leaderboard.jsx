@@ -76,7 +76,7 @@ export default function Leaderboard() {
         <div className="list">
           {others.map(p => (
             <div key={p.rank} className="row">
-              <div className="rank">{p.id}</div>
+              <div className="rank">{p.rank}</div>
               <div className="user-details">
                 <div className="name">{p.user_name}</div>
                 <div className="points">{p.points}</div>
