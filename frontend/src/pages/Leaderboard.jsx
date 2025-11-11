@@ -1,16 +1,20 @@
 // Leaderboard.jsx
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom'
 import "../styles/Leaderboard.css";
 //import { getLeaderboard } from '../api/leaderboard'
+
+
+const OtherAvatarDirect = () => {}
+const MyAvatarDirect = () => {}
 
 // Podium component for the top 3
 function Podium({ user_name, points, id, color }) {
   return (
     <div className="podium">
       <div className="top-info">
-        <div className="avatar" />
+        <div className="avatar" onClick={OtherAvatarDirect}></div>
         <div className="name">{user_name}</div>
-        {/* Fixed: Use the points prop directly instead of p.points */}
         <div className="points">{points}</div>
       </div>
       <div className="base" style={{ backgroundColor: color }}>
@@ -56,7 +60,7 @@ export default function Leaderboard() {
     <div className="leaderboard-container">
       {/* Fixed Header + Podium */}
       <div className="fixed-top">
-        <h1 className="title">Leaderboard</h1>
+        <h1 id="title">Leaderboard</h1>
         <div className="podium-area">
           {/* 2nd Place */}
           <div className="place place-2">
@@ -77,7 +81,7 @@ export default function Leaderboard() {
       <div className="scroll-section">
         <div className="list">
           {others.map(p => (
-            <div key={p.id} className="row">
+            <Link to={`/profile/view/${p.id}`} key={p.id} className="row link-row">
               <div className="rank">{p.id}</div>
               <div className="user-details">
                 <div className="name">{p.user_name}</div>
@@ -85,7 +89,7 @@ export default function Leaderboard() {
               </div>
 
               <div className="avatar" />
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -96,7 +100,7 @@ export default function Leaderboard() {
           <div className="label">My Rank</div>
           <div className="rank">{myRank?.id}</div>
         </div>
-        <div className="avatar" />
+        <div className="avatar" onClick={MyAvatarDirect}></div>
         <div className="name">{myRank?.user_name}</div>
         <div className="points">{myRank?.points}</div>
       </div>

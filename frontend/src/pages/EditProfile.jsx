@@ -4,6 +4,8 @@ import { getProfile, updateProfile, updateProfileMultipart } from '../api/profil
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import camIcon from '../public/camera.png'
+import showIcon from "../public/don't_eye.png"
+import dontEyeIcon from '../public/show.png'
 import '../styles/Profile.css'
 
 export default function EditProfile() {
@@ -27,22 +29,21 @@ export default function EditProfile() {
       const bioVal = user.bio || user.about || user.description || ''
       const fullNameVal = user.full_name || user.name || user.display_name || ''
       const nicknameVal = user.nickname || user.username || user.handle || ''
-      const birthdateVal = user.birthdate || user.dob || user.birthday || ''
       const phoneVal = user.phone || user.phone_number || user.mobile || ''
       const addressVal = user.address || user.location || user.place || ''
       const emailVal = user.email || user.mail || user.email_address || ''
-
       setForm({
         full_name: fullNameVal,
         nickname: nicknameVal,
         bio: bioVal,
-        birthdate: birthdateVal,
         phone: phoneVal,
         address: addressVal,
         email: emailVal,
+        avatar_url: user.avatar_url || null, 
+        avatar: null, 
       })
     }).catch(() => setForm({
-      full_name: '', nickname: '', bio: '', birthdate: '', phone: '', address: '', email: ''
+        full_name: '', nickname: '', bio: '', phone: '', address: '', email: '', avatar_url: null, avatar: null
     }))
   }, [])
 
@@ -75,12 +76,7 @@ export default function EditProfile() {
     if (!form) return
     setSaving(true)
     try {
-      // If an avatar File was selected, send multipart/form-data so backend can receive the file
-      if (form.avatar && form.avatar instanceof File) {
-        await updateProfileMultipart(form)
-      } else {
-        await updateProfile(form)
-      }
+      await updateProfileMultipart(form)
       navigate('/profile')
     } catch (err) {
       console.error(err)
@@ -98,18 +94,22 @@ export default function EditProfile() {
 
   return (
     <div className="edit-screen">
+      
+      {/* NÚT BACK ĐÃ ĐƯỢC DI CHUYỂN RA ĐÂY */}
+      <button
+        className="back-btn"
+        type="button"
+        onClick={() => { setBackActive(true); handleCancel() }}
+        onMouseEnter={() => setBackHovering(true)}
+        onMouseLeave={() => setBackHovering(false)}
+        title="Back">
+        <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
+      </button>
+
       {/* Cover with overlayed action buttons (back/save) */}
       <div className="edit-cover-wrapper">
         <div className="edit-cover" />
-        <button
-          className="back-btn"
-          type="button"
-          onClick={() => { setBackActive(true); handleCancel() }}
-          onMouseEnter={() => setBackHovering(true)}
-          onMouseLeave={() => setBackHovering(false)}
-          title="Back">
-          <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
-        </button>
+        {/* Nút Back đã được gỡ khỏi đây */}
         <button
           className="save-top btn save"
           type="button"
@@ -123,7 +123,11 @@ export default function EditProfile() {
       <div className="edit-avatar-wrapper">
         <div
             className="edit-avatar"
-            style={preview ? { backgroundImage: `url(${preview})` } : undefined}
+            style={{ 
+              backgroundImage: `url(${preview || form.avatar_url || ''})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
           />
         <button
           className="camera-small"
@@ -201,11 +205,13 @@ export default function EditProfile() {
       <div className="section personal-details">
         <h3>Personal details</h3>
 
-        <label className="pill-row">
+          <label className="pill-row">
           <span className="label">Phone</span>
           <div className="pill-input">
             <input type={showPhone ? 'text' : 'password'} name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
-            <button className="eye" type="button" onClick={() => setShowPhone(s => !s)}>{showPhone ? '👁' : '👁️‍🗨️'}</button>
+            <button className="eye" type="button" onClick={() => setShowPhone(s => !s)} aria-label={showPhone ? 'Hide' : 'Show'}>
+              <img src={showPhone ? dontEyeIcon : showIcon} alt={showPhone ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
 
@@ -213,7 +219,9 @@ export default function EditProfile() {
           <span className="label">Location</span>
           <div className="pill-input">
             <input type={showLocation ? 'text' : 'password'} name="address" value={form.address} onChange={handleChange} placeholder="Location" />
-            <button className="eye" type="button" onClick={() => setShowLocation(s => !s)}>{showLocation ? '👁' : '👁️‍🗨️'}</button>
+            <button className="eye" type="button" onClick={() => setShowLocation(s => !s)} aria-label={showLocation ? 'Hide' : 'Show'}>
+              <img src={showLocation ? dontEyeIcon : showIcon} alt={showLocation ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
 
@@ -221,7 +229,9 @@ export default function EditProfile() {
           <span className="label">Email</span>
           <div className="pill-input">
             <input type={showEmail ? 'text' : 'password'} name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-            <button className="eye" type="button" onClick={() => setShowEmail(s => !s)}>{showEmail ? '👁' : '👁️‍🗨️'}</button>
+            <button className="eye" type="button" onClick={() => setShowEmail(s => !s)} aria-label={showEmail ? 'Hide' : 'Show'}>
+              <img src={showEmail ? dontEyeIcon : showIcon} alt={showEmail ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            </button>
           </div>
         </label>
       </div>

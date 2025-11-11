@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { forgotPassword } from '../api/auth'
 import '../styles/ResetPassword.css'
+import backIcon from '../public/back.png'
+
+// icons from src/public
+import emailIcon from '../public/email.png'
 
 export default function ResetPassword(){
   const navigate = useNavigate()
@@ -37,9 +41,14 @@ export default function ResetPassword(){
 return (
     <div className="auth-root">
         <div className="auth-top">
-            <div className="reset-title-wrap">
-                <h1 className="auth-title">PASSWORD RESET</h1>
-            </div>
+      <div className="reset-title-wrap">
+        <h1 className="auth-title">PASSWORD RESET</h1>
+      </div>
+      <div className="auth-header">
+                <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
+                  <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
+                </button>
+      </div>
         </div>
 
         <div className="auth-form" style={{ marginTop: 24 }}>
@@ -47,10 +56,10 @@ return (
 
             <label className="field">
                 <div className="field-label">Email</div>
-                <div className="field-input" style={{ borderColor: notFound ? '#d97a3a' : undefined }}>
-                    <span className="field-icon">✉️</span>
-                    <input placeholder="email@gmail.com" value={email} onChange={e=>{ setEmail(e.target.value); setMsg(''); setNotFound(false) }} />
-                </div>
+        <div className="field-input" style={{ borderColor: notFound ? '#d97a3a' : undefined }}>
+                    <img src={emailIcon} alt="email" className="field-icon" />
+          <input placeholder="email@gmail.com" value={email} onChange={e=>{ setEmail(e.target.value); setMsg(''); setNotFound(false) }} />
+        </div>
             </label>
 
             {msg && <div style={{ color: notFound ? '#d97a3a' : '#c3824e', marginTop: 8 }}>{msg}</div>}

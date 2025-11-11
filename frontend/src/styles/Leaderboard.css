@@ -20,15 +20,17 @@
 /* ------------------------------------------------------------------ */
 /* Fixed top (title + podium) */
 .fixed-top {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   flex-shrink: 0;
   padding: 2rem 1rem 0;
   text-align: center;
 }
-.title {
+#title {
   font-size: 2rem;
   font-weight: 700;
   color: #000;
-  margin-bottom: 1.5rem;
 }
 
 /* ------------------------------------------------------------------ */
@@ -164,6 +166,10 @@
 /* My Rank */
 .my-rank {
   position: fixed;
+.link-row {
+  text-decoration: none;
+  color: inherit;
+}
   height: 45px;
   width: 95%;
   left: 2.5%;
