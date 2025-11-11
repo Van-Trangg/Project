@@ -206,6 +206,13 @@
   color: #000000;
 }
 
+.progress-icon.tree-icon {
+  width: 44px; /* Kích thước icon mặt trời */
+  height: 44px;
+  margin-right: 2px; /* Khoảng cách với chữ */
+  flex-shrink: 0; /* Ngăn nó bị co lại */
+}
+
 /* === Danh sách cuộn ngang (Daily Rewards) === */
 .horizontal-scroll-list {
   /* Tái sử dụng phong cách từ .badge-list */

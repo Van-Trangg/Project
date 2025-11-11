@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css'; 
 import ecopointsIcon from '../public/ecopoint.png';
 import sunIcon from '../public/sun.png';
+import treeIcon from '../public/tree.png';
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -138,7 +139,7 @@ export default function Home() {
       {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
       <div className="home-section">
         <div className="section-header">
-          {/* <img src={treeIcon} alt="Title" /> */}
+          < img src={treeIcon} alt="tree" className="progress-icon tree-icon" />
           <div className="text-content">
             <h3>{currentTitle}</h3>
             <p>Progress until next title</p>
