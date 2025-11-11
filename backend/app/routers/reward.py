@@ -1,34 +1,49 @@
-from fastapi import APIRouter, Depends
-from app.core.security import get_current_user as TokenDep
-from app.models.user import User
+from fastapi import APIRouter
+from app.schemas import reward_schema # Import schema bạn vừa tạo
+from typing import List
 
 router = APIRouter()
 
-
-def _available_rewards():
-    # static list for now. Each reward has an id and the eco_point threshold to unlock
-    return [
-        {"id": 1, "badge": "Seedling", "threshold": 50, "image": "seedling.png"},
-        {"id": 2, "badge": "Sapling", "threshold": 100, "image": "sapling.png"},
-        {"id": 3, "badge": "Evergreen", "threshold": 200, "image": "evergreen.png"},
-        {"id": 4, "badge": "Blossom", "threshold": 300, "image": "blossom.png"},
-        
+@router.get(
+    "/", 
+    response_model=List[reward_schema.Reward], # Trả về 1 DANH SÁCH Reward
+    response_model_by_alias=True # <-- Quan trọng: Bật chế độ alias
+)
+def get_all_rewards():
+    """
+    Cung cấp danh sách GIẢ LẬP (hardcoded) của tất cả
+    các phần thưởng có sẵn.
+    """
+    
+    # Dùng mock_data (snake_case)
+    # để giả lập dữ liệu lấy từ database (Model)
+    mock_data = [
+        {
+            "id": 1,
+            "name": "Giảm 10% vé xe bus",
+            "description": "Áp dụng cho tất cả các tuyến xe bus Phương Trang.",
+            "points_required": 1000, # snake_case
+            "image_url": "https://i.imgur.com/example.png", # snake_case
+            "category": "Voucher"
+        },
+        {
+            "id": 2,
+            "name": "Áo thun GreenJourney",
+            "description": "Làm từ 100% cotton hữu cơ, thân thiện môi trường.",
+            "points_required": 5000, # snake_case
+            "image_url": "https://i.imgur.com/example.png", # snake_case
+            "category": "Merchandise"
+        },
+        {
+            "id": 3,
+            "name": "Quyên góp 1 cây xanh",
+            "description": "Chúng tôi sẽ thay bạn trồng 1 cây xanh tại rừng Cúc Phương.",
+            "points_required": 500, # snake_case
+            "image_url": "https://i.imgur.com/example.png", # snake_case
+            "category": "Charity"
+        }
     ]
-
-
-@router.get("/", tags=["rewards"])
-def list_rewards():
-    """Public listing of rewards (no user context)"""
-    return _available_rewards()
-
-
-@router.get("/me", tags=["rewards"])
-def list_rewards_for_user(current_user: User = Depends(TokenDep)):
-    """Return rewards with an `unlocked` boolean based on the authenticated user's eco points."""
-    points = getattr(current_user, "eco_points", 0) or 0
-    out = []
-    for r in _available_rewards():
-        item = r.copy()
-        item["unlocked"] = points >= (r.get("threshold") or 0)
-        out.append(item)
-    return {"eco_points": points, "rewards": out}
+    
+    # FastAPI sẽ tự động "dịch" mock_data (snake_case)
+    # sang JSON (camelCase) cho frontend
+    return mock_data
