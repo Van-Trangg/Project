@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProfile } from '../api/profile' 
+import BadgeCard from '../components/BadgeCard'
+import { listRewardsForUser } from '../api/reward'
 import editIcon from '../public/edit.png'
 import newEditIcon from '../public/new_edit.png'
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import exitIcon from '../public/exit.png'
 import newExitIcon from '../public/new_exit.png'
+import viewAllIcon from '../public/view_all.png'
 import '../styles/Profile.css'
 
 export default function Profile() {
@@ -27,6 +30,24 @@ export default function Profile() {
                 console.error('Failed to load profile', err)
                 setError(err)
             })
+    }, [])
+
+    // fetch small preview of badges (sync with /reward/me)
+    const [previewBadges, setPreviewBadges] = useState([])
+    useEffect(() => {
+        listRewardsForUser().then(r => {
+            const payload = r.data || { rewards: [] }
+            // prioritize unlocked badges then others
+            const sorted = (payload.rewards || []).sort((a,b) => {
+                const ua = a.unlocked ? 0 : 1
+                const ub = b.unlocked ? 0 : 1
+                if (ua !== ub) return ua - ub
+                return (a.threshold||0) - (b.threshold||0)
+            })
+            setPreviewBadges(sorted.slice(0,3))
+        }).catch(()=>{
+            setPreviewBadges([])
+        })
     }, [])
     const handleLogout = () => {
         localStorage.removeItem('access_token')
@@ -143,12 +164,28 @@ export default function Profile() {
 
             {/* BADGES */}
             <div className="badges-section">
-                <h3>Badges</h3>
-                <div className="badge-list">
-                    <div className="badge-card placeholder"></div>
-                    <div className="badge-card placeholder"></div>
-                    <div className="badge-card placeholder"></div>
+                <div className="badges-header-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <h3>Badges</h3>
+                    <img
+                        src={viewAllIcon}
+                        alt="View all badges"
+                        onClick={() => navigate('/badges')}
+                        style={{ width: 30, height: 30, cursor: 'pointer', border: 'none', background: 'transparent', padding: 0, transform: 'translateX(-10px)' }}
+                    />
                 </div>
+                    <div className="badge-list">
+                        {previewBadges.length === 0 ? (
+                            <>
+                                <div className="badge-card placeholder"></div>
+                                <div className="badge-card placeholder"></div>
+                                <div className="badge-card placeholder"></div>
+                            </>
+                        ) : (
+                            previewBadges.map(b => (
+                                <BadgeCard key={b.id} badge={b} unlocked={b.unlocked} className="profile-badge-small" onClick={() => navigate('/badges')} />
+                            ))
+                        )}
+                    </div>
             </div>
 
             {/* */}
