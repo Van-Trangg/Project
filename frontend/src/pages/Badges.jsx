@@ -22,6 +22,12 @@ export default function Badges(){
   const [versions, setVersions] = useState([])
   const [user, setUser] = useState(null)
   const [selected, setSelected] = useState(null)
+  const imgFor = (img) => {
+    if (!img) return null
+    const s = String(img)
+    if (s.startsWith('http') || s.startsWith('/')) return img
+    return `/badges/${img}`
+  }
 
   useEffect(()=>{
     // try to fetch user-specific rewards (includes unlocked flag and eco_points)
@@ -82,18 +88,21 @@ export default function Badges(){
         <div className="badge-modal" onClick={closeModal}>
           <div className="badge-modal-inner" onClick={e=>e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}>✕</button>
-            <div className="modal-stamp">
-              <div className="stamp-large">{selected.badge ? selected.badge.charAt(0) : '🏅'}</div>
-            </div>
-            <h2 className="modal-title">{selected.badge}</h2>
-            <div className="modal-info">Requires <strong>{selected.threshold}</strong> pts to unlock.</div>
-            <div className="modal-actions">
-              {isUnlocked(selected.threshold) ? (
-                <button className="btn primary">Unlocked</button>
+
+            <div className="modal-image-wrap">
+              {imgFor(selected.image) ? (
+                <img className="modal-image" src={imgFor(selected.image)} alt={selected.badge} />
               ) : (
-                <button className="btn disabled">Locked</button>
+                <div className="stamp-large">{selected.badge ? selected.badge.charAt(0) : '🏅'}</div>
               )}
             </div>
+
+            <div className="modal-title-pill">{selected.badge}</div>
+            <div className="modal-sub">
+              <strong>Obtained on {new Date().toLocaleDateString()}</strong>
+            </div>
+
+            <div className="modal-desc">{selected.description}</div>
           </div>
         </div>
       )}

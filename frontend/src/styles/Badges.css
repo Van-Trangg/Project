@@ -99,6 +99,7 @@
   border-radius: 8px;
   background: linear-gradient(180deg, #fff8ea, #f1f7ee);
   box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.03);
+  position: relative; /* allow absolute overlay elements like crown */
 }
 
 .stamp-inner {
@@ -113,6 +114,19 @@
   object-fit: cover;
   border-radius: 8px;
   display: block;
+}
+
+/* crown overlay for rare badges */
+.badge-crown {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 30px !important; 
+  height: 30px !important;
+  transform: rotate(-315deg);
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18));
+  transform-origin: center center;
 }
 
 /* --- Thông tin Badge --- */
@@ -145,22 +159,23 @@
 }
 
 .badge-modal-inner {
-  background: #fff;
-  padding: 22px;
-  border-radius: 14px;
-  width: 92%;
-  max-width: 420px;
+  background: transparent; /* show only image without outer frame */
+  padding: 0;
+  border-radius: 0;
+  width: 100%;
+  max-width: 100%;
   text-align: center;
   position: relative;
 }
 
 .modal-close {
   position: absolute;
-  right: 10px;
-  top: 8px;
+  right: 16px;
+  top: 12px;
   border: none;
   background: transparent;
-  font-size: 20px;
+  font-size: 28px;
+  color: #ffffff;
   cursor: pointer;
 }
 
@@ -177,6 +192,28 @@
   border-radius: 14px;
   margin: 8px auto;
 }
+
+/* modal image display without extra frame */
+.modal-image-wrap { display:flex; justify-content:center; margin-top: 24px }
+.modal-image { width: min(72vw, 420px); height: auto; display:block; border-radius: 8px }
+
+.modal-title-pill {
+  display: inline-block;
+  margin: 18px auto 6px;
+  padding: 10px 34px;
+  border-radius: 28px;
+  font-weight: 200;
+  font-size: 20px;
+  color: #fff;
+
+  /* Linear gradient từ xanh xám đến trắng nhạt */
+  background: linear-gradient(90deg, #8F9984 54%);
+}
+
+.modal-sub { color: #DAA520; margin-top: 6px; font-weight: 800; font-size: 10px}
+.modal-desc { margin: 18px auto 30px; color: #fff; max-width: 350px; padding: 0 20px; line-height: 1.6; font-size: 15px}
+
+.badge-modal { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.6); z-index:20000 }
 
 .modal-title {
   margin-top: 8px;
