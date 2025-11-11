@@ -1,38 +1,66 @@
-from fastapi import APIRouter
-from app.schemas import home_schema # Import schema (camelCase) mới
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+# Import "thực đơn" (schema)
+from app.schemas import home_schema
+
+# Import các "công cụ"
+from app import models
+from app.db.database import get_db
+from app.core.security import get_current_user # "Người gác cổng"
+
+# Import CRUD (chúng ta vẫn cần 'leaderboard')
+#from app.crud import leaderboard_crud 
+# (Bạn có thể cần import thêm quest_crud, daily_reward_crud...)
 
 router = APIRouter()
 
-# BƯỚC SỬA LỖI: Xóa 'response_model_by_alias=True'
 @router.get(
     "/", 
-    response_model=home_schema.HomeDataResponse 
+    response_model=home_schema.HomeDataResponse # Vẫn dùng schema (camelCase)
 )
-def get_home_data():
+def get_real_home_data(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     """
-    Cung cấp dữ liệu GIẢ LẬP (hardcoded)
-    khớp với cấu trúc (schema) mà frontend (Home.jsx) mong đợi.
+    Cung cấp dữ liệu THẬT (real data) cho trang chủ
+    dựa trên model User đã được xác thực.
     """
     
-    # BƯỚC SỬA LỖI: Dùng camelCase trong mock_data
-    mock_data = {
-        "userName": "HEHEHEHEHEHE", # Đã đổi
-        "ecopoints": 6969,
-        "badges": 54,
-        "rank": 1,
-        "checkIns": 3, # Đã đổi
-        "currentTitle": "Friend of the Trees", # Đã đổi
-        "progressCurrent": 1600, # Đã đổi
-        "progressMax": 1000, # Đã đổi
-        "dailyStreak": 13, # Đã đổi
-        "dailyRewards": [ # Đã đổi
-            { "date": "25/10", "points": 10, "claimed": True, "isToday": False },
-            { "date": "26/10", "points": 10, "claimed": False, "isToday": True },
-            { "date": "27/10", "points": 10, "claimed": False, "isToday": False },
-            { "date": "28/10", "points": 10, "claimed": False, "isToday": False },
-        ]
+    # === LẤY DATA TỪ DATABASE ===
+    
+    # 1. Lấy rank (Vẫn phải gọi CRUD vì 'rank' không có sẵn trong User)
+    # (Hỏi team của bạn tên hàm chính xác, ví dụ: 'get_user_rank')
+    #rank = leaderboard_crud.get_user_rank(db, user_id=current_user.id) 
+    
+    # 2. Lấy Quest/Daily (Tạm thời giả lập nếu team khác chưa xong)
+    quest = {"title": "Friend of Tree", "progress": 1600, "max": 2000} # (Giống ảnh)
+    rewards = [
+        { "date": "25/10", "points": 10, "claimed": True, "isToday": False },
+        { "date": "26/10", "points": 10, "claimed": False, "isToday": True },
+        { "date": "27/10", "points": 10, "claimed": True, "isToday": False },
+        { "date": "28/10", "points": 10, "claimed": True, "isToday": False },
+    ]
+
+    # === TRẢ VỀ DATA (KHỚP VỚI 'camelCase' CỦA SCHEMA) ===
+    # Lấy data trực tiếp từ 'current_user' (dùng tên cột ĐÚNG)
+    real_data = {
+        "userName": current_user.nickname or current_user.full_name, # Ưu tiên nickname
+        "ecopoints": current_user.eco_points,   # <-- Tên đúng
+        "badges": current_user.badges_count,  # <-- Tên đúng (Đơn giản hơn)
+        "rank": 1, # Lấy từ CRUD
+        "checkIns": current_user.check_ins,     # <-- Tên đúng
+        
+        "currentTitle": quest["title"],
+        "progressCurrent": quest["progress"],
+        "progressMax": quest["max"],
+        
+        # LƯU Ý: Model User không có 'daily_streak'. 
+        # Chúng ta tạm dùng 'check_ins' hoặc 0
+        "dailyStreak": current_user.check_ins, 
+        
+        "dailyRewards": rewards
     }
     
-    # FastAPI sẽ kiểm tra xem mock_data (camelCase)
-    # có khớp với schema (camelCase) không
-    return mock_data
+    return real_data
