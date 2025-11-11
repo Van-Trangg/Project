@@ -102,7 +102,7 @@ export default function Home() {
       </div>
 
       {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
-      <div className="home-section progress-section">
+      <div className="home-section">
         <div className="section-header">
           {/* <img src={treeIcon} alt="Title" /> */}
           <div className="text-content">
