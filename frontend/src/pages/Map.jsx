@@ -1,31 +1,25 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from "react-router-dom";
+import { MaptilerLayer } from "@maptiler/leaflet-maptilersdk"
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
 import { listPlaces, getPois } from '../api/map'
-import mapPlaceholder from '../public/map-placeholder.png'
 import '../styles/Map.css'
-
-// const CITIES = [
-//   { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172, image: '/src/public/Map/hcmc.png'},
-//   { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817, image: '/src/public/Map/pq.png'},
-// ]
-
-// const PINS = [
-//   { id: 1, lat: 10.7769, lng: 106.7009, image: '/src/public/Map/dkhi.png', checkInRate: '46%', title: 'Đảo Khỉ', desc: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.' },
-//   { id: 2, lat: 10.7626, lng: 106.6822, title: 'Bến Nghé', desc: 'Historic riverside area' },
-//   { id: 3, lat: 10.7554, lng: 106.6753, title: 'Mai Chí Thọ', desc: 'Modern boulevard' },
-// ]
+import 'leaflet/dist/leaflet.css';
+import { customIcon } from '../components/Pin';
 
 export default function Map() {
   const [maps, setMaps] = useState([])
   const [selectedMap, setSelectedMap] = useState(null)
   const [pois, setPois] = useState([])
-  const [loading, setLoading] = useState(true);
+  const [loadingMaps, setLoadingMaps] = useState(true);
+  const [loadingPois, setLoadingPois] = useState(false);
   const [userId] = useState(1) // TODO: get from auth context
-  //const [selectedCity, setSelectedCity] = useState(CITIES[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
   
   const navigate = useNavigate();
+
   const handleCheckIn = () => {
     if (selectedPin) {
       navigate(`/checkin/${selectedPin.id}`, { state: { poi: selectedPin, map: selectedMap } }); // go to specific check-in page
@@ -33,24 +27,28 @@ export default function Map() {
   }
   // Load maps
   useEffect(() => {
+    setLoadingMaps(true);
     listPlaces()
       .then(res => {
         setMaps(res.data)
         setSelectedMap(res.data[0])
       })
       .catch(err => console.error('Failed to load maps', err))
+      .finally(() => setLoadingMaps(false));
   }, [])
 
   // Load POIs when map changes
   useEffect(() => {
+    if (!selectedMap) return;
+    setLoadingPois(true);
     if (selectedMap) {
-      setLoading(true)
       getPois(selectedMap.id, userId)
-        .then(res => {
-          setPois(res.data)
-          setLoading(false)
-        })
-        .catch(() => setLoading(false))
+        .then(res => setPois(res.data || []))
+        .catch(err => {
+          console.error('Failed to load POIs', err);
+          setPois([]);
+      })
+      .finally(() => setLoadingPois(false));
     }
   }, [selectedMap, userId])
 
@@ -59,14 +57,6 @@ export default function Map() {
     setDropdownOpen(false)
   }
 
-  // Convert lat/lng to % on static map (HCM bounds)
-  const latLngToPercent = (lat, lng) => {
-    const minLat = 10.70, maxLat = 10.85
-    const minLng = 106.60, maxLng = 106.75
-    const top = ((lat - minLat) / (maxLat - minLat)) * 100
-    const left = ((lng - minLng) / (maxLng - minLng)) * 100
-    return { top: `${top}%`, left: `${left}%` }
-  }
   useEffect(() => {
     if (selectedPin) {
       document.body.style.overflow = "hidden";
@@ -80,7 +70,6 @@ export default function Map() {
 
   return (
   <div className="map-page">
-    {/* Top Location Bar */}
     <div className="location-bar">
       <div className="spacer"></div>
       <span className="location-text">{selectedMap?.name || 'Loading...'}</span>
@@ -94,14 +83,9 @@ export default function Map() {
       </button>
       <div className="spacer"></div>
     </div>
-
-    {/* FULL-SCREEN CITY OVERLAY – COVERS EVERYTHING */}
     {dropdownOpen && ( 
       <div className="city-fullscreen-overlay">
-        <div 
-          className="overlay-inner" 
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="overlay-inner" onClick={(e) => e.stopPropagation()}>
           <div className="city-grid">
             {maps.map((city) => (
               <button
@@ -109,9 +93,8 @@ export default function Map() {
                 className="city-card"
                 onClick={() => {handleCityChange(city);}}
               >
-                <div 
-                  className="city-image"
-                  style={{ backgroundImage: `url(${city.image || '/default-city.jpg'})` }}
+                <div className="city-image"
+                  style={{ backgroundImage: `url(${city.image})` }}
                 />
                 <p className="city-name">{city.name}</p>
               </button>
@@ -120,10 +103,9 @@ export default function Map() {
         </div>
       </div>
     )}
-    {/* Map Container */}
     {!dropdownOpen && (
       <div className="map-container">
-        {loading ? (
+        {/* {loading ? (
           <div className="map-loading">Loading map…</div>
         ) : (
           <div
@@ -131,7 +113,7 @@ export default function Map() {
             style={{ backgroundImage: `url(${mapPlaceholder})` }}
           >
             {pois.map((pin) => {
-              const pos = latLngToPercent(pin.lat, pin.lng)
+              const pos = latLngToPercent(pin.lat, pin.lng, selectedMap)
               return (
                 <button
                   key={pin.id}
@@ -147,7 +129,34 @@ export default function Map() {
               )
             })}
           </div>
-        )}
+        )} */}
+      {loadingMaps ? (
+        <div className="map-loading">Loading map…</div>
+      ) :(
+      <MapContainer
+        center={[selectedMap.center_lat, selectedMap.center_lng]}
+        zoom={13}                     
+        style={{ height: '100%', width: '100%' }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution='&copy; OpenStreetMap &copy; CARTO'
+          url="http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />  
+        {pois.map((pin) => (
+          <Marker
+            key={pin.id}
+            position={[pin.lat, pin.lng]}
+            
+            icon = {customIcon}
+            eventHandlers={{
+              click: () => setSelectedPin(pin),
+            }}
+          >
+          </Marker>
+        ))}
+      </MapContainer>
+    )}
       </div>
     )}
     {/* Pin Popup */}

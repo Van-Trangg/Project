@@ -60,13 +60,13 @@
     "category": "green"
   },
   {
-    "name": "Chùa Vĩnh Khiêm",
+    "name": "Chùa Vĩnh Nghiêm",
     "address": "339 Nam Kỳ Khởi Nghĩa, phường 7, Quận 3.",
     "description": "Không chỉ là một địa điểm tâm linh, chùa Vĩnh Nghiêm còn có khuôn viên xanh với cây cối và hồ nước nhỏ, tạo cảm giác thanh bình. Du khách có thể tham quan, tìm hiểu về văn hóa Phật giáo và tham gia các hoạt động thiện nguyện liên quan đến môi trường.",
     "rating": 4.6,
     "image": "https://example.com/images/chuavinhkhiem.jpg",
-    "lat": 10.779284562679406, 
-    "lng": 106.69739081784661,
+    "lat": 10.876937385914024,  
+    "lng": 106.65078881228382,
     "map_id": 1,
     "score": 10,
     "category": "green"

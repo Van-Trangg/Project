@@ -3,7 +3,7 @@ from app.db.database import Base
 from sqlalchemy.orm import relationship
 
 class POI(Base):
-    __tablename__ = "pois"  # ⚠️ đặt tên bảng dạng số nhiều cho thống nhất
+    __tablename__ = "pois" 
 
     id = Column(Integer, primary_key=True, index=True)
     map_id = Column(Integer, ForeignKey("maps.id"), nullable=False, index=True)
