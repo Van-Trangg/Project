@@ -4,16 +4,13 @@ import { getProfile, updateProfile, updateProfileMultipart } from '../api/profil
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import camIcon from '../public/camera.png'
-import showIcon from "../public/don't_eye.png"
-import dontEyeIcon from '../public/show.png'
+import showIcon from "../public/show.png"
+import dontEyeIcon from "../public/don't_eye.png"
 import '../styles/Profile.css'
 
 export default function EditProfile() {
   const [form, setForm] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [showPhone, setShowPhone] = useState(true)
-  const [showLocation, setShowLocation] = useState(true)
-  const [showEmail, setShowEmail] = useState(true)
   const navigate = useNavigate()
   const [backHovering, setBackHovering] = useState(false)
   const [backActive, setBackActive] = useState(false)
@@ -40,10 +37,14 @@ export default function EditProfile() {
         address: addressVal,
         email: emailVal,
         avatar_url: user.avatar_url || null, 
-        avatar: null, 
+        avatar: null,
+        phone_public: user.phone_public,
+        address_public: user.address_public,
+        email_public: user.email_public,
       })
     }).catch(() => setForm({
-        full_name: '', nickname: '', bio: '', phone: '', address: '', email: '', avatar_url: null, avatar: null
+        full_name: '', nickname: '', bio: '', phone: '', address: '', email: '', avatar_url: null, avatar: null,
+        phone_public: true, address_public: true, email_public: true,
     }))
   }, [])
 
@@ -208,29 +209,49 @@ export default function EditProfile() {
           <label className="pill-row">
           <span className="label">Phone</span>
           <div className="pill-input">
-            <input type={showPhone ? 'text' : 'password'} name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
-            <button className="eye" type="button" onClick={() => setShowPhone(s => !s)} aria-label={showPhone ? 'Hide' : 'Show'}>
-              <img src={showPhone ? dontEyeIcon : showIcon} alt={showPhone ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
+            {}
+            <button 
+               className="eye"
+               type="button"
+               onClick={() => setForm(prev => ({ ...prev, phone_public: !prev.phone_public }))}
+               aria-label={form.phone_public ? 'Public' : 'Private'}
+            >
+            {}
+              <img src={form.phone_public ? showIcon : dontEyeIcon} alt={form.phone_public ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
             </button>
           </div>
         </label>
 
         <label className="pill-row">
           <span className="label">Location</span>
-          <div className="pill-input">
-            <input type={showLocation ? 'text' : 'password'} name="address" value={form.address} onChange={handleChange} placeholder="Location" />
-            <button className="eye" type="button" onClick={() => setShowLocation(s => !s)} aria-label={showLocation ? 'Hide' : 'Show'}>
-              <img src={showLocation ? dontEyeIcon : showIcon} alt={showLocation ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+            <div className="pill-input">
+            {}
+            <input type="text" name="address" value={form.address} onChange={handleChange} placeholder="Location" />
+            <button button 
+              className="eye" 
+              type="button" 
+              onClick={() => setForm(prev => ({ ...prev, address_public: !prev.address_public }))} 
+              aria-label={form.address_public ? 'Public' : 'Private'}>
+              {}
+              <img src={form.address_public ? showIcon : dontEyeIcon} alt={form.address_public ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
             </button>
           </div>
         </label>
 
         <label className="pill-row">
           <span className="label">Email</span>
-          <div className="pill-input">
-            <input type={showEmail ? 'text' : 'password'} name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-            <button className="eye" type="button" onClick={() => setShowEmail(s => !s)} aria-label={showEmail ? 'Hide' : 'Show'}>
-              <img src={showEmail ? dontEyeIcon : showIcon} alt={showEmail ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
+           <div className="pill-input">
+          {}
+            <input type="text" name="email" value={form.email} onChange={handleChange} placeholder="Email" />
+            <button 
+              className="eye" 
+              type="button" 
+              onClick={() => setForm(prev => ({ ...prev, email_public: !prev.email_public }))} 
+              aria-label={form.email_public ? 'Public' : 'Private'}
+              >
+              {}
+              <img src={form.email_public ? showIcon : dontEyeIcon} alt={form.email_public ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
             </button>
           </div>
         </label>

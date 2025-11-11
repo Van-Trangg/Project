@@ -5,7 +5,7 @@ export default function Navbar() {
     <nav style={styles.nav}>
       <Link to="/" style={styles.brand}>🌿 GreenJourney</Link>
       <div style={styles.tabs}>
-        <NavLink to="/" style={styles.link}>Home</NavLink>
+        <NavLink to="/home" style={styles.link}>Home</NavLink>
         <NavLink to="/journal" style={styles.link}>Journal</NavLink>
         <NavLink to="/map" style={styles.link}>Map</NavLink>
         <NavLink to="/leaderboard" style={styles.link}>Top</NavLink>
