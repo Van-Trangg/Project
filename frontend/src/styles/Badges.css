@@ -1,0 +1,183 @@
+/* --- Cấu trúc trang chính --- */
+
+.badges-page {
+  padding: 16px;
+}
+
+.badges-header {
+  margin-bottom: 12px;
+}
+
+.badges-sub {
+  color: #475569;
+  margin-top: 4px;
+}
+
+/* --- Nhóm Badge --- */
+
+.badge-group {
+  margin: 18px 0;
+}
+
+.group-title {
+  font-size: 14px;
+  color: #065f46;
+  margin-bottom: 8px;
+}
+
+.group-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+/* --- Thẻ Badge --- */
+
+.badge-card {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.badge-card.locked {
+  opacity: 0.55;
+}
+
+.badge-card.unlocked {
+  box-shadow: 0 6px 18px rgba(6, 95, 70, 0.08);
+}
+
+.badge-card:hover {
+  transform: translateY(-4px);
+}
+
+/* --- Con dấu (Stamp) --- */
+
+.stamp {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fff8ea, #f1f7ee);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.03);
+}
+
+.stamp-inner {
+  font-weight: 700;
+  font-size: 26px;
+  color: #064e3b;
+}
+
+.stamp img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+/* --- Thông tin Badge --- */
+
+.badge-meta {
+  text-align: center;
+}
+
+.badge-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #064e3b;
+}
+
+.badge-cost {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* --- Modal --- */
+
+.badge-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 20000;
+}
+
+.badge-modal-inner {
+  background: #fff;
+  padding: 22px;
+  border-radius: 14px;
+  width: 92%;
+  max-width: 420px;
+  text-align: center;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.stamp-large {
+  font-size: 72px;
+  line-height: 1;
+  color: #065f46;
+  background: #f8fff6;
+  width: 130px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  margin: 8px auto;
+}
+
+.modal-title {
+  margin-top: 8px;
+  font-size: 20px;
+  color: #064e3b;
+}
+
+.modal-info {
+  margin-top: 6px;
+  color: #475569;
+}
+
+.modal-actions {
+  margin-top: 12px;
+}
+
+/* --- Nút (Button) --- */
+
+.btn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #10b981;
+  color: white;
+}
+
+.btn.disabled {
+  background: #e6e6e6;
+  color: #9ca3af;
+}

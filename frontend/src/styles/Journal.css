@@ -1,0 +1,194 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+#title {
+    font-size: 35px;
+    font-weight: 700;
+    color: #000;
+}
+
+.journal-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to bottom, #acc729, #f5f9f0 80%);
+}
+
+.location_box {
+    display: flex;
+    flex-direction: row;
+}
+
+.city_name {
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.jn_des {
+  font-size: 18px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #EFF5D2;
+}
+
+/* Main content area */
+.location_region {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 20px;
+}
+
+/* Horizontal scrolling container with snap-to-center */
+.place_pad {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+  margin-top: 10%;
+  
+  /* Add scroll-snap for smooth centering */
+  scroll-snap-type: x mandatory;
+}
+
+.place_pad::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, Opera */
+}
+
+.horizontal-scroll-container {
+  display: flex;
+  gap: 15px;
+  /* Add padding to allow first and last cards to center properly */
+  padding: 20px calc(50% - 100px); /* 50% of viewport width minus half of card width */
+}
+
+.journal-card {
+  align-items: center;
+  flex: 0 0 auto;
+  width: 200px;
+  border-radius: 16px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  /* This element will be the snap target */
+  scroll-snap-align: center;
+}
+
+/* Style for inactive (non-centered) cards */
+.journal-card.inactive {
+  opacity: 0.6;
+  transform: scale(0.9);
+}
+
+.journal-image {
+  width: 100%;
+  height: 356px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.journal-button {
+    background-color: #7CB342;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 45px auto 15px; /* 30px top, auto left/right, 15px bottom */
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.journal-button:hover {
+  background-color: #45a049;
+}
+
+.journal-description {
+  width: 300px;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}
+
+/* Location Details Styles */
+.location-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  position: relative;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.back-button svg {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
+.journal-location-image {
+  width: 65%;
+  height: 60vh;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 20px 0;
+}
+
+.location-description {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.location-action-button {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  background-color: #7CB342;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.location-action-button:hover {
+  background-color: #689F38;
+}
+
+#location-name {
+  font-weight: bold;
+  color: #fff;
+  margin: 23px auto 30px;
+  font-size: 20px;
+  background-color: #7CB342;
+  border-radius: 32px;
+  padding: 10px 20px;
+}

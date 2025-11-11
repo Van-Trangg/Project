@@ -1,63 +1,119 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from "react-router-dom";
-import { listPlaces } from '../api/map'
-import mapPlaceholder from '../public/map-placeholder.png'
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { listPlaces, getPois } from '../api/map'
+
 import '../styles/Map.css'
+import 'leaflet/dist/leaflet.css';
+import { customIcon } from '../components/Pin';
 
-const CITIES = [
-  { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172, image: '/src/public/Map/hcmc.png'},
-  { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817, image: '/src/public/Map/pq.png'},
-]
+function MapController({ onMapReady }) {
+  const map = useMap(); // This is the Leaflet map instance
 
-const PINS = [
-  { id: 1, lat: 10.7769, lng: 106.7009, image: '/src/public/Map/dkhi.png', checkInRate: '46%', title: 'Đảo Khỉ', desc: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.' },
-  { id: 2, lat: 10.7626, lng: 106.6822, title: 'Bến Nghé', desc: 'Historic riverside area' },
-  { id: 3, lat: 10.7554, lng: 106.6753, title: 'Mai Chí Thọ', desc: 'Modern boulevard' },
-]
+  useEffect(() => {
+    if (map) {
+      onMapReady(map);
+      //console.log('Map ready via useMap');
+    }
+  }, [map, onMapReady]);
+
+  return null; // Renders nothing
+}
 
 export default function Map() {
-  const [selectedCity, setSelectedCity] = useState(CITIES[0]);
+  const [maps, setMaps] = useState([])
+  const [selectedMap, setSelectedMap] = useState(null)
+  const [pois, setPois] = useState([])
+  const [loadingMaps, setLoadingMaps] = useState(true);
+  const [loadingPois, setLoadingPois] = useState(false);
+  
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
-  const [places, setPlaces] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const handleCheckIn = () => {
     if (selectedPin) {
-      navigate(`/checkin/${selectedPin.id}`); // go to specific check-in page
+      document.body.classList.add('page-transitioning');
+      navigate(`/checkin/${selectedPin.id}`, { state: { poi: selectedPin, map: selectedMap} }); // go to specific check-in page
     }
   }
-
-  // Fetch places from API (fallback to static if fails)
+  // Load maps
   useEffect(() => {
+    setLoadingMaps(true);
     listPlaces()
-      .then(r => setPlaces(r.data))
-      .catch(() => console.log('Using static pins'))
-      .finally(() => setLoading(false))
+      .then(res => {
+        setMaps(res.data)
+        setSelectedMap(res.data[0])
+      })
+      .catch(err => console.error('Failed to load maps', err))
+      .finally(() => setLoadingMaps(false));
   }, [])
 
+  // Load POIs when map changes
+  useEffect(() => {
+    if (!selectedMap) return;
+    setLoadingPois(true);
+    if (selectedMap) {
+      getPois(selectedMap.id)
+        .then(res => setPois(res.data || []))
+        .catch(err => {
+          console.error('Failed to load POIs', err);
+          setPois([]);
+      })
+      .finally(() => setLoadingPois(false));
+    }
+  }, [selectedMap])
+
   const handleCityChange = (city) => {
-    setSelectedCity(city)
+    setSelectedMap(city)
     setDropdownOpen(false)
   }
 
   useEffect(() => {
-    if (selectedPin) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [selectedPin]);
+  }, []);
+
+  const mapRef = useRef(null);
+
+  const flyToCityCenter = (e) => {
+    e.stopPropagation();
+
+    // ---- DEBUG ----
+    console.log('fly button clicked');
+    console.log('mapRef.current =', mapRef.current);
+    console.log('selectedMap =', selectedMap);
+    // --------------
+
+    if (!mapRef.current) {
+      console.warn('Map instance not ready yet');
+      return;
+    }
+    if (!selectedMap) {
+      console.warn('No city selected');
+      return;
+    }
+
+    const lat = parseFloat(selectedMap.center_lat);
+    const lng = parseFloat(selectedMap.center_lng);
+
+    if (isNaN(lat) || isNaN(lng)) {
+      console.error('Bad coordinates', selectedMap.center_lat, selectedMap.center_lng);
+      return;
+    }
+
+    mapRef.current.flyTo([lat, lng], 13, {
+      duration: 1.2,
+      easeLinearity: 0.5,
+    });
+  };
 
   return (
   <div className="map-page">
-    {/* Top Location Bar */}
     <div className="location-bar">
       <div className="spacer"></div>
-      <span className="location-text">{selectedCity.name}</span>
+      <span className="location-text">{selectedMap?.name || 'Loading...'}</span>
       <button 
         className="dropdown-toggle"
         onClick={() => setDropdownOpen(prev => !prev)}
@@ -68,27 +124,18 @@ export default function Map() {
       </button>
       <div className="spacer"></div>
     </div>
-
-    {/* FULL-SCREEN CITY OVERLAY – COVERS EVERYTHING */}
     {dropdownOpen && ( 
       <div className="city-fullscreen-overlay">
-        <div 
-          className="overlay-inner" 
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="overlay-inner" onClick={(e) => e.stopPropagation()}>
           <div className="city-grid">
-            {CITIES.map((city) => (
+            {maps.map((city) => (
               <button
                 key={city.id}
                 className="city-card"
-                onClick={() => {
-                  handleCityChange(city);
-                  setDropdownOpen(false);
-                }}
+                onClick={() => {handleCityChange(city);}}
               >
-                <div 
-                  className="city-image"
-                  style={{ backgroundImage: `url(${city.image || '/default-city.jpg'})` }}
+                <div className="city-image"
+                  style={{ backgroundImage: `url(${city.image})` }}
                 />
                 <p className="city-name">{city.name}</p>
               </button>
@@ -97,30 +144,47 @@ export default function Map() {
         </div>
       </div>
     )}
-    {/* Map Container */}
     {!dropdownOpen && (
       <div className="map-container">
-        {loading ? (
+        {loadingMaps ? (
           <div className="map-loading">Loading map…</div>
         ) : (
-          <div
-            className="map-placeholder"
-            style={{ backgroundImage: `url(${mapPlaceholder})` }}
+        <>
+          <MapContainer
+            center={[selectedMap.center_lat, selectedMap.center_lng]}
+            zoom={13}                     
+            style={{ height: '100%', width: '100%' }}
+            scrollWheelZoom={true}
+            whenCreated={(map) => { 
+              mapRef.current = map;
+              console.log('Map instance saved'); 
+            }}
           >
-            {PINS.map((pin) => (
-              <button
+            <TileLayer
+              attribution='&copy; OpenStreetMap &copy; CARTO'
+              url="http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            />  
+            {pois.map((pin) => (
+              <Marker
                 key={pin.id}
-                className="map-pin"
-                style={{
-                  top: `${((pin.lat - 10.73) / (10.80 - 10.73)) * 100}%`,
-                  left: `${((pin.lng - 106.65) / (106.73 - 106.65)) * 100}%`,
+                position={[pin.lat, pin.lng]}
+                
+                icon = {customIcon}
+                eventHandlers={{
+                  click: () => setSelectedPin(pin),
                 }}
-                onClick={() => setSelectedPin(pin)}
               >
-                <span className="pin-icon"></span>
-              </button>
+              </Marker>
             ))}
-          </div>
+            <MapController onMapReady={(map) => { mapRef.current = map; }} />
+          </MapContainer>
+          <button 
+            className = 'map-center-bubble'
+            onClick={flyToCityCenter}
+          >
+            <img src = '/src/public/focus.png' className = 'target-icon'></img>
+          </button>
+        </>    
         )}
       </div>
     )}
@@ -130,7 +194,7 @@ export default function Map() {
       <div className="pin-popup-card">
         <button className="popup-close-btn" onClick={() => setSelectedPin(null)}>
           ×
-        </button>
+        </button> 
         <div
           className="popup-image"
           style={{
@@ -138,11 +202,11 @@ export default function Map() {
           }}
         />
         <div className="popup-content">
-          <h3 className="popup-title">{selectedPin.title}</h3>
+          <h3 className="popup-title">{selectedPin.name}</h3>
           <div className="popup-stat">
-            {selectedPin.checkInRate || '10%'} of users have checked in here
+            {selectedPin.score + '%'|| '10%'} of users have checked in here
           </div>
-          <p className="popup-desc">{selectedPin.desc}</p>
+          <p className="popup-desc">{selectedPin.description}</p>
         </div>
         <button className="checkin-btn" onClick={handleCheckIn}>Check-in</button>
       </div>

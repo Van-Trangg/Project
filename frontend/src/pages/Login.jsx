@@ -2,6 +2,11 @@ import { useState } from 'react'
 import { login } from '../api/auth'
 import '../styles/Auth.css'
 import { useNavigate } from 'react-router-dom'
+import emailIcon from '../public/email.png'
+import lockIcon from '../public/lock.png'
+import showIcon from "../public/don't_eye.png"
+import dontEyeIcon from '../public/show.png'
+import picLogin from '../public/pic_login.png'
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -25,7 +30,7 @@ export default function Login() {
                 throw new Error('No access token received')
             }
             localStorage.setItem('access_token', data.access_token)
-            navigate('/profile')
+            navigate('/home')
         } catch (e) {
             console.error(e)
             setMsg('Login failed. Please check your credentials.')
@@ -36,16 +41,17 @@ export default function Login() {
         <div className="auth-root">
             <div className="auth-top">
                 <div className="auth-circle">
-                    {/* public/login-header.png */}
-                    {/* title removed - using a combined header image instead (add to public/) */}
+                    {/* decorative circle - login image will overlay visually */}
                 </div>
+                {/* place the login image as a sibling so we can position it relative to .auth-top */}
+                <img src={picLogin} alt="login" className="login-pic" />
             </div>
 
             <form className="auth-form login-form" onSubmit={submit}>
                 <label className="field">
                     <div className="field-label">Email</div>
                     <div className="field-input">
-                        <span className="field-icon">✉️</span>
+                        <img src={emailIcon} alt="email" className="field-icon" />
                         <input placeholder="email@gmail.com" value={email} onChange={e => setEmail(e.target.value)} />
                     </div>
                 </label>
@@ -53,7 +59,7 @@ export default function Login() {
                 <label className="field">
                     <div className="field-label">Password</div>
                     <div className="field-input">
-                        <span className="field-icon">🔒</span>
+                        <img src={lockIcon} alt="lock" className="field-icon" />
                         {/* Thêm logic hiện/ẩn mật khẩu */}
                         <input
                             placeholder="Enter your password"
@@ -67,8 +73,7 @@ export default function Login() {
                             aria-label={showPassword ? 'Hide password' : 'Show password'}
                             onClick={() => setShowPassword(s => !s)}
                         >
-                            {/* Bạn có thể đổi 'no' thành icon con mắt 👁️‍🗨️ */}
-                            {showPassword ? '👁' : '👁️‍🗨️'}
+                            <img src={showPassword ? dontEyeIcon : showIcon} alt={showPassword ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
                         </button>
                     </div>
                 </label>

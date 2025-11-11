@@ -1,0 +1,138 @@
+.location-journal-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f9f0;
+  overflow-y: auto;
+}
+
+.location-journal-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.back-button svg {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.location-journal-hero {
+  position: relative;
+  height: 40vh;
+  overflow: hidden;
+}
+
+.location-journal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.location-journal-title {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.journal-entries-container {
+  flex: 1;
+  padding: 20px;
+}
+
+.journal-entry {
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.journal-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.journal-entry-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.journal-entry-date {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.journal-entry-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.journal-entry-content {
+  padding: 15px 20px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.empty-journal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-journal h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.empty-journal p {
+  font-size: 16px;
+  color: #666;
+}
+
+.add-entry-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #7CB342;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-entry-button svg {
+  width: 30px;
+  height: 30px;
+}

@@ -1,10 +1,11 @@
 .map-page {
+  position: sticky;
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(#ACC729 20%, #F5F9F0 100%);
-  min-height: 100vh;
   color: #344e41;
-  position: relative;
-  /* padding-bottom: 70px; */
+  display: flex;
+  max-height: 100dvh;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -13,12 +14,9 @@
   position: sticky;
   width: 100%;
   height: 15dvh;
-  top: 0;
-  background: linear-gradient(#ACC729 29%, #F5F9F0 100%);
+  background: linear-gradient(#ACC729 39%, #F5F9F0 130%);
   display: flex;
   align-items: center;
-  z-index: 1000;
-  padding: 0 16px;
 }
 
 /* Left spacer — takes all available space on the left */
@@ -48,9 +46,7 @@
   transition: background 0.2s;
   flex-shrink: 0;
 }
-.dropdown-toggle:hover {
-  transform: translateY(-2px);
-}
+
 .dropdown-arrow {
   width: 40px;
   height: 40px;
@@ -60,20 +56,10 @@
 
 /* Map Container */
 .map-container {
-  position: sticky;
-  height: 100vh;
-  width: 100%;
-}
-
-.map-placeholder {
-  background: transparent;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
+  height: 85dvh;
   position: relative;
+  width: 100%;
 }
-
 .map-loading {
   display: flex;
   align-items: center;
@@ -121,30 +107,41 @@
   align-items: center;
   z-index: 1000;
   padding-top: 80px;          /* space for top status bar */
+  overflow-y: scroll;
 }
 
 /* Main card */
 .pin-popup-card {
   position: relative;
   overflow-y: auto;
-  width: 95%;
+  width: 90%;
   height: 85%;
   min-height: 550px;
   max-width: 360px;
   border-radius: 30px 30px 0 0;
-  overflow: hidden;
+  overflow: scroll;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   background: #556B2F; /* fallback */
   display: flex;
   align-items: center;
   flex-direction: column;
+  animation: slideUp 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* Image at top */
 .popup-image {
   width: 95%;
   height: 30%;
-  min-height: 100px;
+  min-height: 200px;
   margin-top: 8px;
   background-size: cover;
   background-position: center;
@@ -186,9 +183,12 @@
 .popup-title {
   text-align: center;
   padding-top: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  line-height: 1.3;
   padding-bottom: 5px;
   margin: 0 0 10px;
-  font-size: 35px;
+  font-size: 32px;
   color: #F0F9CA;
   font-weight: 600;
 }
@@ -251,15 +251,17 @@
 .city-fullscreen-overlay {
   position: fixed;
   width: 100%;
-  height: 100dvh;
+  height: 85dvh;
   background: linear-gradient(#F5F9F0 25%, #C6D870 100%);
   z-index: 9999; /* Above everything */
   display: flex;
   flex-direction: column;
-  animation: fadeIn 0.3s ease;
   overflow: hidden; /* Prevent double scroll */
   position: relative;
+  animation: fadeIn 0.25s ease-in;
 }
+
+
 .overlay-inner {
   flex: 1;
   width: 100%;
@@ -274,7 +276,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 50px;
-  padding: 70px 70px;
+  padding: 60px 60px;
   justify-items: center;
 }
 
@@ -286,9 +288,27 @@
   justify-items: center;
   padding: 0;
   width: 100%;
+  transition: transform 0.3s ease;
+  transform: scale(1); 
 }
 .city-card:hover {
-  transform: scale(1.05); /* Slight zoom on hover */
+  transform: scale(1.1); 
+}
+
+.city-card:hover .city-image {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .city-image {
@@ -316,11 +336,35 @@
   to { opacity: 1; }
 }
 
+.map-center-bubble {
+  position: fixed;
+  right: 13px;
+  bottom: 13px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border-color: transparent;
+  background-color: #F5F9F0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.55);
+  z-index: 1000;
+  align-content: center;
+}
+
+.map-center-bubble:hover {
+  transform: scale(1.1);
+  transform: translateX(-10%);
+  transform: translateY(-10%);
+}
+
+.target-icon { 
+  height: 25px;
+  width: 25px;
+}
+
 .check-in-page {
   display: flex;
+  height: 100dvh;
   flex-direction: column;
-  min-height: 100dvh;
-  /* justify-content: flex-end; */
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(#ACC729 20%, #F5F9F0 100%);
   overflow-x: hidden;
@@ -330,7 +374,7 @@
 }
 
 .top-bar {
-  margin-top: 16px;
+  margin-top: 15px;
   margin-left: 5dvw;
   height: 18dvh;
   font-size: 25px;
@@ -338,6 +382,8 @@
 }
 
 .exit-btn {
+  height: 18px;
+  width: 18px;
   background: transparent;
   border: 0px;
 }
@@ -352,7 +398,7 @@
 }
 
 .city-name-prof {
-  padding-top: 40px;
+  padding-top: 30px;
   padding-bottom: 30px;
   font-size: 35px;
   font-weight: bold;
@@ -363,15 +409,17 @@
   left: 22%;
   width: 56%;
   height: 3px;
-  margin-top: 40px;
+  margin-top: 35px;
   background-color:#F0F9CA;
   position: relative;
 }
 
 .location-image {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 45vw;
+  height: 45vw;
+  max-width: 200px;
+  max-height: 200px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
@@ -385,36 +433,66 @@
   position: relative;
   padding-top: 30px;
   padding-bottom: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
   font-size: 35px;
   font-weight: bold;
   color: #F5F9F0;
 }
 
+.popup-stat-checkin {
+  display: inline-block;
+  text-align: center;
+  
+  width: auto;
+  min-width: 250;
+  background: rgba(143, 153, 132, 0.54);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  margin-bottom: 30px;
+}
+
+
 .popup-card {
   position: relative;
+  left: 0;
   bottom: 0;
+  align-self: center;
   display: flex;
   flex-direction: column;
   align-items: center;  
   margin-top: auto;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  height: 100%;
+  width: 90vw;
+  height: 30vh;
   min-height: 300px;
   max-width: 360px;
   border-radius: 30px 30px 0 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   background: #556B2F; /* fallback */
+  animation: slideUp 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 .spark {
   position: absolute;
-  left: 2.8%;
+  left: 5%;
+  top: 1%;
   padding-top: 30px;
+  height: 70px;
+  animation: wiggle 3s ease-in-out infinite;
 }
 .first-rew {
   align-self: flex-start;
-  margin-left: 15%;
+  margin-left: 18%;
   padding-top: 40px;
   font-size: 20px;
   font-weight: 600;
@@ -428,17 +506,55 @@
 }
 
 .point {
-  display:flex;
+  display: flex;
   flex-direction: row;
   align-self: flex-start;
-  margin-left: 15%;
+  margin-left: 18%;
   font-size: 30px;
   font-weight: 600;
   color: #F0F9CA;
   gap: 8px;
   margin-top: 10px;
+  animation: countUp 1s ease-out, wiggle 3s ease-in-out;
 }
-.progress-bar {
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-5deg);
+  }
+  20% {
+    transform: rotateZ(3deg);
+  }
+  25% {
+    transform: rotateZ(-3deg);
+  }
+  30% {
+    transform: rotateZ(2deg);
+  }
+  35% {
+    transform: rotateZ(-2deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
+
+.checkin-progress-bar {
   margin-top: 20px;
   width: 100%;
   margin-left: 20%;
@@ -470,6 +586,12 @@
   height: 10px;
   background: #7CB342;
   border-radius: 20px;
+  animation: fillProgress 1.5s ease-out forwards;
+}
+@keyframes fillProgress {
+  from {
+    width: 0;
+  }
 }
 .expectant-bar {
   position: absolute;
@@ -480,6 +602,22 @@
   height: 10px;
   background: rgba(124, 179, 66, 0.65);
   border-radius: 20px;
+  opacity: 0;
+  animation: contFillProgress ease-out 2.5s forwards;
+}
+@keyframes contFillProgress {
+  from {
+    width: 0px;
+  }
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 .prog-num{
   position: relative;
@@ -493,7 +631,7 @@
 }
 
 /* survey */
-.back-btn {
+.checkin-back-btn {
   margin-left:7%;
   margin-top: 8%;
 }
@@ -508,7 +646,7 @@
   font-size: 25px;
   line-height: 2;
   text-align: left;
-  margin-bottom: 8px;
+  margin-right: 40px;
 }
 .point-survey {
   display:flex;
@@ -518,6 +656,7 @@
   font-weight: 600;
   color: #F0F9CA;
   gap: 8px;
+  margin-bottom: 15px;
 }
 .line-vehicle {
   width: 200px;
@@ -530,15 +669,17 @@
   font-size: 20px;
   line-height: 1.7;
   text-align: left;
+  margin-top: 30px;
   margin-bottom: 8px;
   margin-right: 50px;
 }
 .vehicle-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 50px;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 40px;
   padding: 30px 30px;
   justify-items: center;
+  margin-bottom: 30px;
 }
 .vehicle-card {
   cursor: pointer;
@@ -567,7 +708,7 @@
   height: 60px;
 }
 .vehicle-name {
-  padding: 15px;
+  padding: 35px;
   font-size: 20px;
   font-weight: 600;
 }
@@ -575,27 +716,26 @@
 .receipt {
   display: flex;
   flex-direction: column;
-  justify-items: center;
   align-items: center;
-  margin-right: 40px;;
+  height: 100vh;
 }
+
 .popup-card-receipt {
+  margin-top: auto;
   position: relative;
-  bottom: 0;
+  align-self: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: auto;
-  left: 50%;
-  transform: translateX(-50%);
   width: 90%;
-  height: 50%;
-  min-height: 250px;
+  height: 30%;
+  min-height: 260px;
   max-width: 360px;
   border-radius: 30px 30px 0 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   background: #556B2F; 
 }
+
 .popup-stat-receipt {
   display: inline-block;
   text-align: center;
@@ -614,8 +754,38 @@
   display:flex;
   flex-direction: row;
   align-self: center;
-  font-size: 30px;
+  font-size: 40px;
   font-weight: 600;
   color: #F0F9CA;
   gap: 8px;
+  animation: reveal 0.8s ease-out, wiggle 2s ease-in-out 1s;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.page-transitioning {
+  opacity: 0.8;
+  transform: scale(0.98);
+  transition: opacity 0.3s, transform 0.3s ease;
+}
+.check-in-page.page-enter {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }

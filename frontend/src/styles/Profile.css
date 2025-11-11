@@ -26,10 +26,10 @@
 /* Edit button góc trên phải */
 .edit-btn {
   position: absolute;
-  top: 14px;
+  top: 22px; /* match exit/back vertical position */
   right: 14px;
-  width: 36px;
-  height: 36px;
+  width: 22px; /* same size as .exit-rect/.back-rect */
+  height: 22px;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -67,7 +67,7 @@
   filter: brightness(1.05);
 }
 
-.back-rect { left: 14px; }
+.back-rect { left: 14px; top: 14px; }
 .exit-rect { right: 64px; }
 
 .back-rect img, .exit-rect img, .edit-btn img, .back-btn img {
@@ -207,9 +207,10 @@
 .badges-section h3::before {
   content: '';
   position: absolute;
-  left: 0;
+  /* extend underline 20px wider (10px each side) */
+  left: 0px;
   top: -18px;
-  width: 100%;
+  width: calc(100% + 20px);
   height: 2px;
   background: #556B2F;
 }
@@ -229,6 +230,27 @@
   flex-shrink: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
+
+/* small variant used when rendering BadgeCard inside Profile */
+.badge-card.profile-badge-small {
+  width: 88px;
+  height: 88px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.badge-card.profile-badge-small .stamp { width:56px; height:56px }
+.badge-card.profile-badge-small .stamp-inner { font-size:20px }
+.badge-card.profile-badge-small .badge-meta { display:none }
+
+/* Shift the badges header title slightly to the right within the header row */
+.badges-header-row h3 { margin-left: 10px }
 
 .info-fields {
   width: 92%;
@@ -284,6 +306,7 @@
   margin: 0;           
   padding: 0;   
   background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
+  position: relative;
 }
 .top-bar {
   display: flex;
@@ -304,6 +327,13 @@
   justify-content: center;
   padding: 0;
   transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+  z-index: 100;
+}
+
+.back-btn {
+  position: absolute;
+  top: 1px; /* moved up 5px */
+  left: 14px;
 }
 
 .save-top {
@@ -333,7 +363,6 @@
 }
 .edit-cover-wrapper { position: relative; }
 
-.edit-cover-wrapper .back-btn,
 .edit-cover-wrapper .save-top {
   position: absolute;
   top: 14px;
@@ -349,7 +378,13 @@
   transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
 }
 
-.edit-cover-wrapper .back-btn { left: 14px; width: 20px; height: 20px }
+.back-btn {
+  position: absolute;
+  top: 1px; /* moved up 5px */
+  left: 14px;
+  width: 20px;  /* <--- Bổ sung */
+  height: 20px; /* <--- Bổ sung */
+}
 .edit-cover-wrapper .save-top { right: 14px; width: 44px; height: 36px }
 
 .edit-avatar-wrapper {
@@ -510,7 +545,7 @@
   margin: 0 auto 10px;
   padding-bottom: 4px;
   width: 90%;
-  max-width: 720px;
+  max-width: 800px;
   text-align: left;
   border-bottom: 2px solid #556B2F; /* đường gạch dưới */
 }
