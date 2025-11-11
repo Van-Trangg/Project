@@ -15,6 +15,7 @@ def list_leaderboard(db: DbDep) -> list[LeaderboardOut]:
         "id": user.id,
         "user_name": user.full_name,
         "points": user.eco_points,
+        "avatar": user.avatar_url,
         "rank": index + 1
     }) for (index, user) in enumerate(r)]
 
@@ -28,5 +29,6 @@ def my_rank(
         "id": current_user.id,
         "user_name": current_user.full_name,
         "points": current_user.eco_points,
+        "avatar": current_user.avatar_url,
         "rank": rank
     })
