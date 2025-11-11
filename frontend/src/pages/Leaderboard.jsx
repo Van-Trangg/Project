@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { getLeaderboard } from '../api/leaderboard'
 
 
-function Podium({ user_name, points, rank, color, id }) {
+function Podium({ user_name, points, rank, color, id, avatar}) {
   const navigate = useNavigate();
 
   const handleAvatarClick = () => {
@@ -16,7 +16,9 @@ function Podium({ user_name, points, rank, color, id }) {
   return (
     <div className="podium">
       <div className="top-info">
-        <div className="avatar" onClick={handleAvatarClick}></div>
+        <div className="avatar" onClick={handleAvatarClick}>
+          <img src={avatar} alt={`${user_name}'s avatar`} />
+        </div>
         <div className="name">{user_name}</div>
         <div className="points">{points}</div>
       </div>
@@ -81,7 +83,9 @@ export default function Leaderboard() {
                 <div className="name">{p.user_name}</div>
                 <div className="points">{p.points}</div>
               </div>
-              <div className="avatar" onClick={() => OtherAvatarDirect(p)} />
+              <div className="avatar" onClick={() => OtherAvatarDirect(p)} >
+                <img src={p.avatar} alt={`${p.user_name}'s avatar`} />
+              </div>
             </div>
           ))}
         </div>
@@ -93,7 +97,9 @@ export default function Leaderboard() {
           <div className="label">My Rank</div>
           <div className="rank">{myRank?.rank}</div>
         </div>
-        <div className="avatar" onClick={MyAvatarDirect}></div>
+        <div className="avatar" onClick={MyAvatarDirect}>
+          <img src={myRank.avatar} alt={`${myRank.user_name}'s avatar`} />
+        </div>
         <div className="name">{myRank?.user_name}</div>
         <div className="points">{myRank?.points}</div>
       </div>
