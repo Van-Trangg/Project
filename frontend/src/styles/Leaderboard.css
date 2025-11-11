@@ -166,6 +166,10 @@
 /* My Rank */
 .my-rank {
   position: fixed;
+.link-row {
+  text-decoration: none;
+  color: inherit;
+}
   height: 45px;
   width: 95%;
   left: 2.5%;

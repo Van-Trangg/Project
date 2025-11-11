@@ -1,7 +1,7 @@
 from .user_schema import UserCreate, UserLogin, UserOut  # no UserRead, Token
 from .journal_schema import JournalBase, JournalCreate, JournalOut
 # from .leaderboard_schema import LeaderboardEntry
-from .reward_schema import RewardOut
+from .reward_schema import Reward
 
 __all__ = [
     "UserCreate", "UserLogin", "UserOut",

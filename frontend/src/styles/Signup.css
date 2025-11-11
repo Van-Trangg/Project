@@ -8,7 +8,8 @@
 .signup-page .auth-top {
   height: auto;
   /* keep some padding for the page but allow the title row to visually stick out */
-  padding: 28px 20px 0 20px;
+  /* moved down 30px as requested */
+  padding: 68px 20px 0 20px;
   display: block;
 }
 
@@ -84,7 +85,8 @@
 
 @media (max-width: 420px) {
   .signup-page .auth-title-row { margin-left: -24px; gap: 10px; }
-  .signup-page .auth-top { padding-left: 16px; }
+  /* keep the same additional top offset on mobile */
+  .signup-page .auth-top { padding: 58px 16px 0 16px; }
   /* slightly smaller spacing on narrow screens */
   .signup-page .back-arrow { margin-bottom: 30px; }
   .signup-page .auth-form { padding: 0 16px 24px 16px; margin-top: 30px; }
