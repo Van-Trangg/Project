@@ -75,29 +75,34 @@ export default function Home() {
 
       {/* === LƯỚI THỐNG KÊ 2x2 === */}
       <div className="stats-grid">
-        <div className="stat-card" onClick={() => navigate('/rewards')}>
+        <div className="stat-card" onClick={() => navigate('/reward')}>
           <div className="stat-card-header">
             <span className="title">Ecopoints</span>
-            {/* <img src={leafIcon} alt="Ecopoints" /> */}
           </div>
           <div className="value">{ecopoints.toLocaleString('de-DE')}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/profile')}>
-          <div className="stat-card-header"><span className="title">Badges</span></div>
+          <div className="stat-card-header">
+            <span className="title">Badges</span>
+            </div>
           <div className="value">{badges}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/leaderboard')}>
-          <div className="stat-card-header"><span className="title">Rank</span></div>
+          <div className="stat-card-header">
+            <span className="title">Rank</span>
+            </div>
           <div className="value">#{rank}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/journal')}>
-          <div className="stat-card-header"><span className="title">Check-ins</span></div>
+          <div className="stat-card-header">
+            <span className="title">Check-ins</span>
+            </div>
           <div className="value">{String(checkIns).padStart(2, '0')}</div>
         </div>
       </div>
 
       {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
-      <div className="home-section">
+      <div className="home-section progress-section">
         <div className="section-header">
           {/* <img src={treeIcon} alt="Title" /> */}
           <div className="text-content">
