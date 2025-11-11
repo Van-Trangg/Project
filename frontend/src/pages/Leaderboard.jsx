@@ -1,5 +1,6 @@
 // Leaderboard.jsx
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom'
 import "../styles/Leaderboard.css";
 import { useNavigate } from 'react-router-dom'
 import { getLeaderboard } from '../api/leaderboard'
@@ -74,15 +75,15 @@ export default function Leaderboard() {
       <div className="scroll-section">
         <div className="list">
           {others.map(p => (
-            <div key={p.rank} className="row">
-              <div className="rank">{p.rank}</div>
+            <Link to={`/profile/view/${p.id}`} key={p.id} className="row link-row">
+              <div className="rank">{p.id}</div>
               <div className="user-details">
                 <div className="name">{p.user_name}</div>
                 <div className="points">{p.points}</div>
               </div>
 
-              <div className="avatar" onClick={() => OtherAvatarDirect(p)} />
-            </div>
+              <div className="avatar" onClick={() => OtherAvatarDirect(p)}/>
+            </Link>
           ))}
         </div>
       </div>

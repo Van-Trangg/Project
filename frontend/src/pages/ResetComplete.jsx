@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import '../styles/ResetPassword.css'
+import backIcon from '../public/back.png'
 
 export default function ResetComplete(){
   const navigate = useNavigate()
@@ -8,6 +9,11 @@ export default function ResetComplete(){
       <div className="auth-top">
         <div className="reset-title-wrap">
           <h1 className="auth-title">PASSWORD RESET</h1>
+        </div>
+        <div className="auth-header">
+          <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
+            <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
+          </button>
         </div>
       </div>
 

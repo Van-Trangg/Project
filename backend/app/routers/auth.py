@@ -22,6 +22,10 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
+    code = f"{random.randint(0, 9999):04d}"
+    expiry = datetime.utcnow() + timedelta(minutes=15)
+    reset_codes[payload.email] = {"code": code, "expiry": expiry}
+    print(f"!!! OTP reset for  {payload.email} is: {code} !!!")
     return user
 
 @router.post("/login")

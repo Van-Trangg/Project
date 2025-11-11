@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { verifyReset, forgotPassword } from '../api/auth'
 import '../styles/ResetPassword.css'
+import backIcon from '../public/back.png'
 
 export default function VerifyCode(){
   const navigate = useNavigate()
@@ -88,6 +89,11 @@ export default function VerifyCode(){
       <div className="auth-top">
         <div className="reset-title-wrap">
           <h1 className="auth-title">{flow === 'signup' ? 'ACCOUNT ACTIVATION' : 'CHECK YOUR EMAIL'}</h1>
+        </div>
+        <div className="auth-header">
+          <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
+            <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
+          </button>
         </div>
       </div>
 
