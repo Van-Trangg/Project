@@ -73,7 +73,6 @@
   aspect-ratio: 1 / 1;
   display: flex; 
   flex-direction: column;     
-  justify-content: space-between;
 }
 
 .stat-card-header {
@@ -129,6 +128,7 @@
   /* Tái sử dụng shadow từ .stats strong */
   text-shadow: 0 1px 0 #C8D6A1;
   text-align: right;
+  margin-top: auto;
 }
 
 /* === Section chung (cho Progress & Daily Rewards) === */
@@ -169,6 +169,13 @@
   color: #556B2F;
   font-weight: 500;
   margin: 2px 0 0 0;
+}
+
+.section-title-icon.sun-icon {
+  width: 40px; /* Kích thước icon mặt trời */
+  height: 40px;
+  margin-right: 2px; /* Khoảng cách với chữ */
+  flex-shrink: 0; /* Ngăn nó bị co lại */
 }
 
 /* === Progress Bar === */
@@ -230,6 +237,7 @@
   padding: 12px 10px;
   text-align: center;
   transition: all 0.2s ease;
+  position: relative;
   
   /* Style cho thẻ đã nhận (màu tối) */
   background: #465C20; /* Màu xanh rêu đậm */
@@ -343,4 +351,23 @@
   font-size: 28px; /* Kích thước icon */
   color: #556B2F; /* Màu icon */
   line-height: 1;
+}
+
+.reward-card .reward-leaf-icon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  
+  bottom: -8px; 
+  right: -8px; 
+}
+
+.stat-card .middle-leaf-icon {
+  width: 28px;
+  height: 28px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
 }
