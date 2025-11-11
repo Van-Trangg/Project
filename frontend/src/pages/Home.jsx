@@ -12,29 +12,57 @@ export default function Home() {
 
   useEffect(() => {
     const fetchHomeData = async () => {
-      setLoading(true); // 2. BẮT ĐẦU LOADING
-      setError(null);   // Xóa lỗi cũ
+      setLoading(true);
+      setError(null);
       
       try {
-        const response = await fetch('http://127.0.0.1:8000/home'); 
+        // 1. Lấy token mà file Login.jsx đã lưu
+        const token = localStorage.getItem('access_token'); // <-- Tên key LẤY TỪ LOGIN.JSX
 
-        if (!response.ok) {
-          throw new Error('Lỗi mạng hoặc server (Backend sập?)');
+        // 2. Kiểm tra xem đã đăng nhập chưa
+        if (!token) {
+          setError("Bạn chưa đăng nhập. Đang chuyển về trang Login...");
+          setLoading(false);
+          // Chuyển về trang login sau 2 giây
+          setTimeout(() => navigate('/login'), 2000); 
+          return;
         }
 
-        const data = await response.json();
-        setData(data); // 3. SET DATA (THÀNH CÔNG)
+        // 3. Gửi token trong Headers (ĐÂY LÀ PHẦN SỬA LỖI 401)
+        const response = await fetch('http://127.0.0.1:8000/home', {
+          method: 'GET',
+          headers: {
+            // "Giơ thẻ" (token) cho "người gác cổng"
+            'Authorization': `Bearer ${token}` 
+          }
+        }); 
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            // Lỗi 401 (Token sai hoặc hết hạn)
+            setError("Token không hợp lệ. Vui lòng đăng nhập lại.");
+            localStorage.removeItem('access_token'); // Xóa token hỏng
+            setTimeout(() => navigate('/login'), 2000);
+          } else {
+            // Các lỗi khác (500, v.v.)
+            throw new Error('Lỗi mạng hoặc server (Backend sập?)');
+          }
+        } else {
+          // THÀNH CÔNG!
+          const data = await response.json();
+          setData(data); 
+        }
 
       } catch (error) {
         console.error("Không thể gọi API backend:", error);
-        setError(error.message); // 4. SET LỖI (THẤT BẠI)
+        setError(error.message);
       } finally {
-        setLoading(false); // 5. LUÔN TẮT LOADING (Dù thành công hay lỗi)
+        setLoading(false);
       }
     };
 
     fetchHomeData();
-  }, []); // Chỉ chạy 1 lần
+  }, [navigate]);// Chỉ chạy 1 lần
 
   // --- SỬA LẠI THỨ TỰ CHECK ---
 
