@@ -9,6 +9,7 @@ import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import exitIcon from '../public/exit.png'
 import newExitIcon from '../public/new_exit.png'
+import viewAllIcon from '../public/view_all.png'
 import '../styles/Profile.css'
 
 export default function Profile() {
@@ -165,7 +166,12 @@ export default function Profile() {
             <div className="badges-section">
                 <div className="badges-header-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                     <h3>Badges</h3>
-                    <button className="btn view-badges-btn" onClick={() => navigate('/badges')}>View all</button>
+                    <img
+                        src={viewAllIcon}
+                        alt="View all badges"
+                        onClick={() => navigate('/badges')}
+                        style={{ width: 30, height: 30, cursor: 'pointer', border: 'none', background: 'transparent', padding: 0, transform: 'translateX(-10px)' }}
+                    />
                 </div>
                     <div className="badge-list">
                         {previewBadges.length === 0 ? (

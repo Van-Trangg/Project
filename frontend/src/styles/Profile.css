@@ -207,9 +207,10 @@
 .badges-section h3::before {
   content: '';
   position: absolute;
-  left: 0;
+  /* extend underline 20px wider (10px each side) */
+  left: 0px;
   top: -18px;
-  width: 100%;
+  width: calc(100% + 20px);
   height: 2px;
   background: #556B2F;
 }
@@ -247,6 +248,9 @@
 .badge-card.profile-badge-small .stamp { width:56px; height:56px }
 .badge-card.profile-badge-small .stamp-inner { font-size:20px }
 .badge-card.profile-badge-small .badge-meta { display:none }
+
+/* Shift the badges header title slightly to the right within the header row */
+.badges-header-row h3 { margin-left: 10px }
 
 .info-fields {
   width: 92%;
@@ -541,7 +545,7 @@
   margin: 0 auto 10px;
   padding-bottom: 4px;
   width: 90%;
-  max-width: 720px;
+  max-width: 800px;
   text-align: left;
   border-bottom: 2px solid #556B2F; /* đường gạch dưới */
 }
