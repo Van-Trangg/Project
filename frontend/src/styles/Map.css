@@ -444,8 +444,10 @@
 }
 .spark {
   position: absolute;
-  left: 2.8%;
+  left: 5%;
+  top: 1%;
   padding-top: 30px;
+  height: 70px;
 }
 .first-rew {
   align-self: flex-start;
