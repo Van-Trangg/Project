@@ -8,7 +8,7 @@ from app.schemas.leaderboard_schema import LeaderboardOut
 router = APIRouter()
 CurrentUser = Depends(get_current_user)
 
-@router.get("")
+@router.get("", response_model=list[LeaderboardOut])
 def list_leaderboard(db: DbDep) -> list[LeaderboardOut]:
     r = db.query(User).order_by(User.eco_points.desc()).limit(10).all()
     return [LeaderboardOut.model_validate({
@@ -19,7 +19,7 @@ def list_leaderboard(db: DbDep) -> list[LeaderboardOut]:
         "rank": index + 1
     }) for (index, user) in enumerate(r)]
 
-@router.get("/my")
+@router.get("/my", response_model=LeaderboardOut)
 def my_rank(
     db: DbDep,
     current_user: User = CurrentUser,

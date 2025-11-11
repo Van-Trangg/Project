@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from app.db.database import DbDep
 from app.models.journal import Journal
 from app.models.poi import POI
-from app.schemas.journal_schema import JournalCreate, JournalUpdate
+from app.schemas.journal_schema import JournalCreate, JournalOut, JournalUpdate
 from app.core.security import get_current_user
 from app.models.user import User
 
@@ -10,13 +10,13 @@ router = APIRouter()
 
 CurrentUser = Depends(get_current_user)
 
-@router.get("")
+@router.get("", response_model=list[JournalOut])
 def list_journals(
     db: DbDep,
 ):
     return db.query(Journal).all()
 
-@router.get("/my")
+@router.get("/my", response_model=list[JournalOut])
 def list_my_journals(
     db: DbDep,
     current_user: User = CurrentUser,
@@ -28,7 +28,7 @@ def list_my_journals(
     query = db.query(Journal).filter(*filters).order_by(Journal.created_at.desc())
     return query.all()
 
-@router.post("")
+@router.post("", response_model=JournalOut)
 def create_journal(
     payload: JournalCreate,
     db: DbDep,
@@ -43,7 +43,7 @@ def create_journal(
     db.refresh(journal)
     return journal
 
-@router.put("/{journal_id}")
+@router.patch("/{journal_id}", response_model=JournalOut)
 def update_journal(
     journal_id: int,
     payload: JournalUpdate,
@@ -61,7 +61,7 @@ def update_journal(
     db.refresh(journal)
     return journal
 
-@router.get("/{journal_id}")
+@router.get("/{journal_id}", response_model=JournalOut)
 def get_journal(
     journal_id: int,
     db: DbDep,
@@ -74,7 +74,7 @@ def get_journal(
         raise HTTPException(status_code=403, detail="Not authorized to view this journal")
     return journal
 
-@router.delete("/{journal_id}")
+@router.delete("/{journal_id}", response_model=dict)
 def delete_journal(
     journal_id: int,
     db: DbDep,
