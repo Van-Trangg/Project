@@ -30,7 +30,7 @@ export default function Login() {
                 throw new Error('No access token received')
             }
             localStorage.setItem('access_token', data.access_token)
-            navigate('/profile')
+            navigate('/home')
         } catch (e) {
             console.error(e)
             setMsg('Login failed. Please check your credentials.')

@@ -94,18 +94,22 @@ export default function EditProfile() {
 
   return (
     <div className="edit-screen">
+      
+      {/* NÚT BACK ĐÃ ĐƯỢC DI CHUYỂN RA ĐÂY */}
+      <button
+        className="back-btn"
+        type="button"
+        onClick={() => { setBackActive(true); handleCancel() }}
+        onMouseEnter={() => setBackHovering(true)}
+        onMouseLeave={() => setBackHovering(false)}
+        title="Back">
+        <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
+      </button>
+
       {/* Cover with overlayed action buttons (back/save) */}
       <div className="edit-cover-wrapper">
         <div className="edit-cover" />
-        <button
-          className="back-btn"
-          type="button"
-          onClick={() => { setBackActive(true); handleCancel() }}
-          onMouseEnter={() => setBackHovering(true)}
-          onMouseLeave={() => setBackHovering(false)}
-          title="Back">
-          <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
-        </button>
+        {/* Nút Back đã được gỡ khỏi đây */}
         <button
           className="save-top btn save"
           type="button"
@@ -201,7 +205,7 @@ export default function EditProfile() {
       <div className="section personal-details">
         <h3>Personal details</h3>
 
-            <label className="pill-row">
+          <label className="pill-row">
           <span className="label">Phone</span>
           <div className="pill-input">
             <input type={showPhone ? 'text' : 'password'} name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />

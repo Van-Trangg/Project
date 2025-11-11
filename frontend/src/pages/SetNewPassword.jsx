@@ -7,6 +7,7 @@ import '../styles/ResetPassword.css'
 import lockIcon from '../public/lock.png'
 import showIcon from "../public/don't_eye.png"
 import dontEyeIcon from '../public/show.png'
+import backIcon from '../public/back.png'
 
 export default function SetNewPassword(){
   const navigate = useNavigate()
@@ -51,6 +52,11 @@ export default function SetNewPassword(){
       <div className="auth-top">
         <div className="reset-title-wrap">
           <h1 className="auth-title">SET A NEW PASSWORD</h1>
+        </div>
+        <div className="auth-header">
+          <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
+            <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
+          </button>
         </div>
       </div>
 

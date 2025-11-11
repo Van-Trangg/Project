@@ -19,6 +19,29 @@ overflow-x: hidden;
   overflow: visible;
 }
 
+/* Position a back-arrow inside the top area at top-left (matches Profile) */
+.auth-top .back-arrow {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+}
+
+.auth-top .back-arrow img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
 .auth-circle {
   position: absolute;
   width: 800px;

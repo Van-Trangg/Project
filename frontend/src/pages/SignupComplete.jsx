@@ -1,13 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import '../styles/Signup.css'
+import backIcon from '../public/back.png'
 
 export default function SignupComplete(){
   const navigate = useNavigate()
   return (
     <div className="auth-root signup-page">
-      <div className="auth-top">
+        <div className="auth-top">
         <div className="auth-header">
-          <button className="back-arrow" onClick={() => navigate(-1)}>‹</button>
+          <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
+            <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
+          </button>
         </div>
       </div>
 
