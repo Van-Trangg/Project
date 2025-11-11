@@ -1,23 +1,26 @@
 // Leaderboard.jsx
 import { useEffect, useState } from "react";
 import "../styles/Leaderboard.css";
-//import { getLeaderboard } from '../api/leaderboard'
+import { useNavigate } from 'react-router-dom'
+import { getLeaderboard } from '../api/leaderboard'
 
 
-const OtherAvatarDirect = () => {}
-const MyAvatarDirect = () => {}
+function Podium({ user_name, points, rank, color, id }) {
+  const navigate = useNavigate();
 
-// Podium component for the top 3
-function Podium({ user_name, points, id, color }) {
+  const handleAvatarClick = () => {
+    navigate(`/OtherProfile/${id}`, { state: { user: { user_name, points, rank, id } } });
+  };
+
   return (
     <div className="podium">
       <div className="top-info">
-        <div className="avatar" onClick={OtherAvatarDirect}></div>
+        <div className="avatar" onClick={handleAvatarClick}></div>
         <div className="name">{user_name}</div>
         <div className="points">{points}</div>
       </div>
       <div className="base" style={{ backgroundColor: color }}>
-        <div className="rank">{id}</div>
+        <div className="rank">{rank}</div>
       </div>
     </div>
   );
@@ -25,26 +28,17 @@ function Podium({ user_name, points, id, color }) {
 
 // Main Leaderboard Component
 export default function Leaderboard() {
-  const [rows, setRows] = useState([]);
-  //  useEffect(()=>{ getLeaderboard().then(r => setRows(r.data)) }, [])
-  useEffect(() => {
-    const mockData = [
-      { id: 1, user_name: "Name", points: 3123 },
-      { id: 2, user_name: "Name", points: 2453 },
-      { id: 3, user_name: "Name", points: 1100 },
-      { id: 4, user_name: "Name", points: 1000 },
-      { id: 5, user_name: "Name", points: 987 },
-      { id: 6, user_name: "Name", points: 870 },
-      { id: 7, user_name: "Name", points: 750 },
-      { id: 8, user_name: "Name", points: 300 },
-      { id: 9, user_name: "Name", points: 240 },
-      { id: 10, user_name: "Name", points: 100 },
-    ];
-    setTimeout(() => {
-      setRows(mockData);
-    }, 100);
-  }, []);
 
+  const navigate = useNavigate();
+
+  const MyAvatarDirect = () => { navigate(`/Profile`) }
+  const OtherAvatarDirect = (p) => {
+    navigate(`/OtherProfile/${p.id}`, { state: { user: p } });
+  };
+
+
+  const [rows, setRows] = useState([]);
+  useEffect(() => { getLeaderboard().then(r => setRows(r.data)) }, [])
   // --- PREVENTS BLANK PAGE ---
   // If rows is not yet an array, show a loading message
   if (!rows || rows.length === 0) {
@@ -53,13 +47,13 @@ export default function Leaderboard() {
 
   const top3 = rows.slice(0, 3);
   const others = rows.slice(3);
-  const myRank = rows.find(p => p.id === 7);
+  const myRank = rows.find(p => p.rank === 7);
 
   return (
     <div className="leaderboard-container">
       {/* Fixed Header + Podium */}
       <div className="fixed-top">
-        <h1 id="title">Leaderboard</h1>
+        <h1 rank="title">Leaderboard</h1>
         <div className="podium-area">
           {/* 2nd Place */}
           <div className="place place-2">
@@ -80,14 +74,14 @@ export default function Leaderboard() {
       <div className="scroll-section">
         <div className="list">
           {others.map(p => (
-            <div key={p.id} className="row">
-              <div className="rank">{p.id}</div>
+            <div key={p.rank} className="row">
+              <div className="rank">{p.rank}</div>
               <div className="user-details">
                 <div className="name">{p.user_name}</div>
                 <div className="points">{p.points}</div>
               </div>
 
-              <div className="avatar" />
+              <div className="avatar" onClick={() => OtherAvatarDirect(p)} />
             </div>
           ))}
         </div>
@@ -97,7 +91,7 @@ export default function Leaderboard() {
       <div className="my-rank">
         <div className="lr">
           <div className="label">My Rank</div>
-          <div className="rank">{myRank?.id}</div>
+          <div className="rank">{myRank?.rank}</div>
         </div>
         <div className="avatar" onClick={MyAvatarDirect}></div>
         <div className="name">{myRank?.user_name}</div>
