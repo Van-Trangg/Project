@@ -46,6 +46,15 @@ export default function CheckIn() {
       .finally(setLoadingProfile(false));
   }, [])
 
+  //Animation
+  useEffect(() => {
+    document.body.classList.remove('page-transitioning');
+    
+    const pageContent = document.querySelector('.check-in-page');
+    if (pageContent) {
+      pageContent.classList.add('page-enter');
+    }
+  }, []);
 
   // Mock GPS
   const mockGps = {

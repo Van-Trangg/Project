@@ -32,6 +32,7 @@ export default function Map() {
   const navigate = useNavigate();
   const handleCheckIn = () => {
     if (selectedPin) {
+      document.body.classList.add('page-transitioning');
       navigate(`/checkin/${selectedPin.id}`, { state: { poi: selectedPin, map: selectedMap} }); // go to specific check-in page
     }
   }
@@ -104,7 +105,7 @@ export default function Map() {
 
     mapRef.current.flyTo([lat, lng], 13, {
       duration: 1.2,
-      easeLinearity: 0.25,
+      easeLinearity: 0.5,
     });
   };
 
