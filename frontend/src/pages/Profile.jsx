@@ -117,8 +117,6 @@ export default function Profile() {
                     <div><strong>{user.check_ins || 0}</strong><p>Check-ins</p></div>
                     <div><strong>{user.badges_count || 0}</strong><p>Badges</p></div>
                     <div><strong>{user.rank || 'N/A'}</strong><p>Rank</p></div>
-                    <div><strong>{user.eco_points || 0}</strong><p>Current Points</p></div>
-                    <div><strong>{user.total_eco_points || 0}</strong><p>Total Points</p></div>
                 </div>
 
                 {/*  */}
