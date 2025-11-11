@@ -10,7 +10,7 @@ function Podium({ user_name, points, rank, color, id }) {
   const navigate = useNavigate();
 
   const handleAvatarClick = () => {
-    navigate(`/OtherProfile/${id}`, { state: { user: { user_name, points, rank, id } } });
+    navigate(`/profile/view/${id}`, { state: { user: { user_name, points, rank, id } } });
   };
 
   return (
@@ -34,7 +34,7 @@ export default function Leaderboard() {
 
   const MyAvatarDirect = () => { navigate(`/Profile`) }
   const OtherAvatarDirect = (p) => {
-    navigate(`/OtherProfile/${p.id}`, { state: { user: p } });
+    navigate(`/profile/view/${p.id}`, { state: { user: p } });
   };
 
 
@@ -75,15 +75,14 @@ export default function Leaderboard() {
       <div className="scroll-section">
         <div className="list">
           {others.map(p => (
-            <Link to={`/profile/view/${p.id}`} key={p.id} className="row link-row">
+            <div key={p.rank} className="row">
               <div className="rank">{p.id}</div>
               <div className="user-details">
                 <div className="name">{p.user_name}</div>
                 <div className="points">{p.points}</div>
               </div>
-
-              <div className="avatar" onClick={() => OtherAvatarDirect(p)}/>
-            </Link>
+              <div className="avatar" onClick={() => OtherAvatarDirect(p)} />
+            </div>
           ))}
         </div>
       </div>
