@@ -2,15 +2,40 @@
 
 .badges-page {
   padding: 16px;
+  /* Match profile background and layout */
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
+  min-height: 100vh;
+  color: #344e41;
 }
 
 .badges-header {
   margin-bottom: 12px;
+  /* make room so the title sits below the back button (like signup pages) */
+  padding-top: 48px;
+}
+
+/* Match H1 style from Signup page so the title size and color are consistent */
+.badges-header h1 {
+  margin: 0;
+  color: #48612F;
+  font-weight: 900;
+  font-size: clamp(28px, 6vw, 40px);
+  line-height: 1;
 }
 
 .badges-sub {
   color: #475569;
-  margin-top: 4px;
+  margin-top: 30px; /* move down 5px */
+  font-size: 15px;
+  line-height: 1.35;
+  max-width: 720px;
+  margin-bottom: 0;
+}
+
+.badges-sub strong {
+  color: #065f46;
+  font-weight: 800;
 }
 
 /* --- Nhóm Badge --- */
@@ -30,6 +55,11 @@
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 12px;
 }
+
+/* Version grouping */
+.badge-version { margin-bottom: 28px }
+.version-title { font-size: 16px; color: #355a36; margin: 8px 0 12px; font-weight: 800 }
+.version-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px }
 
 /* --- Thẻ Badge --- */
 
@@ -181,3 +211,19 @@
   background: #e6e6e6;
   color: #9ca3af;
 }
+
+/* Ensure back button in Badges page matches position/size used elsewhere */
+.badges-page .back-btn {
+  position: absolute;
+  top: 30px;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.badges-page .back-btn img { width: 100%; height: 100%; object-fit: contain; display: block }

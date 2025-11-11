@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { listRewardsForUser, listRewards } from '../api/reward'
 import BadgeCard from '../components/BadgeCard'
 import '../styles/Badges.css'
+import backIcon from '../public/back.png'
 
 function groupByThreshold(items){
   const map = {}
@@ -15,26 +17,25 @@ function groupByThreshold(items){
 }
 
 export default function Badges(){
+  const navigate = useNavigate()
   const [badges, setBadges] = useState([])
-  const [groups, setGroups] = useState([])
+  const [versions, setVersions] = useState([])
   const [user, setUser] = useState(null)
   const [selected, setSelected] = useState(null)
 
   useEffect(()=>{
     // try to fetch user-specific rewards (includes unlocked flag and eco_points)
     listRewardsForUser().then(r => {
-      const payload = r.data || { rewards: [] }
+      const payload = r.data || { versions: [] }
       setUser({ eco_points: payload.eco_points })
-      setBadges(payload.rewards || [])
-      setGroups(groupByThreshold(payload.rewards || []))
+      setVersions(payload.versions || [])
     }).catch(()=>{
       // fallback to public listing if user not authenticated
       listRewards().then(r => {
-        setBadges(r.data || [])
-        setGroups(groupByThreshold(r.data || []))
+        // public listing returns an array of versions (from backend)
+        setVersions(r.data || [])
       }).catch(()=>{
-        setBadges([])
-        setGroups([])
+        setVersions([])
       })
     })
   }, [])
@@ -54,17 +55,22 @@ export default function Badges(){
 
   return (
     <div className="badges-page">
+
       <header className="badges-header">
+      {/* top-left back button to match other pages */}
+      <button className="back-btn" onClick={() => navigate('/profile')} title="Back">
+        <img src={backIcon} alt="Back" />
+      </button>
         <h1>Badges</h1>
-        <p className="badges-sub">Collect badges by reaching milestones. Your current points: <strong>{user ? user.eco_points : '—'}</strong></p>
+        <p className="badges-sub">Collect badges by reaching milestones. Your current points: <strong>{user ? user.total_eco_points : '—'}</strong></p>
       </header>
 
       <div className="badges-grid">
-        {groups.map(group => (
-          <section className="badge-group" key={group.threshold}>
-            <h3 className="group-title">Unlock at {group.threshold} pts</h3>
-            <div className="group-list">
-              {group.items.map(b => (
+        {versions.map(v => (
+          <section className="badge-version" key={v.version}>
+            <h2 className="version-title">{v.title || `Version ${v.version}`}</h2>
+            <div className="version-list">
+              {v.badges.map(b => (
                 <BadgeCard key={b.id} badge={b} unlocked={isUnlocked(b)} onClick={handleClick} />
               ))}
             </div>
