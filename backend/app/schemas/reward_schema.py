@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-# Định nghĩa cấu trúc của MỘT phần thưởng
+# --- Định nghĩa cấu trúc của MỘT phần thưởng ---
 class Reward(BaseModel):
     id: int
     name: str
@@ -15,3 +15,15 @@ class Reward(BaseModel):
     class Config:
         from_attributes = True
         populate_by_name = True # Cho phép dùng alias
+
+
+# --- Định nghĩa cấu trúc trả về khi đổi thưởng thành công ---
+class RedeemResponse(BaseModel):
+    message: str
+    
+    # Dùng alias để "dịch" sang camelCase
+    user_points_left: int = Field(..., alias='userPointsLeft')
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
