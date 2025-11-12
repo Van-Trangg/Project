@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
-import { listPlaces, getPois } from '../api/map'
+import { listPlaces, getPois, percentageChecked } from '../api/map'
 
 import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
 import { customIcon } from '../components/Pin';
 
 function MapController({ onMapReady }) {
-  const map = useMap(); // This is the Leaflet map instance
+  const map = useMap();
 
   useEffect(() => {
     if (map) {
@@ -16,7 +16,6 @@ function MapController({ onMapReady }) {
       //console.log('Map ready via useMap');
     }
   }, [map, onMapReady]);
-
   return null; // Renders nothing
 }
 
@@ -26,7 +25,8 @@ export default function Map() {
   const [pois, setPois] = useState([])
   const [loadingMaps, setLoadingMaps] = useState(true);
   const [loadingPois, setLoadingPois] = useState(false);
-  
+  const [percentLoading, setPercentLoading] = useState(false);
+  const [percentCache, setPercentCache] = useState({});   // { poiId: percent }
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
   const navigate = useNavigate();
@@ -49,19 +49,54 @@ export default function Map() {
   }, [])
 
   // Load POIs when map changes
+  // useEffect(() => {
+  //   if (!selectedMap) return;
+  //   setLoadingPois(true);
+  //   if (selectedMap) {
+  //     getPois(selectedMap.id)
+  //       .then(res => setPois(res.data || []))
+  //       .catch(err => {
+  //         console.error('Failed to load POIs', err);
+  //         setPois([]);
+  //     })
+  //     .finally(() => setLoadingPois(false));
+  //   }
+  // }, [selectedMap])
+
   useEffect(() => {
     if (!selectedMap) return;
+
     setLoadingPois(true);
-    if (selectedMap) {
-      getPois(selectedMap.id)
-        .then(res => setPois(res.data || []))
-        .catch(err => {
-          console.error('Failed to load POIs', err);
-          setPois([]);
+    setPercentCache({});               // clear cache for the previous city
+
+    const poisPromise = getPois(selectedMap.id);
+
+    const percentagesPromise = poisPromise.then(res => {
+      const list = res.data || [];
+      return Promise.all(
+        list.map(poi =>
+          percentageChecked(poi.id)
+            .then(r => ({ id: poi.id, percent: r.data?.percent ?? 0 }))
+            .catch(() => ({ id: poi.id, percent: 0 }))   // swallow errors
+        )
+      );
+    });
+
+    Promise.all([poisPromise, percentagesPromise])
+      .then(([poisRes, percents]) => {
+        setPois(poisRes.data || []);
+
+        const cache = {};
+        percents.forEach(p => (cache[p.id] = p.percent));
+        setPercentCache(cache);
+        console.log('Percent cache updated:', cache);
+      })
+      .catch(err => {
+        console.error('Failed to load map data', err);
+        setPois([]);
       })
       .finally(() => setLoadingPois(false));
-    }
-  }, [selectedMap])
+  }, [selectedMap]);
 
   const handleCityChange = (city) => {
     setSelectedMap(city)
@@ -204,7 +239,8 @@ export default function Map() {
         <div className="popup-content">
           <h3 className="popup-title">{selectedPin.name}</h3>
           <div className="popup-stat">
-            {selectedPin.score + '%'|| '10%'} of users have checked in here
+            {percentLoading ? '…' : percentCache[selectedPin?.id] !== undefined
+            ? `${percentCache[selectedPin.id]}%`: '–'} of users have checked in here
           </div>
           <p className="popup-desc">{selectedPin.description}</p>
         </div>

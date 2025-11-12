@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react'
-import { checkin, confirmVehicle, checked, getProgress } from '../api/map'
+import { checkin, confirmVehicle, checked, getProgress, percentageChecked } from '../api/map'
 import { getProfile } from '../api/profile'
 import '../styles/Map.css'
 
@@ -21,6 +21,7 @@ export default function CheckIn() {
   const [step, setStep] = useState("confirm");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [currentProgress, setCurrentProgress] = useState(0);
+  const [percentCheckedIn, setPercent] = useState(0);
   const [maxProgress, setMaxProgress] = useState(0);
   const [receipt, setReceipt] = useState(null)
   const [checkedIn, setCheckedIn] = useState(false);
@@ -50,6 +51,13 @@ export default function CheckIn() {
       })
       .catch(err => {
           console.error('Failed to load progress', err)
+      })
+    percentageChecked(poi.id)
+      .then(res => {
+        setPercent(res.data.percent);
+      })
+      .catch(err => {
+          console.error('Failed to load percentage checked-in', err)
       })
       .finally(setLoadingProfile(false));
   }, [])
@@ -150,7 +158,7 @@ const handleCancel = () => {
             ></div>
             <div className = 'location-name'>{poi.name}</div>
             <div className="popup-stat-checkin">
-              {poi.score + '%' || '20%'} of users have checked in here
+              {percentCheckedIn + '%' || '20%'} of users have checked in here
             </div>
           </div>
           <div className = {`popup-card ${checkedIn ? 'checked-in' : ''}`}>
