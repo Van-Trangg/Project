@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,Depends
 from app.schemas import reward_schema # Import schema bạn vừa tạo
 from typing import List
-
+from app.core.security import get_current_user as TokenDep
+from app.models.user import User
 router = APIRouter()
 
 
