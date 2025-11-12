@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, file, home, leaderboard, journal, map as map_router, profile, reward
+from app.routers import auth, file, home, leaderboard, journal, map as map_router, profile, reward, users
 from app.db.database import init_db
 
 app = FastAPI(title="GreenJourney API", version="0.1.0")
@@ -24,7 +24,7 @@ app.include_router(map_router.router, prefix="/map", tags=["map"])
 app.include_router(profile.router, prefix="/profile", tags=["profile"])
 app.include_router(reward.router, prefix="/reward", tags=["reward"])
 app.include_router(file.router, prefix="/file", tags=["file"])
-
+app.include_router(users.router, prefix="/users", tags=["users"])
 @app.on_event("startup")
 async def on_startup():
     init_db()

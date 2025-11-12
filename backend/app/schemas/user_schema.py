@@ -11,7 +11,7 @@ class UserLogin(BaseModel):
 
 class UserOut(BaseModel):
     id: int
-    email: EmailStr
+    email: EmailStr | None = None
     full_name: str | None = None
     nickname: str | None = None
     bio: str | None = None
@@ -22,6 +22,9 @@ class UserOut(BaseModel):
     eco_points: int
     total_eco_points: int
     avatar_url: str | None = None
+    phone_public: bool
+    address_public: bool
+    email_public: bool
     class Config:
         from_attributes = True
 class ForgotPasswordRequest(BaseModel):
@@ -43,3 +46,6 @@ class UserUpdate(BaseModel):
     phone: str | None = None
     address: str | None = None
     email: EmailStr | None = None
+    phone_public: bool | None = None
+    address_public: bool | None = None
+    email_public: bool | None = None

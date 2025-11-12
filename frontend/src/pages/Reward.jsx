@@ -1,19 +1,16 @@
-// src/pages/Rewards.jsx
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import '../styles/Reward.css'
-// URL ảnh nền (thay bằng ảnh của bạn)
-const headerImageUrl = 'https://images.unsplash.com/photo-1547036322-3860f0e37d12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTg1fDB8MXxzZWFyY2h8MTB8fGZvbGlhZ2V8ZW58MHx8fHwxNzMwNzIzNDI1fDA&ixlib=rb-4.0.3&q=80&w=1080';
+// src/pages/Reward.jsx
 
-export default function Rewards() {
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../styles/Reward.css'; // <--- Vẫn import file CSS như cũ
+
+export default function Reward() {
   const navigate = useNavigate();
 
   // Dữ liệu giả (hardcoded) cho phần History
   const historyData = [
     { id: 1, title: 'Điểm danh', amount: 123, type: 'positive' },
     { id: 2, title: 'Vouncher 10%', amount: -123, type: 'negative' },
-    { id: 3, title: 'Trồng cây', amount: -500, type: 'negative' },
-    { id: 4, title: 'Check-in công viên', amount: 50, type: 'positive' },
   ];
 
   // Dữ liệu giả cho phần Promotions
@@ -25,19 +22,15 @@ export default function Rewards() {
   return (
     <div className="rewards-page">
       
-      {/* === PHẦN ẢNH NỀN VÀ HEADER === */}
-      <div className="rewards-header-image" style={{ backgroundImage: `url(${headerImageUrl})` }}>
-        <div className="header-overlay">
-          {/* Bạn có thể dùng icon thật thay cho chữ '<' */}
+      <div className="header-overlay">
           <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
           <h1>Rewards</h1>
         </div>
-      </div>
 
       {/* === PHẦN NỘI DUNG CHÍNH (Thẻ và Lịch sử) === */}
       <div className="rewards-main-content">
 
-        {/* --- THẺ BALANCE (Được kéo đè lên ảnh) --- */}
+        {/* --- THẺ BALANCE (Đây là "khung bo góc") --- */}
         <div className="balance-card">
           <span className="balance-title">Balance</span>
           <div className="balance-amount">
@@ -60,7 +53,7 @@ export default function Rewards() {
           <div className="history-list">
             {historyData.map((item) => (
               <div key={item.id} className="history-item">
-                <div className="item-icon-placeholder"></div> {/* Placeholder cho icon */}
+                <div className="item-icon-placeholder"></div>
                 <span className="item-text">{item.title}</span>
                 <span className={`item-value ${item.type}`}>
                   {item.type === 'positive' ? '+' : ''}{item.amount} 🍃
@@ -78,7 +71,7 @@ export default function Rewards() {
           <div className="promo-list">
             {promoData.map((promo) => (
               <div key={promo.id} className="promo-card">
-                <div className="promo-icon-placeholder"></div> {/* Placeholder cho logo HCMC Metro */}
+                <div className="promo-icon-placeholder"></div>
                 <span className="promo-text">{promo.title}</span>
                 <span className="promo-price">{promo.price} 🍃</span>
               </div>
@@ -89,7 +82,6 @@ export default function Rewards() {
       </div>
 
       {/* === THANH ĐIỀU HƯỚNG DƯỚI CÙNG === */}
-      {/* (Giả sử đây là component cố định) */}
       <nav className="bottom-nav">
         <button className="nav-item active" onClick={() => navigate('/reward')}>
           <span>Rewards</span>
