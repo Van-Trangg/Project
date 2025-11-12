@@ -2,10 +2,6 @@
   /* Tái sử dụng font từ .profile-page */
   font-family: 'Poppins', sans-serif;
   
-  /* * Homepage dùng gradient xanh lá toàn trang, 
-   * khác với profile (bắt đầu từ màu trắng).
-   * Chúng ta dùng các màu tương đồng với theme.
-   */
   background: linear-gradient(180deg, #ACC729 0%, #F5F9F0 99%);
   min-height: 100vh;
   
@@ -313,6 +309,8 @@
   
   /* Tái sử dụng màu .nickname cho thẻ không active */
   color: #A9BC96; 
+  background: none; 
+  border: none;
 }
 
 .nav-item img {
@@ -361,17 +359,17 @@
 }
 
 .reward-card .reward-leaf-icon {
-  width: 24px;
-  height: 24px;
+  width: 42px;
+  height: 42px;
   position: absolute;
   
-  bottom: -8px; 
-  right: -8px; 
+  bottom: -12px; 
+  right: -12px; 
 }
 
 .stat-card .middle-leaf-icon {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   
   margin-left: 78px;
   

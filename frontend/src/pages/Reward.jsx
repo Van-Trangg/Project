@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Reward.css'; // <--- Vẫn import file CSS như cũ
+import ecopointsIcon from '../public/ecopoint.png'; 
 
 export default function Reward() {
   const navigate = useNavigate();
@@ -21,7 +22,6 @@ export default function Reward() {
 
   return (
     <div className="rewards-page">
-      
       <div className="header-overlay">
           <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
           <h1>Rewards</h1>
@@ -35,7 +35,7 @@ export default function Reward() {
           <span className="balance-title">Balance</span>
           <div className="balance-amount">
             <h2>3.123</h2>
-            <span className="leaf-icon">🍃</span>
+            <img src={ecopointsIcon} alt="leaf" className="balance-leaf-icon" />
           </div>
           <div className="action-buttons">
             <button className="btn-secondary">How to earn</button>
@@ -56,7 +56,10 @@ export default function Reward() {
                 <div className="item-icon-placeholder"></div>
                 <span className="item-text">{item.title}</span>
                 <span className={`item-value ${item.type}`}>
-                  {item.type === 'positive' ? '+' : ''}{item.amount} 🍃
+                  {item.type === 'positive' ? '+' : ''}{item.amount}
+                  <div>
+                  <img src={ecopointsIcon} alt="leaf" className="leaf-icon" />
+                  </div>
                 </span>
               </div>
             ))}
@@ -73,7 +76,11 @@ export default function Reward() {
               <div key={promo.id} className="promo-card">
                 <div className="promo-icon-placeholder"></div>
                 <span className="promo-text">{promo.title}</span>
-                <span className="promo-price">{promo.price} 🍃</span>
+                <span className="promo-price">{promo.price}
+                  <div>
+                  <img src={ecopointsIcon} alt="leaf" className="promo-leaf-icon" />
+                  </div>
+                </span>
               </div>
             ))}
           </div>
