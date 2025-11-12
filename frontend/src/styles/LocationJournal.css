@@ -1,12 +1,15 @@
+/* LocationJournal.css */
 .location-journal-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f5f9f0;
   overflow-y: auto;
+  position: relative;
 }
 
 .location-journal-header {
+  background: linear-gradient(#ACC729,#F5F9F0 80%);
   padding: 20px;
   display: flex;
   align-items: center;
@@ -31,7 +34,7 @@
 .location-journal-hero {
   position: relative;
   height: 40vh;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .location-journal-image {
@@ -51,16 +54,21 @@
 }
 
 .journal-entries-container {
+  display: flex;
   flex: 1;
   padding: 20px;
+  padding-left: 0px;
+  flex-direction: column;
+  align-items: start;
 }
 
 .journal-entry {
-  background-color: white;
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .journal-entry-header {
@@ -69,30 +77,59 @@
   align-items: center;
   padding: 15px 20px;
   border-bottom: 1px solid #f0f0f0;
-}
-
-.journal-entry-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
+  background-color: #f9f9f9;
 }
 
 .journal-entry-date {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
+.small-entry {
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.small-entry:last-child {
+  border-bottom: none;
+}
+
+.small-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.entry-time {
   font-size: 14px;
   color: #666;
-  margin: 0;
 }
 
-.journal-entry-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+.entry-emotion {
+  font-size: 24px;
 }
 
-.journal-entry-content {
-  padding: 15px 20px;
+.small-entry-content {
   font-size: 16px;
   line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.entry-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.entry-image {
+  width: calc(50% - 5px);
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .empty-journal {
@@ -102,6 +139,7 @@
   justify-content: center;
   padding: 40px 20px;
   text-align: center;
+  width: 100%;
 }
 
 .empty-journal h2 {
@@ -115,10 +153,15 @@
   color: #666;
 }
 
-.add-entry-button {
+/* Add Entry Button Container */
+.add-entry-container {
   position: fixed;
   right: 20px;
   bottom: 20px;
+  z-index: 10;
+}
+
+.add-entry-button {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -130,9 +173,293 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  z-index: 2;
+  position: relative;
 }
 
 .add-entry-button svg {
   width: 30px;
   height: 30px;
+  transition: transform 0.3s ease;
+}
+
+.add-entry-button.active svg {
+  transform: rotate(45deg);
+}
+
+.add-entry-button.active {
+  background-color: #C3EA21;
+}
+
+/* Add Option Buttons */
+.add-option-button {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Aligns items to the start (left) */
+  background-color: #C3EA21;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 15px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 1;
+  width: auto;
+  min-width: 100px;
+}
+
+.add-option-button svg {
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  color: #000;
+}
+
+.add-option-button span {
+  font-size: 16px;
+  color: #000;
+  white-space: nowrap;
+}
+
+.add-option-button.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Position the two buttons vertically - CORRECTED SELECTORS */
+.add-option-button:nth-of-type(2) {
+  bottom: 140px; /* Add Text - top button */
+}
+
+.add-option-button:nth-of-type(3) {
+  bottom: 80px; /* Add Image - bottom button */
+}
+
+/* Add hover effects */
+.add-option-button:hover {
+  background-color: #f5f5f5;
+}
+/* Add to your LocationJournal.css file */
+
+/* Editing Mode Styles */
+.editing-mode-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f9f0;
+  position: relative;
+}
+
+.editing-header {
+  background: linear-gradient(#ACC729,#F5F9F0 80%);
+  padding: 20px;
+  display: flex; /* Changed from text-align */
+  justify-content: space-between; /* Added to space out title and button */
+  align-items: center; /* Added to vertically align items */
+}
+
+.editing-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.editing-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.editing-field {
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.editing-input {
+  padding: 15px;
+  background-color: white;
+  border: 1px solid #7CB342;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.editing-content-field {
+  flex: 1;
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 200px;
+}
+
+.editing-textarea {
+  flex: 1;
+  padding: 15px;
+  background-color: white;
+  border: 1px solid #7CB342;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 200px;
+  resize: none;
+}
+
+.editing-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.editing-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.editing-controls {
+  display: flex;
+  justify-content: flex-end; /* Changed from space-between */
+  align-items: center;
+  padding: 20px;
+}
+
+/* Removed .back-edit-button styles as they are no longer needed */
+
+.right-controls {
+  display: flex;
+  gap: 15px;
+}
+
+.emotion-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-image-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  color: #7CB342;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-image-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Modal Styles */
+.emotion-picker-modal,
+.image-options-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.emotion-picker-content,
+.image-options-content {
+  background-color: white;
+  border-radius: 16px;
+  padding: 20px;
+  width: 80%;
+  max-width: 400px;
+}
+
+.emotion-picker-content h3,
+.image-options-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.emotion-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.emotion-option {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.emotion-option.selected {
+  background-color: #7CB342;
+}
+
+.image-options-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.image-option-button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.image-option-button:hover {
+  background-color: #e0e0e0;
+}
+
+.image-option-button svg {
+  width: 24px;
+  height: 24px;
+  color: #7CB342;
+}
+
+.image-option-button span {
+  font-size: 1rem;
 }
