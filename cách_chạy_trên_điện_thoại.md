@@ -1,3 +1,4 @@
+```bash
 -Dùng lệnh sau để chạy backend: uvicorn app.main:app --host 0.0.0.0 --port 8000
 -Trong thư mục frontend, tạo file .env.development.local: điền VITE_API_BASE=http://<IP_cua_toi>:8000 
   Kiểm tra IP = ipconfig, thay IP trong phần IPv4 vào link trên
