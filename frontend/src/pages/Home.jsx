@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css'; 
+import ecopointsIcon from '../public/ecopoint.png';
+import sunIcon from '../public/sun.png';
+import treeIcon from '../public/tree.png';
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -96,6 +99,9 @@ export default function Home() {
   return (
     <div className="homepage-body">
       {/* === HEADER CHÀO MỪNG === */}
+      <div className="profile-avatar" onClick={() => navigate('/profile')}>
+          <span className="avatar-placeholder"></span> 
+      </div>
       <div className="home-header">
         <h1>Good morning, {userName}</h1>
         <p>Up for a new adventure today?</p>
@@ -107,6 +113,7 @@ export default function Home() {
           <div className="stat-card-header">
             <span className="title">Ecopoints</span>
           </div>
+           <img src={ecopointsIcon} alt="leaf" className="middle-leaf-icon" />
           <div className="value">{ecopoints.toLocaleString('de-DE')}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/profile')}>
@@ -132,7 +139,7 @@ export default function Home() {
       {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
       <div className="home-section">
         <div className="section-header">
-          {/* <img src={treeIcon} alt="Title" /> */}
+          < img src={treeIcon} alt="tree" className="progress-icon tree-icon" />
           <div className="text-content">
             <h3>{currentTitle}</h3>
             <p>Progress until next title</p>
@@ -152,7 +159,7 @@ export default function Home() {
       {/* === PHẦN THƯỞNG HÀNG NGÀY === */}
       <div className="home-section">
         <div className="section-header">
-          {/* <img src={sunIcon} alt="Rewards" /> */}
+          <img src={sunIcon} alt="sun" className="section-title-icon sun-icon" />
           <div className="text-content">
             <h3>Daily Rewards</h3>
             <p>Your current streak: {dailyStreak}</p>
@@ -169,8 +176,8 @@ export default function Home() {
               `}
             >
               <span className="points">{reward.points}</span>
+              <img src={ecopointsIcon} alt="leaf" className="reward-leaf-icon" />
               <span className="date">{reward.date}</span>
-              {/* <img src={leafIcon} alt="leaf" className="leaf-icon" /> */}
             </div>
           ))}
         </div>

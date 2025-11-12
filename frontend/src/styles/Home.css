@@ -6,7 +6,7 @@
    * khác với profile (bắt đầu từ màu trắng).
    * Chúng ta dùng các màu tương đồng với theme.
    */
-  background: linear-gradient(180deg, #ACC729 100%, #F5F9F0 99%);
+  background: linear-gradient(180deg, #ACC729 0%, #F5F9F0 99%);
   min-height: 100vh;
   
   /* Tái sử dụng màu chữ chính từ .profile-page */
@@ -15,6 +15,7 @@
   
   /* Thêm padding-bottom để không bị nav-bar che mất */
   padding-bottom: 90px; 
+  position: relative;
 }
 
 /* === Header Chào mừng === */
@@ -58,8 +59,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
-  padding: 0 24px;
-  margin-top: 24px;
+  padding: 0 48px;
+  margin-top: 16px;
 }
 
 .stat-card {
@@ -69,6 +70,9 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 
   cursor: pointer;
+  aspect-ratio: 1 / 1;
+  display: flex; 
+  flex-direction: column;     
 }
 
 .stat-card-header {
@@ -123,6 +127,8 @@
   
   /* Tái sử dụng shadow từ .stats strong */
   text-shadow: 0 1px 0 #C8D6A1;
+  text-align: right;
+  margin-top: auto;
 }
 
 /* === Section chung (cho Progress & Daily Rewards) === */
@@ -165,6 +171,13 @@
   margin: 2px 0 0 0;
 }
 
+.section-title-icon.sun-icon {
+  width: 40px; /* Kích thước icon mặt trời */
+  height: 40px;
+  margin-right: 2px; /* Khoảng cách với chữ */
+  flex-shrink: 0; /* Ngăn nó bị co lại */
+}
+
 /* === Progress Bar === */
 .progress-bar {
   width: 100%;
@@ -193,6 +206,13 @@
   color: #000000;
 }
 
+.progress-icon.tree-icon {
+  width: 44px; /* Kích thước icon mặt trời */
+  height: 44px;
+  margin-right: 2px; /* Khoảng cách với chữ */
+  flex-shrink: 0; /* Ngăn nó bị co lại */
+}
+
 /* === Danh sách cuộn ngang (Daily Rewards) === */
 .horizontal-scroll-list {
   /* Tái sử dụng phong cách từ .badge-list */
@@ -212,7 +232,7 @@
 .reward-card {
   /* Tái sử dụng từ .badge-card.placeholder */
   width: 90px;
-  height: 115px;
+  height: 90px;
   border-radius: 16px;
   flex-shrink: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
@@ -224,6 +244,7 @@
   padding: 12px 10px;
   text-align: center;
   transition: all 0.2s ease;
+  position: relative;
   
   /* Style cho thẻ đã nhận (màu tối) */
   background: #465C20; /* Màu xanh rêu đậm */
@@ -255,7 +276,7 @@
 }
 
 .reward-card.today .date {
-  color: #D98C00; /* Màu cam cho ngày hôm nay */
+  color: #D4A722; /* Màu cam cho ngày hôm nay */
   font-weight: 700;
   opacity: 1;
 }
@@ -304,4 +325,56 @@
 .nav-item.active {
   /* Tái sử dụng màu .profile-info h2 */
   color: #556B2F;
+}
+
+.profile-avatar{
+  position: absolute;
+  top: 34px;
+  right: 24px; 
+  z-index: 10;
+  cursor: pointer;
+  
+  /* 1. Ép kích thước và hình tròn */
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  border-radius: 50% !important;
+  
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden !important; /* Vẫn giữ để cắt */
+  
+  /* 2. Ép căn giữa (Flex) */
+  display: flex !important;
+  align-items: center !important; /* Flex sẽ căn dọc */
+  justify-content: center !important; /* Flex sẽ căn ngang */
+  
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+.profile-avatar .avatar-placeholder {
+  font-size: 28px; /* Kích thước icon */
+  color: #556B2F; /* Màu icon */
+  line-height: 1;
+}
+
+.reward-card .reward-leaf-icon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  
+  bottom: -8px; 
+  right: -8px; 
+}
+
+.stat-card .middle-leaf-icon {
+  width: 28px;
+  height: 28px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
 }
