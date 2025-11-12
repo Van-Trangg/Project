@@ -95,18 +95,16 @@
   transform: translate(-50%, -50%);
 }
 
-/* Popup Overlay */
-/* Overlay (darkens background) */
 .pin-popup-overlay {
   position: fixed;
   inset: 0;
   background: rgba(255, 255, 255, 0.4);
   display: flex;
-  flex-direction: column;     /* ← vertical stack */
-  justify-content: flex-end;  /* ← push card to bottom */
+  flex-direction: column;     
+  justify-content: flex-end;  
   align-items: center;
   z-index: 1000;
-  padding-top: 80px;          /* space for top status bar */
+  padding-top: 80px;          
   overflow-y: scroll;
 }
 
@@ -148,7 +146,6 @@
   border-radius: 30px 30px 0 0;
 }
 
-/* Close X */
 .popup-close-btn {
   position: absolute;
   top: 20px;
@@ -167,10 +164,8 @@
   z-index: 10;
 }
 
-/* Green curved content area */
-/* Content – grows to fill space */
 .popup-content {
-  flex: 0;                         /* ← takes remaining space */
+  flex: 0;                       
   background: #556B2F;
   color: white;
   padding-left: 20px;
@@ -247,16 +242,15 @@
   transform: translateY(0);
 }
 
-/* FULL-SCREEN OVERLAY – COVERS MAP & NAVBAR */
 .city-fullscreen-overlay {
   position: fixed;
   width: 100%;
   height: 85dvh;
   background: linear-gradient(#F5F9F0 25%, #C6D870 100%);
-  z-index: 9999; /* Above everything */
+  z-index: 9999; 
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent double scroll */
+  overflow: hidden; 
   position: relative;
   animation: fadeIn 0.25s ease-in;
 }
@@ -553,6 +547,17 @@
   }
 }
 
+.popup-card.checked-in .spark,
+.popup-card.checked-in .ecopoint-icon {
+  opacity: 0.6; 
+}
+.popup-card.checked-in .spark {
+  animation: none;
+}
+.popup-card.checked-in .first-rew,
+.popup-card.checked-in .point {
+  color: #A2B269; 
+}
 
 .checkin-progress-bar {
   margin-top: 20px;
@@ -564,7 +569,7 @@
   left: 10%;
   align-self: flex-start;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: #F0F9CA;
 }
 .track-bar {
@@ -582,7 +587,7 @@
   left: 1%;
   top: 50%;
   transform: translateY(-50%);
-  width: 60%;
+  max-width: 80%;
   height: 10px;
   background: #7CB342;
   border-radius: 20px;
@@ -598,7 +603,6 @@
   left: 1%;
   top: 50%;
   transform: translateY(-50%);
-  width: 80%;
   height: 10px;
   background: rgba(124, 179, 66, 0.65);
   border-radius: 20px;
@@ -620,14 +624,20 @@
   }
 }
 .prog-num{
-  position: relative;
-  align-self: flex-end;
-  right: 0px;
+  position: absolute;
+  right: 11%;
   margin-top: 3px;
-  transform: translateX(+19%);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 700;
   color: #D4A722;
+}
+.prog-num-disabled{
+  position: absolute;
+  right: 11%;
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #EFF5D2;
 }
 
 /* survey */
@@ -656,6 +666,7 @@
   font-weight: 600;
   color: #F0F9CA;
   gap: 8px;
+  margin-top: 15px;
   margin-bottom: 15px;
 }
 .line-vehicle {
@@ -734,6 +745,7 @@
   border-radius: 30px 30px 0 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   background: #556B2F; 
+  animation: slideUp 0.5s ease-in-out;
 }
 
 .popup-stat-receipt {
@@ -788,4 +800,20 @@
     transform: translateX(0);
     opacity: 1;
   }
+}
+.checkin-btn-disabled {
+  display: fixed;
+  align-self: center;
+  text-align: center;
+  width: 160px;
+  color: white;
+  background: #3C4136;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 30px;
+  padding: 15px 30px;
+  margin-top: auto;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

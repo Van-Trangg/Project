@@ -1,7 +1,7 @@
 import { api } from './apiClient'
 
 export const listPlaces = () => api.get('/map/map/list')  
-
+export const getProgress = () => api.get('/home/')
 export const getPois = (mapId) => {
   return api.get(`/map/map/${mapId}/pois`)
 }
