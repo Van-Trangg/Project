@@ -1,11 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react'
-import { checkin, confirmVehicle, checked } from '../api/map'
+import { checkin, confirmVehicle, checked, getProgress } from '../api/map'
 import { getProfile } from '../api/profile'
 import '../styles/Map.css'
 
 const VEHICLES = {
-  // walk: { name: "Walk", bonus: 20, image: 'src/public/Map/walk.png' },
   bike: { name: "Bicycle", bonus: 20, image: '/src/public/Map/bike.png' },
   bus: { name: "Bus", bonus: 10, image: '/src/public/Map/bus.png' },
   ev_scooter: { name: "Motorbike", bonus: 0, image: '/src/public/Map/scooter.png' },
@@ -21,7 +20,8 @@ export default function CheckIn() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [step, setStep] = useState("confirm");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [earnedPoints, setEarnedPoints] = useState(0);
+  const [currentProgress, setCurrentProgress] = useState(0);
+  const [maxProgress, setMaxProgress] = useState(0);
   const [receipt, setReceipt] = useState(null)
   const [checkedIn, setCheckedIn] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
@@ -30,10 +30,10 @@ export default function CheckIn() {
   useEffect(() => {
     setLoadingProfile(true);
     getProfile()
-        .then(r => setUser(r.data))
-        .catch(err => {
-            console.error('Failed to load profile', err)
-        })
+      .then(r => setUser(r.data))
+      .catch(err => {
+          console.error('Failed to load profile', err)
+      })
     console.log('User profile loaded in check-in page');
     console.log(user);
     checked(poi.id)
@@ -42,6 +42,14 @@ export default function CheckIn() {
       })
       .catch(err => {
           console.error('Failed to check check-in status', err);
+      })
+    getProgress()
+      .then(res => {
+        setCurrentProgress(res.data.progressCurrent);
+        setMaxProgress(res.data.progressMax);
+      })
+      .catch(err => {
+          console.error('Failed to load progress', err)
       })
       .finally(setLoadingProfile(false));
   }, [])
@@ -113,24 +121,9 @@ export default function CheckIn() {
 
   if (!poi) return <div>Location not found</div>
 
-// const handleConfirmTransport = () => {
-//     if (selectedTransport == Transports[1] || selectedTransport == Transports[3]) {
-//       setEarnedPoints(150);
-//     }
-//     if (selectedTransport && selectedTransport.id !== 0) {
-//       setShowSurvey(false);
-//       setShowReceipt(true);
-//     }
-//   }
-
 const handleCancel = () => {
-  setSelectedVehicle(null);
-  setEarnedPoints(0);
   navigate(-1); 
 }
-
-  //sau này check state người dùng đã checkin tại đây chưa => tắt hiển thị expectant bar + làm mờ chữ
-  const bonusTest = false;
 
   return (
     <div className = 'check-in-page'>
@@ -160,22 +153,36 @@ const handleCancel = () => {
               {poi.score + '%' || '20%'} of users have checked in here
             </div>
           </div>
-          <div className = 'popup-card'>
+          <div className = {`popup-card ${checkedIn ? 'checked-in' : ''}`}>
             <img src = '/src/public/spark.png' className = 'spark'></img>
             <span className = 'first-rew'>First Check-in Reward</span>
             <div className = 'point'>
-              <span>100</span>
+              <span>{poi.score}</span>
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
             <div className = 'checkin-progress-bar'>
               <div className = 'prog-title'>Progress until next title</div>
               <span className = 'track-bar'>
-                <span className = 'fill-bar'></span>
-                <span className = 'expectant-bar'></span>
+                <span 
+                className = 'fill-bar'
+                style={{ width: `${(currentProgress / maxProgress) * 100}%` }}
+                > </span>
+                {!checkedIn && (
+                  <span className = 'expectant-bar'
+                  style={{ width: `${((currentProgress + poi.score*3) / maxProgress) * 100}%` }}
+                  ></span>)}
               </span>
-              <div className = 'prog-num'>1600+ 200/2000</div>
+              {!checkedIn ? (
+                <div className = 'prog-num'>{currentProgress + '+' + poi.score + '/' + maxProgress}</div>
+              ) : (
+                <div className = 'prog-num-disabled'>{currentProgress+ '/' + maxProgress}</div>
+              )}
             </div>
-            <button className="checkin-btn" onClick={handleCheckInTemp}>Confirm</button>
+            {!checkedIn ? (
+              <button className="checkin-btn" onClick={handleCheckIn}>Confirm</button>
+            ) : (
+              <button className="checkin-btn-disabled">Checked in</button>
+            )}
           </div>
         </>
       )}
@@ -227,20 +234,19 @@ const handleCancel = () => {
         <div className = 'receipt'>
           <div className = 'spacer'></div>
           <div className = 'vehicle-message'>
-              {/* sau khi backend them user thi bonusTest doi thanh receipt.vehicle_bonus === 0 */}
-              {bonusTest && (
-                <>
-                  <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
-                  <div className = 'point-survey'>
-                    <span>receipt.vehicle_bonus</span>
-                    <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
-                  </div>
-                  <span className = 'line-vehicle'></span>
-                </>
-              )}
+              {/* {bonusTest && (
+              //   <>
+              //     <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
+              //     <div className = 'point-survey'>
+              //       <span>{poi.score}</span>
+              //       <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+              //     </div>
+              //     <span className = 'line-vehicle'></span>
+              //   </>
+              // )} */}
               <p className = 'congratulatory'>At this location, you have gained a total of</p>
               <div className = 'point-survey'>
-                <span>receipt.total_points</span>
+                <span className = 'checkin-score'> {poi.score}</span>
                 <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
               </div>
               <p className = 'congratulatory'>Impressive!<br/>Thank you for your commitment towards improving our environment.</p>
