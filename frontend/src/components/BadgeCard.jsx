@@ -1,16 +1,19 @@
 import React from 'react'
 import crownIcon from '../public/crown.png'
-
+import { baseURL } from '../api/apiClient'
 export default function BadgeCard({ badge, unlocked, onClick, className = '' }){
   const cost = badge.threshold || 0
   // image can be either:
   // - a full URL (starts with 'http'),
   // - an absolute public path (starts with '/'), e.g. '/back.png',
   // - or a filename served from /badges/<filename>
-  const imgSrc = badge && badge.image
-    ? (String(badge.image).startsWith('http') || String(badge.image).startsWith('/')
-        ? badge.image
-        : `/badges/${badge.image}`)
+const imgSrc = badge && badge.image
+    ? (String(badge.image).startsWith('http')
+        ? badge.image 
+        : (String(badge.image).startsWith('/') 
+            ? badge.image 
+            : `${baseURL}/badges/${badge.image}`) 
+      )
     : null
 
   return (

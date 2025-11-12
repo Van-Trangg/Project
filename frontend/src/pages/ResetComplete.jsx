@@ -18,7 +18,7 @@ export default function ResetComplete(){
       </div>
 
       <div className="auth-form" style={{ marginTop: 24 }}>
-        <p style={{ color: '#6b6b6b', marginTop: 0 }}>Your password has been successfully reset. Click confirm to set a new password</p>
+        <p style={{ color: '#6b6b6b', marginTop: 0 }}>Your password has been successfully reset. Click confirm to login</p>
 
         <button className="auth-btn" onClick={() => navigate('/login')} style={{ marginTop: 18, minHeight: 54, borderRadius: 28 }}>
           Confirm
