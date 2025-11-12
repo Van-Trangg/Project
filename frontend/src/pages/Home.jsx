@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css'; 
+import ecopointsIcon from '../public/ecopoint.png';
+import sunIcon from '../public/sun.png';
+import treeIcon from '../public/tree.png';
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -12,29 +15,57 @@ export default function Home() {
 
   useEffect(() => {
     const fetchHomeData = async () => {
-      setLoading(true); // 2. BẮT ĐẦU LOADING
-      setError(null);   // Xóa lỗi cũ
+      setLoading(true);
+      setError(null);
       
       try {
-        const response = await fetch('http://127.0.0.1:8000/home'); 
+        // 1. Lấy token mà file Login.jsx đã lưu
+        const token = localStorage.getItem('access_token'); // <-- Tên key LẤY TỪ LOGIN.JSX
 
-        if (!response.ok) {
-          throw new Error('Lỗi mạng hoặc server (Backend sập?)');
+        // 2. Kiểm tra xem đã đăng nhập chưa
+        if (!token) {
+          setError("Bạn chưa đăng nhập. Đang chuyển về trang Login...");
+          setLoading(false);
+          // Chuyển về trang login sau 2 giây
+          setTimeout(() => navigate('/login'), 2000); 
+          return;
         }
 
-        const data = await response.json();
-        setData(data); // 3. SET DATA (THÀNH CÔNG)
+        // 3. Gửi token trong Headers (ĐÂY LÀ PHẦN SỬA LỖI 401)
+        const response = await fetch('http://127.0.0.1:8000/home', {
+          method: 'GET',
+          headers: {
+            // "Giơ thẻ" (token) cho "người gác cổng"
+            'Authorization': `Bearer ${token}` 
+          }
+        }); 
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            // Lỗi 401 (Token sai hoặc hết hạn)
+            setError("Token không hợp lệ. Vui lòng đăng nhập lại.");
+            localStorage.removeItem('access_token'); // Xóa token hỏng
+            setTimeout(() => navigate('/login'), 2000);
+          } else {
+            // Các lỗi khác (500, v.v.)
+            throw new Error('Lỗi mạng hoặc server (Backend sập?)');
+          }
+        } else {
+          // THÀNH CÔNG!
+          const data = await response.json();
+          setData(data); 
+        }
 
       } catch (error) {
         console.error("Không thể gọi API backend:", error);
-        setError(error.message); // 4. SET LỖI (THẤT BẠI)
+        setError(error.message);
       } finally {
-        setLoading(false); // 5. LUÔN TẮT LOADING (Dù thành công hay lỗi)
+        setLoading(false);
       }
     };
 
     fetchHomeData();
-  }, []); // Chỉ chạy 1 lần
+  }, [navigate]);// Chỉ chạy 1 lần
 
   // --- SỬA LẠI THỨ TỰ CHECK ---
 
@@ -68,6 +99,9 @@ export default function Home() {
   return (
     <div className="homepage-body">
       {/* === HEADER CHÀO MỪNG === */}
+      <div className="profile-avatar" onClick={() => navigate('/profile')}>
+          <span className="avatar-placeholder"></span> 
+      </div>
       <div className="home-header">
         <h1>Good morning, {userName}</h1>
         <p>Up for a new adventure today?</p>
@@ -75,23 +109,29 @@ export default function Home() {
 
       {/* === LƯỚI THỐNG KÊ 2x2 === */}
       <div className="stats-grid">
-        <div className="stat-card" onClick={() => navigate('/rewards')}>
+        <div className="stat-card" onClick={() => navigate('/reward')}>
           <div className="stat-card-header">
             <span className="title">Ecopoints</span>
-            {/* <img src={leafIcon} alt="Ecopoints" /> */}
           </div>
+           <img src={ecopointsIcon} alt="leaf" className="middle-leaf-icon" />
           <div className="value">{ecopoints.toLocaleString('de-DE')}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/profile')}>
-          <div className="stat-card-header"><span className="title">Badges</span></div>
+          <div className="stat-card-header">
+            <span className="title">Badges</span>
+            </div>
           <div className="value">{badges}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/leaderboard')}>
-          <div className="stat-card-header"><span className="title">Rank</span></div>
+          <div className="stat-card-header">
+            <span className="title">Rank</span>
+            </div>
           <div className="value">#{rank}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/journal')}>
-          <div className="stat-card-header"><span className="title">Check-ins</span></div>
+          <div className="stat-card-header">
+            <span className="title">Check-ins</span>
+            </div>
           <div className="value">{String(checkIns).padStart(2, '0')}</div>
         </div>
       </div>
@@ -99,7 +139,7 @@ export default function Home() {
       {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
       <div className="home-section">
         <div className="section-header">
-          {/* <img src={treeIcon} alt="Title" /> */}
+          < img src={treeIcon} alt="tree" className="progress-icon tree-icon" />
           <div className="text-content">
             <h3>{currentTitle}</h3>
             <p>Progress until next title</p>
@@ -119,7 +159,7 @@ export default function Home() {
       {/* === PHẦN THƯỞNG HÀNG NGÀY === */}
       <div className="home-section">
         <div className="section-header">
-          {/* <img src={sunIcon} alt="Rewards" /> */}
+          <img src={sunIcon} alt="sun" className="section-title-icon sun-icon" />
           <div className="text-content">
             <h3>Daily Rewards</h3>
             <p>Your current streak: {dailyStreak}</p>
@@ -136,8 +176,8 @@ export default function Home() {
               `}
             >
               <span className="points">{reward.points}</span>
+              <img src={ecopointsIcon} alt="leaf" className="reward-leaf-icon" />
               <span className="date">{reward.date}</span>
-              {/* <img src={leafIcon} alt="leaf" className="leaf-icon" /> */}
             </div>
           ))}
         </div>

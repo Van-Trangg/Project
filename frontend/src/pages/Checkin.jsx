@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react'
-import { checkin, confirmVehicle } from '../api/map'
+import { checkin, confirmVehicle, checked } from '../api/map'
+import { getProfile } from '../api/profile'
 import '../styles/Map.css'
 
 const VEHICLES = {
@@ -16,26 +17,60 @@ export default function CheckIn() {
   const { poi, map } = state || {};
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [step, setStep] = useState("confirm");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [receipt, setReceipt] = useState(null)
-  const [userId] = useState(0) // from auth
+  const [checkedIn, setCheckedIn] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   
+  // Load user profile
+  useEffect(() => {
+    setLoadingProfile(true);
+    getProfile()
+        .then(r => setUser(r.data))
+        .catch(err => {
+            console.error('Failed to load profile', err)
+        })
+    console.log('User profile loaded in check-in page');
+    console.log(user);
+    checked(poi.id)
+      .then(res => {
+        setCheckedIn(res.data.checked);
+      })
+      .catch(err => {
+          console.error('Failed to check check-in status', err);
+      })
+      .finally(setLoadingProfile(false));
+  }, [])
+
+  //Animation
+  useEffect(() => {
+    document.body.classList.remove('page-transitioning');
+    
+    const pageContent = document.querySelector('.check-in-page');
+    if (pageContent) {
+      pageContent.classList.add('page-enter');
+    }
+  }, []);
+
   // Mock GPS
   const mockGps = {
     user_lat: poi.lat + 0.0001,
     user_lng: poi.lng + 0.0001
   }
+
   const handleCheckIn = async () => {
     if (isCheckingIn) return;
 
     setIsCheckingIn(true);
     try {
       const res = await checkin({
-        user_id: userId,
+        user_id: user.id,
         poi_id: poi.id,
+        //Caafn theem route laays user latlng
         user_lat: mockGps.user_lat,
         user_lng: mockGps.user_lng,
       });
@@ -44,9 +79,8 @@ export default function CheckIn() {
     if (!res?.data) {
       throw new Error("Invalid response from server");
     }
-
     setReceipt(res.data);
-    setStep('survey');
+    setStep('receipt');
     } catch (err) {
       // Safely extract error message
       const message = err.response?.data?.detail || err.message || "Check-in failed. Please try again.";
@@ -58,7 +92,8 @@ export default function CheckIn() {
   };
 
   const handleCheckInTemp = () => {
-    setStep('survey');
+    window.scrollTo(0, 0);
+    setStep('receipt');
   }
 
   const handleConfirmVehicle = async () => {
@@ -132,7 +167,7 @@ const handleCancel = () => {
               <span>100</span>
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
-            <div className = 'progress-bar'>
+            <div className = 'checkin-progress-bar'>
               <div className = 'prog-title'>Progress until next title</div>
               <span className = 'track-bar'>
                 <span className = 'fill-bar'></span>
@@ -144,10 +179,10 @@ const handleCancel = () => {
           </div>
         </>
       )}
-      {step === 'survey' && (
+      {/* {step === 'survey' && (
       <>
-        <button className = 'back-btn' onClick = {() => {
-          setSelectedTransport(null) ; 
+        <button className = 'exit-btn' onClick = {() => {
+          setSelectedVehicle(null) ; 
           setStep('confirm')
           }}
         >
@@ -187,7 +222,7 @@ const handleCancel = () => {
           Submit
         </button>
       </>
-      )}
+      )} */}
       {step === 'receipt' && (
         <div className = 'receipt'>
           <div className = 'spacer'></div>
@@ -216,8 +251,7 @@ const handleCancel = () => {
               Your new balance
             </div>
             <div className = 'total-balance'>
-              <span>user.balance</span> 
-              {/* Cần API lấy balance ở đây */}
+              <span>{user.eco_points}</span> 
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
             <button className="checkin-btn" onClick={handleCancel}>Confirm</button>

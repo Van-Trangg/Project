@@ -1,94 +1,113 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import { listPlaces, getPois } from '../api/map'
-import mapPlaceholder from '../public/map-placeholder.png'
+
 import '../styles/Map.css'
+import 'leaflet/dist/leaflet.css';
+import { customIcon } from '../components/Pin';
+
+function MapController({ onMapReady }) {
+  const map = useMap(); // This is the Leaflet map instance
+
+  useEffect(() => {
+    if (map) {
+      onMapReady(map);
+      //console.log('Map ready via useMap');
+    }
+  }, [map, onMapReady]);
+
+  return null; // Renders nothing
+}
 
 export default function Map() {
   const [maps, setMaps] = useState([])
   const [selectedMap, setSelectedMap] = useState(null)
   const [pois, setPois] = useState([])
-  const [loading, setLoading] = useState(true);
-  const [userId] = useState(1) // TODO: get from auth context
+  const [loadingMaps, setLoadingMaps] = useState(true);
+  const [loadingPois, setLoadingPois] = useState(false);
+  
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
-  
   const navigate = useNavigate();
   const handleCheckIn = () => {
     if (selectedPin) {
-      navigate(`/checkin/${selectedPin.id}`, { state: { poi: selectedPin, map: selectedMap } }); // go to specific check-in page
+      document.body.classList.add('page-transitioning');
+      navigate(`/checkin/${selectedPin.id}`, { state: { poi: selectedPin, map: selectedMap} }); // go to specific check-in page
     }
   }
   // Load maps
   useEffect(() => {
+    setLoadingMaps(true);
     listPlaces()
       .then(res => {
         setMaps(res.data)
         setSelectedMap(res.data[0])
       })
       .catch(err => console.error('Failed to load maps', err))
+      .finally(() => setLoadingMaps(false));
   }, [])
 
   // Load POIs when map changes
   useEffect(() => {
+    if (!selectedMap) return;
+    setLoadingPois(true);
     if (selectedMap) {
-      setLoading(true)
-      getPois(selectedMap.id, userId)
-        .then(res => {
-          setPois(res.data)
-          setLoading(false)
-        })
-        .catch(() => setLoading(false))
+      getPois(selectedMap.id)
+        .then(res => setPois(res.data || []))
+        .catch(err => {
+          console.error('Failed to load POIs', err);
+          setPois([]);
+      })
+      .finally(() => setLoadingPois(false));
     }
-  }, [selectedMap, userId])
+  }, [selectedMap])
 
   const handleCityChange = (city) => {
     setSelectedMap(city)
     setDropdownOpen(false)
   }
 
-  // Convert lat/lng to % on static map (HCM bounds)
-  const latLngToPercent = (lat, lng, map) => {
-    if (!map?.center_lat || !map?.center_lng || !map?.radius_m) {
-      return { top: '50%', left: '50%' };
-    }
-
-    const { center_lat, center_lng, radius_m } = map;
-
-    // 1. Approximate meters per degree
-    const METERS_PER_DEG_LAT = 111194; // more accurate than 111000
-    const METERS_PER_DEG_LNG = METERS_PER_DEG_LAT * Math.cos((center_lat * Math.PI) / 180);
-
-    // 2. Distance from center (in meters)
-    const dLat = (lat - center_lat) * METERS_PER_DEG_LAT;
-    const dLng = (lng - center_lng) * METERS_PER_DEG_LNG;
-
-    const scaleFactor = 0.5;
-    // 4. Convert to fraction of map size (-1 to +1)
-    const fracY = dLat / (scaleFactor*radius_m); // -1 (top) to +1 (bottom)
-    const fracX = dLng / (scaleFactor*radius_m); // -1 (left) to +1 (right)
-
-    // 5. Convert to percentage (0% = top-left, 100% = bottom-right)
-    let top = 50 + fracY * 50;  // 50% = center vertically
-    let left = 50 + fracX * 50; // 50% = center horizontally
-
-    // 7. Clamp to image bounds (0–100%)
-    top = Math.max(0, Math.min(100, top));
-    left = Math.max(0, Math.min(100, left));
-
-    return { top: `${top}%`, left: `${left}%` };
-  };
-
   useEffect(() => {
-    if (selectedPin) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [selectedPin]);
+  }, []);
+
+  const mapRef = useRef(null);
+
+  const flyToCityCenter = (e) => {
+    e.stopPropagation();
+
+    // ---- DEBUG ----
+    console.log('fly button clicked');
+    console.log('mapRef.current =', mapRef.current);
+    console.log('selectedMap =', selectedMap);
+    // --------------
+
+    if (!mapRef.current) {
+      console.warn('Map instance not ready yet');
+      return;
+    }
+    if (!selectedMap) {
+      console.warn('No city selected');
+      return;
+    }
+
+    const lat = parseFloat(selectedMap.center_lat);
+    const lng = parseFloat(selectedMap.center_lng);
+
+    if (isNaN(lat) || isNaN(lng)) {
+      console.error('Bad coordinates', selectedMap.center_lat, selectedMap.center_lng);
+      return;
+    }
+
+    mapRef.current.flyTo([lat, lng], 13, {
+      duration: 1.2,
+      easeLinearity: 0.5,
+    });
+  };
 
   return (
   <div className="map-page">
@@ -116,7 +135,7 @@ export default function Map() {
                 onClick={() => {handleCityChange(city);}}
               >
                 <div className="city-image"
-                  style={{ backgroundImage: `url(${city.image || '/default-city.jpg'})` }}
+                  style={{ backgroundImage: `url(${city.image})` }}
                 />
                 <p className="city-name">{city.name}</p>
               </button>
@@ -127,30 +146,45 @@ export default function Map() {
     )}
     {!dropdownOpen && (
       <div className="map-container">
-        {loading ? (
+        {loadingMaps ? (
           <div className="map-loading">Loading map…</div>
         ) : (
-          <div
-            className="map-placeholder"
-            style={{ backgroundImage: `url(${mapPlaceholder})` }}
+        <>
+          <MapContainer
+            center={[selectedMap.center_lat, selectedMap.center_lng]}
+            zoom={13}                     
+            style={{ height: '100%', width: '100%' }}
+            scrollWheelZoom={true}
+            whenCreated={(map) => { 
+              mapRef.current = map;
+              console.log('Map instance saved'); 
+            }}
           >
-            {pois.map((pin) => {
-              const pos = latLngToPercent(pin.lat, pin.lng, selectedMap)
-              return (
-                <button
-                  key={pin.id}
-                  className="map-pin"
-                  style={{
-                    top: pos.top,
-                    left: pos.left,
-                  }}
-                  onClick={() => setSelectedPin(pin)}
-                >
-                  <span className="pin-icon"></span>
-                </button>
-              )
-            })}
-          </div>
+            <TileLayer
+              attribution='&copy; OpenStreetMap &copy; CARTO'
+              url="http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            />  
+            {pois.map((pin) => (
+              <Marker
+                key={pin.id}
+                position={[pin.lat, pin.lng]}
+                
+                icon = {customIcon}
+                eventHandlers={{
+                  click: () => setSelectedPin(pin),
+                }}
+              >
+              </Marker>
+            ))}
+            <MapController onMapReady={(map) => { mapRef.current = map; }} />
+          </MapContainer>
+          <button 
+            className = 'map-center-bubble'
+            onClick={flyToCityCenter}
+          >
+            <img src = '/src/public/focus.png' className = 'target-icon'></img>
+          </button>
+        </>    
         )}
       </div>
     )}
