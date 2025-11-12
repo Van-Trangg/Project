@@ -10,7 +10,7 @@ from app.models.map import Map
 from app.models.checkin import Checkin
 from app.models.user import User
 from app.schemas.map_schema import MapOut, PoiOut
-from app.schemas.checkin_schema import CheckinRequest, CheckinReceipt, VehicleConfirmRequest
+from app.schemas.checkin_schema import CheckinRequest, CheckinReceipt
 from app.crud import map_crud, checkin_crud
 from app.core.security import get_current_user
 
@@ -77,70 +77,43 @@ def get_nearest_map(
 
 
 # --- Check-in routes ---
-
 @router.post("/checkin", response_model=CheckinReceipt)
 def checkin(
     payload: CheckinRequest,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ):
     """Xử lý check-in tại một POI (xác thực GPS + chống trùng)."""
+    # --- Kiểm tra POI tồn tại ---
     poi = db.get(POI, payload.poi_id)
     if not poi:
         raise HTTPException(status_code=404, detail="POI not found")
 
+    # --- Kiểm tra khoảng cách GPS ---
     dist = haversine_m(payload.user_lat, payload.user_lng, poi.lat, poi.lng)
     if dist > GPS_RADIUS_M:
         raise HTTPException(status_code=400, detail=f"Too far from POI ({dist:.1f}m)")
 
+    # --- Chống check-in trùng ---
     if checkin_crud.user_has_checked(db, user.id, payload.poi_id):
         raise HTTPException(status_code=400, detail="Already checked in")
 
+    # --- Tạo mã biên nhận ---
     receipt_no = f"RC-{uuid.uuid4().hex[:10].upper()}"
-    check, total = checkin_crud.create_checkin(db, user.id, payload.poi_id, dist, poi.score, receipt_no)
 
+    # --- Ghi nhận check-in (đã bao gồm cập nhật điểm & checked_users) ---
+    check, total = checkin_crud.create_checkin(
+        db, user.id, payload.poi_id, dist, poi.score, receipt_no
+    )
+
+    # --- Trả về kết quả ---
     return CheckinReceipt(
         checkin_id=check.id,
         poi_name=poi.name,
         distance_m=round(dist, 1),
         earned_points=poi.score,
-        vehicle_bonus=0,
         total_points=total,
         receipt_no=receipt_no,
-    )
-
-
-@router.post("/checkin/{checkin_id}/vehicle", response_model=CheckinReceipt)
-def confirm_vehicle(
-    checkin_id: int,
-    body: VehicleConfirmRequest,
-    db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
-):
-    """Xác nhận phương tiện di chuyển → cộng điểm thưởng."""
-    check = db.get(Checkin, checkin_id)
-    if not check:
-        raise HTTPException(status_code=404, detail="Check-in not found")
-
-    # Chỉ cho phép user sở hữu check-in này
-    if check.user_id != user.id:
-        raise HTTPException(status_code=403, detail="Forbidden: not your check-in")
-
-    poi = db.get(POI, check.poi_id)
-
-    bonus_map = {"walk": 10, "bike": 8, "bus": 5, "ev_scooter": 6, "car": 0}
-    bonus = bonus_map.get(body.vehicle_type, 0)
-
-    check, total = checkin_crud.add_vehicle_bonus(db, checkin_id, body.vehicle_type, bonus)
-
-    return CheckinReceipt(
-        checkin_id=check.id,
-        poi_name=poi.name,
-        distance_m=round(check.distance_m, 1),
-        earned_points=check.earned_points,
-        vehicle_bonus=check.vehicle_bonus,
-        total_points=total,
-        receipt_no=check.receipt_no,
     )
 
 
@@ -157,3 +130,29 @@ def check_poi_status(
     """
     checked = checkin_crud.user_has_checked(db, user.id, poi_id)
     return {"checked": checked}
+
+
+@router.get("/poi/{poi_id}/checked/percent", response_model=dict)
+def check_poi_percentage(
+    poi_id: int,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)  # yêu cầu đăng nhập để xem thống kê
+):
+    """
+    Tính % người dùng đã check-in tại POI này trên tổng số người dùng.
+    Trả về: { "poi_id", "checked_users", "total_users", "percent" }
+    """
+    total_users = checkin_crud.count_total_users(db)
+    checked_users = checkin_crud.count_checked_users_for_poi(db, poi_id)
+
+    if total_users == 0:
+        percent = 0.0
+    else:
+        percent = round(checked_users * 100.0 / total_users, 2)
+
+    return {
+        "poi_id": poi_id,
+        "checked_users": checked_users,
+        "total_users": total_users,
+        "percent": percent
+    }

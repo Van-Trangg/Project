@@ -1,0 +1,506 @@
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "poi_id": 19,
+    "created_at": "2025-10-23T10:20:17.297647",
+    "distance_m": 69.97,
+    "earned_points": 10,
+    "receipt_no": "RC-0D55F435E7"
+  },
+  {
+    "id": 2,
+    "user_id": 1,
+    "poi_id": 10,
+    "created_at": "2025-10-30T10:20:17.297722",
+    "distance_m": 72.07,
+    "earned_points": 10,
+    "receipt_no": "RC-3BE5E52A98"
+  },
+  {
+    "id": 3,
+    "user_id": 1,
+    "poi_id": 15,
+    "created_at": "2025-11-09T10:20:17.297758",
+    "distance_m": 53.08,
+    "earned_points": 10,
+    "receipt_no": "RC-2A230B1191"
+  },
+  {
+    "id": 4,
+    "user_id": 1,
+    "poi_id": 22,
+    "created_at": "2025-11-09T10:20:17.297813",
+    "distance_m": 104.59,
+    "earned_points": 10,
+    "receipt_no": "RC-1D6C3B9AB0"
+  },
+  {
+    "id": 5,
+    "user_id": 1,
+    "poi_id": 21,
+    "created_at": "2025-10-20T10:20:17.297858",
+    "distance_m": 111.48,
+    "earned_points": 10,
+    "receipt_no": "RC-E6D50B4260"
+  },
+  {
+    "id": 6,
+    "user_id": 2,
+    "poi_id": 26,
+    "created_at": "2025-10-16T10:20:17.297904",
+    "distance_m": 10.28,
+    "earned_points": 10,
+    "receipt_no": "RC-42A03C6F49"
+  },
+  {
+    "id": 7,
+    "user_id": 2,
+    "poi_id": 29,
+    "created_at": "2025-10-14T10:20:17.297940",
+    "distance_m": 110.73,
+    "earned_points": 10,
+    "receipt_no": "RC-1424E61A53"
+  },
+  {
+    "id": 8,
+    "user_id": 2,
+    "poi_id": 14,
+    "created_at": "2025-11-08T10:20:17.297959",
+    "distance_m": 36.79,
+    "earned_points": 10,
+    "receipt_no": "RC-EE4DBCA34E"
+  },
+  {
+    "id": 9,
+    "user_id": 3,
+    "poi_id": 18,
+    "created_at": "2025-11-09T10:20:17.297975",
+    "distance_m": 81.08,
+    "earned_points": 10,
+    "receipt_no": "RC-398B8EA485"
+  },
+  {
+    "id": 10,
+    "user_id": 3,
+    "poi_id": 20,
+    "created_at": "2025-11-04T10:20:17.297992",
+    "distance_m": 9.01,
+    "earned_points": 10,
+    "receipt_no": "RC-D7181FC168"
+  },
+  {
+    "id": 11,
+    "user_id": 4,
+    "poi_id": 20,
+    "created_at": "2025-11-03T10:20:17.298012",
+    "distance_m": 37.89,
+    "earned_points": 10,
+    "receipt_no": "RC-417984B670"
+  },
+  {
+    "id": 12,
+    "user_id": 4,
+    "poi_id": 17,
+    "created_at": "2025-11-09T10:20:17.298033",
+    "distance_m": 99.89,
+    "earned_points": 10,
+    "receipt_no": "RC-C7E47C124E"
+  },
+  {
+    "id": 13,
+    "user_id": 4,
+    "poi_id": 10,
+    "created_at": "2025-11-11T10:20:17.298044",
+    "distance_m": 104.26,
+    "earned_points": 10,
+    "receipt_no": "RC-13301C329C"
+  },
+  {
+    "id": 14,
+    "user_id": 4,
+    "poi_id": 16,
+    "created_at": "2025-10-24T10:20:17.298061",
+    "distance_m": 95.72,
+    "earned_points": 10,
+    "receipt_no": "RC-09943BA7C2"
+  },
+  {
+    "id": 15,
+    "user_id": 4,
+    "poi_id": 24,
+    "created_at": "2025-11-11T10:20:17.298075",
+    "distance_m": 30.99,
+    "earned_points": 10,
+    "receipt_no": "RC-E1E4C0D2C7"
+  },
+  {
+    "id": 16,
+    "user_id": 4,
+    "poi_id": 2,
+    "created_at": "2025-11-03T10:20:17.298085",
+    "distance_m": 6.63,
+    "earned_points": 10,
+    "receipt_no": "RC-49E65646DA"
+  },
+  {
+    "id": 17,
+    "user_id": 4,
+    "poi_id": 18,
+    "created_at": "2025-10-26T10:20:17.298094",
+    "distance_m": 26.08,
+    "earned_points": 10,
+    "receipt_no": "RC-C7079AB1B3"
+  },
+  {
+    "id": 18,
+    "user_id": 4,
+    "poi_id": 11,
+    "created_at": "2025-10-18T10:20:17.298110",
+    "distance_m": 114.0,
+    "earned_points": 10,
+    "receipt_no": "RC-1D313805C2"
+  },
+  {
+    "id": 19,
+    "user_id": 4,
+    "poi_id": 26,
+    "created_at": "2025-10-30T10:20:17.298130",
+    "distance_m": 86.46,
+    "earned_points": 10,
+    "receipt_no": "RC-E5563C8BB4"
+  },
+  {
+    "id": 20,
+    "user_id": 4,
+    "poi_id": 27,
+    "created_at": "2025-11-07T10:20:17.298141",
+    "distance_m": 62.85,
+    "earned_points": 10,
+    "receipt_no": "RC-BE94176F88"
+  },
+  {
+    "id": 21,
+    "user_id": 5,
+    "poi_id": 22,
+    "created_at": "2025-11-05T10:20:17.298155",
+    "distance_m": 34.64,
+    "earned_points": 10,
+    "receipt_no": "RC-2394DD0D65"
+  },
+  {
+    "id": 22,
+    "user_id": 5,
+    "poi_id": 17,
+    "created_at": "2025-10-19T10:20:17.298170",
+    "distance_m": 33.78,
+    "earned_points": 10,
+    "receipt_no": "RC-84E3B757F4"
+  },
+  {
+    "id": 23,
+    "user_id": 5,
+    "poi_id": 4,
+    "created_at": "2025-10-23T10:20:17.298180",
+    "distance_m": 68.81,
+    "earned_points": 10,
+    "receipt_no": "RC-E4EB0D5A6B"
+  },
+  {
+    "id": 24,
+    "user_id": 5,
+    "poi_id": 1,
+    "created_at": "2025-10-20T10:20:17.298190",
+    "distance_m": 13.21,
+    "earned_points": 10,
+    "receipt_no": "RC-C22E45FF88"
+  },
+  {
+    "id": 25,
+    "user_id": 6,
+    "poi_id": 2,
+    "created_at": "2025-10-13T10:20:17.298213",
+    "distance_m": 88.15,
+    "earned_points": 10,
+    "receipt_no": "RC-AE67076C14"
+  },
+  {
+    "id": 26,
+    "user_id": 6,
+    "poi_id": 20,
+    "created_at": "2025-11-01T10:20:17.298239",
+    "distance_m": 8.3,
+    "earned_points": 10,
+    "receipt_no": "RC-33CA55979B"
+  },
+  {
+    "id": 27,
+    "user_id": 6,
+    "poi_id": 5,
+    "created_at": "2025-11-12T10:20:17.298250",
+    "distance_m": 22.35,
+    "earned_points": 10,
+    "receipt_no": "RC-A10721EE34"
+  },
+  {
+    "id": 28,
+    "user_id": 7,
+    "poi_id": 26,
+    "created_at": "2025-10-21T10:20:17.298261",
+    "distance_m": 50.11,
+    "earned_points": 10,
+    "receipt_no": "RC-EA36650715"
+  },
+  {
+    "id": 29,
+    "user_id": 7,
+    "poi_id": 17,
+    "created_at": "2025-10-28T10:20:17.298271",
+    "distance_m": 75.31,
+    "earned_points": 10,
+    "receipt_no": "RC-D27C8F60D7"
+  },
+  {
+    "id": 30,
+    "user_id": 7,
+    "poi_id": 8,
+    "created_at": "2025-10-19T10:20:17.298283",
+    "distance_m": 41.26,
+    "earned_points": 10,
+    "receipt_no": "RC-E43CAB07FB"
+  },
+  {
+    "id": 31,
+    "user_id": 7,
+    "poi_id": 21,
+    "created_at": "2025-11-03T10:20:17.298310",
+    "distance_m": 70.13,
+    "earned_points": 10,
+    "receipt_no": "RC-29C41F4283"
+  },
+  {
+    "id": 32,
+    "user_id": 7,
+    "poi_id": 28,
+    "created_at": "2025-10-17T10:20:17.298339",
+    "distance_m": 12.47,
+    "earned_points": 10,
+    "receipt_no": "RC-E48B63E15E"
+  },
+  {
+    "id": 33,
+    "user_id": 7,
+    "poi_id": 3,
+    "created_at": "2025-10-25T10:20:17.298350",
+    "distance_m": 43.65,
+    "earned_points": 10,
+    "receipt_no": "RC-A6B81EB122"
+  },
+  {
+    "id": 34,
+    "user_id": 8,
+    "poi_id": 9,
+    "created_at": "2025-10-15T10:20:17.298362",
+    "distance_m": 112.27,
+    "earned_points": 10,
+    "receipt_no": "RC-746E2FB899"
+  },
+  {
+    "id": 35,
+    "user_id": 8,
+    "poi_id": 24,
+    "created_at": "2025-10-13T10:20:17.298383",
+    "distance_m": 96.34,
+    "earned_points": 10,
+    "receipt_no": "RC-9840363EE7"
+  },
+  {
+    "id": 36,
+    "user_id": 8,
+    "poi_id": 25,
+    "created_at": "2025-10-29T10:20:17.298400",
+    "distance_m": 19.85,
+    "earned_points": 10,
+    "receipt_no": "RC-EE9E427757"
+  },
+  {
+    "id": 37,
+    "user_id": 8,
+    "poi_id": 27,
+    "created_at": "2025-10-29T10:20:17.298416",
+    "distance_m": 68.52,
+    "earned_points": 10,
+    "receipt_no": "RC-ECB7A204E4"
+  },
+  {
+    "id": 38,
+    "user_id": 8,
+    "poi_id": 8,
+    "created_at": "2025-11-12T10:20:17.298443",
+    "distance_m": 68.23,
+    "earned_points": 10,
+    "receipt_no": "RC-8DA7BB9F9C"
+  },
+  {
+    "id": 39,
+    "user_id": 8,
+    "poi_id": 13,
+    "created_at": "2025-10-19T10:20:17.298469",
+    "distance_m": 22.21,
+    "earned_points": 10,
+    "receipt_no": "RC-B4F30B6E4E"
+  },
+  {
+    "id": 40,
+    "user_id": 8,
+    "poi_id": 22,
+    "created_at": "2025-11-01T10:20:17.298480",
+    "distance_m": 12.47,
+    "earned_points": 10,
+    "receipt_no": "RC-890DB2F92B"
+  },
+  {
+    "id": 41,
+    "user_id": 9,
+    "poi_id": 24,
+    "created_at": "2025-10-25T10:20:17.298491",
+    "distance_m": 71.91,
+    "earned_points": 10,
+    "receipt_no": "RC-9E3F70E0D9"
+  },
+  {
+    "id": 42,
+    "user_id": 9,
+    "poi_id": 22,
+    "created_at": "2025-10-24T10:20:17.298508",
+    "distance_m": 47.18,
+    "earned_points": 10,
+    "receipt_no": "RC-DD9F107B08"
+  },
+  {
+    "id": 43,
+    "user_id": 9,
+    "poi_id": 4,
+    "created_at": "2025-11-05T10:20:17.298518",
+    "distance_m": 13.61,
+    "earned_points": 10,
+    "receipt_no": "RC-C29546CD21"
+  },
+  {
+    "id": 44,
+    "user_id": 9,
+    "poi_id": 25,
+    "created_at": "2025-10-14T10:20:17.298529",
+    "distance_m": 55.47,
+    "earned_points": 10,
+    "receipt_no": "RC-E74BB200F1"
+  },
+  {
+    "id": 45,
+    "user_id": 9,
+    "poi_id": 18,
+    "created_at": "2025-10-31T10:20:17.298549",
+    "distance_m": 90.37,
+    "earned_points": 10,
+    "receipt_no": "RC-11E65C6AF6"
+  },
+  {
+    "id": 46,
+    "user_id": 9,
+    "poi_id": 15,
+    "created_at": "2025-10-14T10:20:17.298577",
+    "distance_m": 111.93,
+    "earned_points": 10,
+    "receipt_no": "RC-F4F6FDCBCE"
+  },
+  {
+    "id": 47,
+    "user_id": 9,
+    "poi_id": 29,
+    "created_at": "2025-10-22T10:20:17.298595",
+    "distance_m": 78.16,
+    "earned_points": 10,
+    "receipt_no": "RC-CAB3A75455"
+  },
+  {
+    "id": 48,
+    "user_id": 2,
+    "poi_id": 19,
+    "created_at": "2025-10-23T10:20:17.297647",
+    "distance_m": 69.97,
+    "earned_points": 10,
+    "receipt_no": "RC-0D55F435E7"
+  },
+  {
+    "id": 49,
+    "user_id": 2,
+    "poi_id": 10,
+    "created_at": "2025-10-30T10:20:17.297722",
+    "distance_m": 72.07,
+    "earned_points": 10,
+    "receipt_no": "RC-3BE5E52A98"
+  },
+  {
+    "id": 50,
+    "user_id": 2,
+    "poi_id": 15,
+    "created_at": "2025-11-09T10:20:17.297758",
+    "distance_m": 53.08,
+    "earned_points": 10,
+    "receipt_no": "RC-2A230B1191"
+  },
+  {
+    "id": 51,
+    "user_id": 2,
+    "poi_id": 22,
+    "created_at": "2025-11-09T10:20:17.297813",
+    "distance_m": 104.59,
+    "earned_points": 10,
+    "receipt_no": "RC-1D6C3B9AB0"
+  },
+  {
+    "id": 52,
+    "user_id": 2,
+    "poi_id": 21,
+    "created_at": "2025-10-20T10:20:17.297858",
+    "distance_m": 111.48,
+    "earned_points": 10,
+    "receipt_no": "RC-E6D50B4260"
+  },
+  {
+    "id": 53,
+    "user_id": 10,
+    "poi_id": 22,
+    "created_at": "2025-11-09T10:20:17.297813",
+    "distance_m": 104.59,
+    "earned_points": 10,
+    "receipt_no": "RC-1D6C3B9AB0"
+  },
+  {
+    "id": 54,
+    "user_id": 10,
+    "poi_id": 21,
+    "created_at": "2025-10-20T10:20:17.297858",
+    "distance_m": 111.48,
+    "earned_points": 10,
+    "receipt_no": "RC-E6D50B4260"
+  },
+  {
+    "id": 55,
+    "user_id": 9,
+    "poi_id": 1,
+    "created_at": "2025-10-14T10:20:17.298577",
+    "distance_m": 111.93,
+    "earned_points": 10,
+    "receipt_no": "RC-F4F6FDCBCE"
+  },
+  {
+    "id": 56,
+    "user_id": 9,
+    "poi_id": 2,
+    "created_at": "2025-10-22T10:20:17.298595",
+    "distance_m": 78.16,
+    "earned_points": 10,
+    "receipt_no": "RC-CAB3A75455"
+  }
+]

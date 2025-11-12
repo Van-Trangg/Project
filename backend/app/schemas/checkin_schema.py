@@ -11,9 +11,6 @@ class CheckinReceipt(BaseModel):
     poi_name: str
     distance_m: float
     earned_points: int
-    vehicle_bonus: int
     total_points: int
     receipt_no: str
 
-class VehicleConfirmRequest(BaseModel):
-    vehicle_type: str  # walk|bike|bus|car|ev_scooter...

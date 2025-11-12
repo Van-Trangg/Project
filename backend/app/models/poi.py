@@ -15,6 +15,7 @@ class POI(Base):
     lat = Column(Float, nullable=False)
     lng = Column(Float, nullable=False)
     score = Column(Integer, default=10)
+    checked_users = Column(Integer, default=0)
     category = Column(String, nullable=True)  # cafe xanh, giao thông xanh...
 
     journals = relationship("Journal", back_populates="poi")
