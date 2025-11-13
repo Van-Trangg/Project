@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel
 
 from app.models.journal import EmotionEnum
@@ -18,6 +19,7 @@ class JournalUpdate(JournalBase):
 
 class JournalOut(JournalBase):
     id: int
+    created_at: datetime.datetime
 
     class Config:
         from_attributes = True
