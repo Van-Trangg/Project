@@ -18,8 +18,10 @@ import SetNewPassword from '../pages/SetNewPassword'
 import LocationJournal from '../pages/LocationJournal.jsx'
 import SignupComplete from '../pages/SignupComplete'
 import ViewProfile from '../pages/ViewProfile'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import HistoryPage from '../pages/HistoryPage'
+import DetailPage from '../pages/DetailPage'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+
 export default function AppRouter(){
   return (
     <BrowserRouter>
@@ -45,6 +47,7 @@ export default function AppRouter(){
           <Route path="/signup-complete" element={<SignupComplete />} />
           <Route path="/reward" element={<Reward/>} />
           <Route path="/history" element={<HistoryPage/>} />
+          <Route path="/detail" element={<DetailPage/>} />
           <Route path="/badges" element={<Badges/>} />
           <Route path="/location/:id" element={<LocationJournal/>} />
         </Routes>

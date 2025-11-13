@@ -86,7 +86,11 @@ export default function Reward() {
           </div>
           <div className="promo-list">
             {promoData.map((promo) => (
-              <div key={promo.id} className="promo-card">
+              <div 
+                key={promo.id} 
+                className="promo-card" 
+                onClick={() => navigate('/detail')}
+              >
                 <div className="promo-icon-placeholder"></div>
                 <span className="promo-text">{promo.title}</span>
                 <span className="promo-price">{promo.price}

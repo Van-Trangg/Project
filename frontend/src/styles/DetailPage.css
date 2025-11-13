@@ -1,0 +1,172 @@
+/* src/styles/Detail.css */
+
+/* === BỐ CỤC TỔNG THỂ === */
+.promo-detail-page {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f0f7dd;
+  min-height: 100vh;
+  padding-bottom: 24px;
+}
+
+/* === HEADER ĐƠN GIẢN === */
+.detail-header {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(180deg, #ACC729 0%, #F5F9F0 99%);
+  color: #000000;
+}
+.detail-header .back-arrow {
+  font-size: 28px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 18px;
+}
+.detail-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* === NỘI DUNG CHÍNH (CARD KHUYẾN MÃI LỚN) === */
+.detail-main-content {
+  padding: 24px;
+}
+.promo-detail-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.detail-card-header {
+  display: flex;
+  /* Nếu không có phần bên trái, chỉ cần căn phải */
+  justify-content: flex-end; /* <--- ĐÃ SỬA: Đẩy nội dung sang phải */
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* --- XÓA CÁC CLASS LIÊN QUAN ĐẾN LOGO METRO --- */
+/*
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.metro-logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+.metro-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+*/
+
+/* --- CLASS MỚI CHO PHẦN GIÁ KHI ĐỨNG MỘT MÌNH --- */
+.card-header-right-alone { 
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #e8f5e9;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+/* --- CÁC STYLE KHÁC CHO PHẦN GIÁ VÀ LÁ (GIỮ NGUYÊN) --- */
+.promo-price-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4CAF50;
+}
+.promo-leaf-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.promo-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+.promo-deadline {
+  font-size: 14px;
+  color: #616161;
+  margin-bottom: 16px;
+}
+.deadline-label {
+  font-weight: 600;
+  color: #333;
+}
+.promo-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4A4A4A;
+  margin-bottom: 24px;
+}
+.btn-redeem {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(90deg, #8BC34A 0%, #ACC729 100%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(139, 195, 74, 0.4);
+}
+
+/* === PHẦN "YOU MIGHT ALSO LIKE" (Giữ nguyên) === */
+.also-like-section {
+  margin-top: 40px;
+}
+.section-header-compact {
+  margin-bottom: 16px;
+}
+.section-header-compact h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+.related-promo-list {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+.related-promo-list::-webkit-scrollbar {
+  display: none;
+}
+.related-promo-card {
+  flex-shrink: 0;
+  width: 120px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+.related-promo-icon-placeholder {
+  width: 60px;
+  height: 60px;
+  background: #eeeeee;
+  border-radius: 12px;
+}
+.related-promo-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.3;
+}
