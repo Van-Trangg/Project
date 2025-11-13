@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProfile } from '../api/profile' 
 import BadgeCard from '../components/BadgeCard'
-import { listRewardsForUser } from '../api/reward'
+import { listBadgesForUser,listBadges } from '../api/reward'
 import editIcon from '../public/edit.png'
 import newEditIcon from '../public/new_edit.png'
 import backIcon from '../public/back.png'
@@ -35,7 +35,7 @@ export default function Profile() {
     // fetch small preview of badges (sync with /reward/me)
     const [previewBadges, setPreviewBadges] = useState([])
     useEffect(() => {
-            listRewardsForUser().then(r => {
+            listBadgesForUser().then(r => {
                 const payload = r.data || { versions: [] }
                 // payload.versions is an array of { version, title, badges: [] }
                 const allBadges = (payload.versions || []).flatMap(v => v.badges || [])
@@ -50,7 +50,7 @@ export default function Profile() {
                     setPreviewBadges(sorted)
             }).catch(()=>{
                 // fallback: try public listing which returns versions array
-                listRewards().then(r2 => {
+                listBadges().then(r2 => {
                     const versions = r2.data || []
                     const all = (versions || []).flatMap(v => v.badges || [])
                     const sortedPublic = all.sort((a,b)=>{
