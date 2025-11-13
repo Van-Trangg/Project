@@ -4,27 +4,19 @@
 /* === BỐ CỤC TỔNG THỂ === */
 .rewards-page {
   font-family: 'Poppins', sans-serif;
-  background-color: #f0f7dd; /* Màu nền xanh lá mạ rất nhạt */
+  background: linear-gradient(180deg, #ACC729 0%, #F5F9F0 99%);
   min-height: 100vh;
   padding-bottom: 90px;
   overflow-x: hidden;
 }
 
 /* === PHẦN HEADER (Đã bỏ ảnh, thay bằng màu nền) === */
-.rewards-header-image {
-  height: 120px; /* Giảm chiều cao header */
-  background-color: #556B2F; /* Thay ảnh bằng màu nền xanh rêu */
-  position: relative;
-  display: flex; /* Căn giữa nội dung */
-  align-items: flex-end; /* Đẩy nội dung xuống dưới */
-  padding: 24px;
-}
 
 .header-overlay {
   /* Bỏ 'position: absolute', 'top', 'left' */
   display: flex;
   align-items: center;
-  color: #ffffff; /* Chữ trắng */
+  color: #000000; /* Chữ trắng */
   width: 100%;
 }
 
@@ -32,7 +24,8 @@
   font-size: 28px;
   font-weight: 600;
   cursor: pointer;
-  margin-right: 12px;
+  margin-right: 18px;
+  margin-left: 18px;
 }
 
 .header-overlay h1 {
@@ -63,7 +56,7 @@
 .balance-title {
   font-size: 16px;
   font-weight: 500;
-  color: #616161;
+  color: #000000;
 }
 .balance-amount {
   display: flex;
@@ -74,12 +67,15 @@
 .balance-amount h2 {
   font-size: 44px;
   font-weight: 700;
-  color: #4CAF50;
+  color: #7CB342;
   margin: 0;
 }
-.balance-amount .leaf-icon {
-  font-size: 32px;
-  color: #4CAF50;
+.balance-amount .balance-leaf-icon {
+  width: 52px;
+  height: 52px;
+  
+  padding-bottom: 6px;
+  padding-right: 10px;
 }
 .action-buttons {
   display: flex;
@@ -166,10 +162,21 @@
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
+
+  display: flex;
+  flex-direction: row; 
+  align-items: center;    
+  justify-content: center;
+}
+.item-value .leaf-icon{
+  width: 20px;
+  height: 20px;
+  margin-left: 2px;
+  margin-top: 2px
 }
 .item-value.positive {
   background: #e8f5e9;
-  color: #4CAF50;
+  color: #556B2F;
 }
 .item-value.negative {
   background: #eeeeee;
@@ -208,9 +215,10 @@
   color: #333;
   margin-top: 8px;
   display: -webkit-box;
+  overflow: hidden;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-clamp: 2;
   min-height: 42px;
 }
 .promo-price {
@@ -219,7 +227,14 @@
   margin-top: 8px;
   font-weight: 700;
   font-size: 15px;
-  color: #4CAF50;
+  color: #556B2F;
+}
+
+.promo-price .promo-leaf-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 2px;
+  margin-top: 2px;
 }
 
 /* === THANH ĐIỀU HƯỚNG (Bottom Nav) === */
@@ -247,17 +262,33 @@
   font-weight: 600;
   
   /* Tái sử dụng màu .nickname cho thẻ không active */
-  color: #A9BC96; 
+  color: #000000;
+  background: none; 
+  border: none;
 }
 
 .nav-item img {
   width: 24px;
   height: 24px;
-  /* (Cần 2 bộ icon: xám và xanh, hoặc dùng SVG) */
 }
 
 /* Style cho thẻ "Home" (active) */
 .nav-item.active {
   /* Tái sử dụng màu .profile-info h2 */
-  color: #556B2F;
+  color: #7CB342 !important;
+}
+
+.nav-item .icon-solid {
+  display: none !important; 
+}
+.nav-item .icon-outline {
+  display: block !important; /* Hoặc display: inline; */
+}
+
+/* Khi active: Ẩn icon outline (viền), hiện icon solid (đặc) */
+.nav-item.active .icon-solid {
+  display: block !important; /* Hoặc display: inline; */
+}
+.nav-item.active .icon-outline {
+  display: none !important;
 }

@@ -2,10 +2,6 @@
   /* Tái sử dụng font từ .profile-page */
   font-family: 'Poppins', sans-serif;
   
-  /* * Homepage dùng gradient xanh lá toàn trang, 
-   * khác với profile (bắt đầu từ màu trắng).
-   * Chúng ta dùng các màu tương đồng với theme.
-   */
   background: linear-gradient(180deg, #ACC729 0%, #F5F9F0 99%);
   min-height: 100vh;
   
@@ -247,8 +243,9 @@
   position: relative;
   
   /* Style cho thẻ đã nhận (màu tối) */
-  background: #465C20; /* Màu xanh rêu đậm */
-  color: #ffffff;
+  background: #F0F9CA; /* Màu xanh lá rất nhạt */
+  border: 2px solid #D9E6A3; /* Thêm viền nhạt */
+  color: #A9BC96; /* Màu chữ xám/nhạt */
 }
 
 .reward-card .points {
@@ -286,6 +283,11 @@
   filter: none;
 }
 
+.reward-card.claimed {
+  background: #465C20; /* Màu xanh rêu đậm */
+  color: #ffffff;
+  border-color: #465C20; /* Bỏ viền */
+}
 
 /* === Thanh điều hướng dưới cùng === */
 .bottom-nav {
@@ -312,7 +314,9 @@
   font-weight: 600;
   
   /* Tái sử dụng màu .nickname cho thẻ không active */
-  color: #A9BC96; 
+  color: #000000;
+  background: none; 
+  border: none;
 }
 
 .nav-item img {
@@ -324,7 +328,22 @@
 /* Style cho thẻ "Home" (active) */
 .nav-item.active {
   /* Tái sử dụng màu .profile-info h2 */
-  color: #556B2F;
+  color: #7CB342 !important;
+}
+
+.nav-item .icon-solid {
+  display: none !important; 
+}
+.nav-item .icon-outline {
+  display: block !important; /* Hoặc display: inline; */
+}
+
+/* Khi active: Ẩn icon outline (viền), hiện icon solid (đặc) */
+.nav-item.active .icon-solid {
+  display: block !important; /* Hoặc display: inline; */
+}
+.nav-item.active .icon-outline {
+  display: none !important;
 }
 
 .profile-avatar{
@@ -361,17 +380,17 @@
 }
 
 .reward-card .reward-leaf-icon {
-  width: 24px;
-  height: 24px;
+  width: 42px;
+  height: 42px;
   position: absolute;
   
-  bottom: -8px; 
-  right: -8px; 
+  bottom: -12px; 
+  right: -12px; 
 }
 
 .stat-card .middle-leaf-icon {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   
   margin-left: 78px;
   

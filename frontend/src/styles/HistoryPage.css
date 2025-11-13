@@ -1,0 +1,96 @@
+/* src/styles/HistoryPage.css */
+
+/* === BỐ CỤC TỔNG THỂ === */
+.history-page {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f0f7dd; /* Màu nền xanh lá mạ nhạt */
+  min-height: 100vh;
+  padding-bottom: 24px;
+}
+
+/* === HEADER ĐƠN GIẢN === */
+.history-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: #000000;
+}
+
+.history-header .back-arrow {
+  font-size: 28px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 18px;
+  margin-left: 18px;
+}
+
+.history-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* === DANH SÁCH LỊCH SỬ ĐẦY ĐỦ === */
+.history-list-full {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Khoảng cách giữa các item */
+  padding: 24px; /* Lề cho toàn bộ danh sách */
+}
+
+/* === CÁC CLASS TÁI SỬ DỤNG TỪ REWARD.CSS === */
+
+/* (Đây là style cho mỗi hàng trong lịch sử) */
+.history-item {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.item-icon-placeholder {
+  width: 40px;
+  height: 40px;
+  background: #eeeeee; /* Màu xám placeholder */
+  border-radius: 50%; /* Bo tròn */
+}
+
+.item-text {
+  flex: 1; /* Tự động đẩy phần value sang phải */
+  margin-left: 12px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* (Khối màu xanh/xám chứa điểm) */
+.item-value {
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  
+  /* Căn chữ và lá nằm ngang */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-value.positive {
+  background: #e8f5e9;
+  color: #4CAF50;
+}
+
+.item-value.negative {
+  background: #eeeeee; /* Nền xám nhạt */
+  color: #616161; /* Chữ xám đậm */
+}
+
+/* (Icon lá bên trong khối .item-value) */
+.item-value .leaf-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 4px; /* Khoảng cách với chữ số */
+}
