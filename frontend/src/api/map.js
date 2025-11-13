@@ -17,3 +17,7 @@ export const confirmVehicle = (checkinId, vehicle) =>
 export const checked = (poi_id) => {
   return api.get(`map/map/poi/${poi_id}/checked`)
 }
+
+export const percentageChecked = (poi_id) => {
+  return api.get(`map/map/poi/${poi_id}/checked/percent`)
+}
