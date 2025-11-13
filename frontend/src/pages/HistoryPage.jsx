@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/HistoryPage.css'; // <--- Import file CSS mới
+import ecopointsIcon from '../public/ecopoint.png';
 
 export default function HistoryPage() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function HistoryPage() {
               {/* Phần 2: Icon lá */}
               {/* (Giả sử bạn dùng ecopoint.png từ public) */}
               <img 
-                src="/ecopoint.png" 
+                src={ecopointsIcon}
                 alt="leaf" 
                 className="leaf-icon" 
               />
