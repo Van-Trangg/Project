@@ -215,9 +215,10 @@
   color: #333;
   margin-top: 8px;
   display: -webkit-box;
+  overflow: hidden;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-clamp: 2;
   min-height: 42px;
 }
 .promo-price {
@@ -261,19 +262,33 @@
   font-weight: 600;
   
   /* Tái sử dụng màu .nickname cho thẻ không active */
-  color: #A9BC96; 
+  color: #000000;
+  background: none; 
+  border: none;
 }
 
 .nav-item img {
   width: 24px;
   height: 24px;
-  /* (Cần 2 bộ icon: xám và xanh, hoặc dùng SVG) */
-  background: none;
-  border: none;
 }
 
 /* Style cho thẻ "Home" (active) */
 .nav-item.active {
   /* Tái sử dụng màu .profile-info h2 */
-  color: #556B2F;
+  color: #7CB342 !important;
+}
+
+.nav-item .icon-solid {
+  display: none !important; 
+}
+.nav-item .icon-outline {
+  display: block !important; /* Hoặc display: inline; */
+}
+
+/* Khi active: Ẩn icon outline (viền), hiện icon solid (đặc) */
+.nav-item.active .icon-solid {
+  display: block !important; /* Hoặc display: inline; */
+}
+.nav-item.active .icon-outline {
+  display: none !important;
 }
