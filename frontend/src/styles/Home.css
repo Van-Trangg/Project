@@ -308,7 +308,7 @@
   font-weight: 600;
   
   /* Tái sử dụng màu .nickname cho thẻ không active */
-  color: #000000; 
+  color: #000000;
   background: none; 
   border: none;
 }
@@ -322,7 +322,7 @@
 /* Style cho thẻ "Home" (active) */
 .nav-item.active {
   /* Tái sử dụng màu .profile-info h2 */
-  color: #7CB342;
+  color: #7CB342 !important;
 }
 
 .nav-item .icon-solid {
