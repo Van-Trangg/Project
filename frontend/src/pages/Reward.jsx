@@ -48,7 +48,10 @@ export default function Reward() {
         <div className="history-section">
           <div className="section-header">
             <h3>History</h3>
-            <a href="#" className="see-more">See more</a>
+            <span 
+              className="see-more" 
+              onClick={() => navigate('/history')}>See more
+            </span>
           </div>
           <div className="history-list">
             {historyData.map((item) => (
