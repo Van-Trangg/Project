@@ -9,6 +9,7 @@ from app.models.map import Map
 from app.models.poi import POI
 from app.models.user import User
 from app.models.checkin import Checkin
+from app.models.journal import Journal
 
 
 # --- Password Hashing ---
@@ -23,6 +24,22 @@ def load_json(path: str):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
+def seed_journals(journal_file: str = "app/data/journals.json"):
+    journals = load_json(journal_file)
+    with Session(engine) as session:
+        for j in journals:
+            existing = session.scalar(select(Journal).where(Journal.id == j["id"]))
+            if not existing:
+                if isinstance(j.get("created_at"), str):
+                    try:
+                        j["created_at"] = datetime.fromisoformat(j["created_at"])
+                    except ValueError:
+                        j["created_at"] = datetime.strptime(j["created_at"], "%Y-%m-%d %H:%M:%S")
+
+                session.add(Journal(**j))
+        session.commit()
+        print(f"✅ Seed completed: {len(journals)} journals inserted")
 
 # --- Seed Maps + POIs ---
 def seed_maps_and_pois(map_file: str = "app/data/map.json", poi_file: str = "app/data/poi.json"):
@@ -98,3 +115,4 @@ if __name__ == "__main__":
     seed_maps_and_pois("app/data/map.json", "app/data/poi.json")
     seed_users("app/data/users.json")
     seed_checkins("app/data/checkins.json")
+    seed_journals("app/data/journals.json")
