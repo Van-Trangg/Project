@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100..900;1,100..900&display=swap');
+
 /* LocationJournal.css */
 .location-journal-container {
   height: 100vh;
@@ -98,7 +100,7 @@
 
 .small-entry-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
   margin-bottom: 10px;
 }
@@ -113,6 +115,7 @@
 }
 
 .small-entry-content {
+  font-family: "Asap", sans-serif;
   font-size: 16px;
   line-height: 1.5;
   margin-bottom: 10px;
@@ -164,7 +167,7 @@
 .add-entry-button {
   width: 60px;
   height: 60px;
-  border-radius: 50%;
+  border-radius: 25%;
   background-color: #7CB342;
   color: white;
   border: none;
@@ -195,11 +198,11 @@
 /* Add Option Buttons */
 .add-option-button {
   position: absolute;
-  bottom: 70px;
+  bottom: 0px;
   right: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Aligns items to the start (left) */
+  justify-content: flex-start;
   background-color: #C3EA21;
   border: none;
   border-radius: 30px;
@@ -232,20 +235,15 @@
   transform: scale(1);
 }
 
-/* Position the two buttons vertically - CORRECTED SELECTORS */
+/* Position the two buttons vertically */
 .add-option-button:nth-of-type(2) {
-  bottom: 140px; /* Add Text - top button */
-}
-
-.add-option-button:nth-of-type(3) {
-  bottom: 80px; /* Add Image - bottom button */
+  bottom: 70px; /* Add Text - top button */
 }
 
 /* Add hover effects */
 .add-option-button:hover {
   background-color: #f5f5f5;
 }
-/* Add to your LocationJournal.css file */
 
 /* Editing Mode Styles */
 .editing-mode-container {
@@ -259,32 +257,31 @@
 .editing-header {
   background: linear-gradient(#ACC729,#F5F9F0 80%);
   padding: 20px;
-  display: flex; /* Changed from text-align */
-  justify-content: space-between; /* Added to space out title and button */
-  align-items: center; /* Added to vertically align items */
+  display: flex;
+  align-items: center;
+  position: relative; /* Add this to establish a positioning context */
 }
 
 .editing-header h2 {
+  position: absolute; /* Add this to take the h2 out of the normal flow */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); /* This trick perfectly centers the element */
   margin: 0;
   font-size: 1.5rem;
   color: #333;
 }
-
 .editing-content {
   flex: 1;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 .editing-field {
-  padding: 15px;
-  background-color: white;
   border-radius: 8px;
   font-size: 1.2rem;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .editing-input {
@@ -297,17 +294,17 @@
 }
 
 .editing-content-field {
+  font-family: "Asap", sans-serif;
   flex: 1;
   padding: 15px;
-  background-color: white;
   border-radius: 8px;
   font-size: 1.2rem;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   min-height: 200px;
 }
 
 .editing-textarea {
+  font-family: "Asap", sans-serif;
   flex: 1;
   padding: 15px;
   background-color: white;
@@ -332,46 +329,67 @@
   border-radius: 8px;
 }
 
+/* Fixed positioning for the controls */
 .editing-controls {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
   display: flex;
-  justify-content: flex-end; /* Changed from space-between */
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-end;
   padding: 20px;
 }
 
-/* Removed .back-edit-button styles as they are no longer needed */
-
-.right-controls {
+.emotion-image-block {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 15px;
+  background-color: white;
+  border-radius: 30px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* Make sure the line is horizontal */
+.emotion-image-block::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: 30px;
+  background-color: #e0e0e0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .emotion-button {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: white;
+  background-color: transparent;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .add-image-button {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: white;
+  background-color: transparent;
   border: none;
   color: #7CB342;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .add-image-button svg {
@@ -379,57 +397,149 @@
   height: 24px;
 }
 
-/* Modal Styles */
-.emotion-picker-modal,
+/* --- MODAL STYLES --- */
+
+/* Emotion Picker Modal */
+.emotion-picker-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(#ACC729, #FFF 80%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  /* Start off-screen at the bottom */
+  transform: translateY(100%);
+  /* Animate the transform property */
+  transition: transform 0.4s ease-out;
+  visibility: hidden; /* Hide it so it can't be clicked when closed */
+}
+
+/* Active state: On-screen and visible */
+.emotion-picker-modal.open {
+  /* Move to its natural position */
+  transform: translateY(0%);
+  visibility: visible;
+}
+
+.emotion-picker-content {
+  background-color: transparent;
+  border-radius: 0;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s; /* Fade in with a slight delay */
+}
+
+.emotion-picker-modal.open .emotion-picker-content {
+  opacity: 1;
+}
+
+.emotion-picker-content h3 {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.emotion-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.emotion-option {
+  border-color: #4CAF50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  height: 100px;
+  outline: none; /* Removes the browser's default focus outline */
+}
+
+.emotion-option:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.emotion-option.selected {
+  background-color: rgba(255, 255, 255, 0.4);
+  /* box-shadow: REMOVED */
+}
+.emotion-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+}
+
+.emotion-label {
+  color: black;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Image Options Modal - NEW ANIMATION STYLES */
 .image-options-modal {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 1000;
+
+  /* Start off-screen at the bottom */
+  transform: translateY(100%);
+  /* Animate the transform property */
+  transition: transform 0.4s ease-out;
+  visibility: hidden; /* Hide it so it can't be clicked when closed */
 }
 
-.emotion-picker-content,
+/* Active state: On-screen and visible */
+.image-options-modal.open {
+  /* Move to its natural position */
+  transform: translateY(0%);
+  visibility: visible;
+}
+
 .image-options-content {
   background-color: white;
   border-radius: 16px;
   padding: 20px;
   width: 80%;
   max-width: 400px;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
 }
 
-.emotion-picker-content h3,
+.image-options-modal.open .image-options-content {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .image-options-content h3 {
   margin-top: 0;
   margin-bottom: 20px;
   text-align: center;
-}
-
-.emotion-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.emotion-option {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: none;
-  background-color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.emotion-option.selected {
-  background-color: #7CB342;
 }
 
 .image-options-buttons {
@@ -462,4 +572,55 @@
 
 .image-option-button span {
   font-size: 1rem;
+}
+
+.editing-field-time {
+  font-size: 2.8rem; /* Increased font size */
+}
+
+/* For the input state (when you click to edit) */
+.editing-input-time {
+  font-size: 1.4rem; /* Increased font size */
+}
+
+.entry-emotion-text {
+  margin-left: 4px;
+  font-size: 14px;
+  font-style: italic;
+  color: #666;     
+}
+
+/* Style for the emoji itself */
+.entry-emotion-emoji {
+  margin-left: 4px;
+  font-size: 20px; /* The original large size for the emoji */
+}
+
+.current-emotion-display {
+  font-size: 5rem; /* Make the emoji large */
+  text-align: center; /* Center the emoji horizontally */
+  margin: 10px 0; /* Add some vertical spacing */
+  line-height: 1; /* Prevents extra space below the emoji */
+}
+
+/* --- Editing Mode Top Row Layout --- */
+
+.editing-top-row {
+  display: flex;
+  justify-content: space-between; /* Pushes the date/time group and emoji to opposite ends */
+  align-items: center; /* Vertically aligns them in the middle */
+  margin-bottom: 20px; /* Adds space below this row before the content field */
+}
+
+.date-time-group {
+  display: flex;
+  flex-direction: column; /* Stacks the day and time fields vertically */
+  gap: 10px; /* Adds a small space between the day and time fields */
+  flex: 1; /* Allows the group to grow and take up available space */
+}
+
+.current-emotion-display {
+  font-size: 4rem; /* Make the emoji large, but not too large */
+  line-height: 1;
+  /* No need for text-align center here, as flexbox handles alignment */
 }

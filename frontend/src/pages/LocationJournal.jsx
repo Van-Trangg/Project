@@ -1,7 +1,35 @@
 // LocationJournal.jsx
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { createJournal, updateJournal } from '../api/journal'; // <-- IMPORT API FUNCTIONS
 import '../styles/LocationJournal.css';
+
+// This data remains the same, as it's the single source of truth for our UI.
+const emotionData = [
+  { emoji: '😴', label: 'Sleepy', value: 0 },
+  { emoji: '😄', label: 'Joyful', value: 1 },
+  { emoji: '😢', label: 'Miserable', value: 2 },
+  { emoji: '😊', label: 'Happy', value: 3 },
+  { emoji: '😔', label: 'Sad', value: 4 },
+  { emoji: '😐', label: 'Neutral', value: 5 },
+  { emoji: '😁', label: 'Delighted', value: 6 },
+  { emoji: '😡', label: 'Angry', value: 7 },
+  { emoji: '😕', label: 'Confused', value: 8 }
+];
+
+// A robust helper function to get emotion data from either a string label or a number value
+const getEmotionData = (input) => {
+  // If input is a string (e.g., from API), find by label
+  if (typeof input === 'string') {
+    return emotionData.find(e => e.label.toLowerCase() === input.toLowerCase()) || emotionData[5]; // Fallback to Neutral
+  }
+  // If input is a number (e.g., from our state), find by value
+  if (typeof input === 'number') {
+    return emotionData.find(e => e.value === input) || emotionData[5]; // Fallback to Neutral
+  }
+  // Default fallback
+  return emotionData[5];
+};
 
 export default function LocationJournal() {
   const location = useLocation();
@@ -10,10 +38,16 @@ export default function LocationJournal() {
   const [showAddOptions, setShowAddOptions] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
   const [editType, setEditType] = useState('');
+  const [isEditingExistingEntry, setIsEditingExistingEntry] = useState(false);
+  const [isEmotionPickerAnimating, setIsEmotionPickerAnimating] = useState(false);
+  const [isImageOptionsAnimating, setIsImageOptionsAnimating] = useState(false);
+  const [originalDay, setOriginalDay] = useState(null);
+  const [originalIndex, setOriginalIndex] = useState(null);
+  const [currentEntryId, setCurrentEntryId] = useState(null); // <-- NEW: Track entry ID for updates
   const [currentEntry, setCurrentEntry] = useState({
-    day: new Date().toLocaleDateString('en-GB'),
+    day: formatDate(new Date()),
     time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-    emotion: 4,
+    emotion: 5, // Default to 'Neutral'
     content: '',
     images: []
   });
@@ -21,6 +55,47 @@ export default function LocationJournal() {
   const [showEmotionPicker, setShowEmotionPicker] = useState(false);
   const [showImageOptions, setShowImageOptions] = useState(false);
   const addButtonRef = useRef(null);
+
+  // Effect for Emotion Picker Animation
+  useEffect(() => {
+    if (showEmotionPicker) {
+      const timer = setTimeout(() => setIsEmotionPickerAnimating(true), 10);
+      return () => clearTimeout(timer);
+    } else {
+      setIsEmotionPickerAnimating(false);
+    }
+  }, [showEmotionPicker]);
+
+  // Effect for Image Options Animation
+  useEffect(() => {
+    if (showImageOptions) {
+      const timer = setTimeout(() => setIsImageOptionsAnimating(true), 10);
+      return () => clearTimeout(timer);
+    } else {
+      setIsImageOptionsAnimating(false);
+    }
+  }, [showImageOptions]);
+
+
+  // Function to format date as "Month Day, Year"
+  function formatDate(date) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  }
+
+  // Function to parse date string back to Date object
+  function parseDate(dateString) {
+    // For format like "August 17, 2006"
+    const parts = dateString.split(' ');
+    if (parts.length === 3) {
+      const month = parts[0];
+      const day = parts[1].replace(',', '');
+      const year = parts[2];
+      return new Date(`${month} ${day}, ${year}`);
+    }
+    // Fallback for other formats
+    return new Date(dateString);
+  }
 
   // Get the COMPLETE location object passed from Journal.jsx's navigation state
   const locationData = location.state?.location;
@@ -58,11 +133,16 @@ export default function LocationJournal() {
     setEditType('text');
     setEditingMode(true);
     setShowAddOptions(false);
+    // Set flag for new entry
+    setIsEditingExistingEntry(false);
+    setOriginalDay(null);
+    setOriginalIndex(null);
+    setCurrentEntryId(null); // <-- Reset ID for new entries
     // Reset form for new entry
     setCurrentEntry({
-      day: new Date().toLocaleDateString('en-GB'),
+      day: formatDate(new Date()),
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      emotion: 4,
+      emotion: 5, // Default to 'Neutral'
       content: '',
       images: []
     });
@@ -72,11 +152,16 @@ export default function LocationJournal() {
     setEditType('image');
     setEditingMode(true);
     setShowAddOptions(false);
+    // Set flag for new entry
+    setIsEditingExistingEntry(false);
+    setOriginalDay(null);
+    setOriginalIndex(null);
+    setCurrentEntryId(null); // <-- Reset ID for new entries
     // Reset form for new entry
     setCurrentEntry({
-      day: new Date().toLocaleDateString('en-GB'),
+      day: formatDate(new Date()),
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      emotion: 4,
+      emotion: 5, // Default to 'Neutral'
       content: '',
       images: []
     });
@@ -86,44 +171,98 @@ export default function LocationJournal() {
     const dayEntry = journalEntries.find(e => e.day === day);
     if (dayEntry && dayEntry.smallEntries[entryIndex]) {
       const entry = dayEntry.smallEntries[entryIndex];
+
+      // Convert string emotion from API to number for internal state
+      const emotionDataForEntry = getEmotionData(entry.emotion);
+
       setCurrentEntry({
         day: day,
         time: entry.time,
-        emotion: entry.emotion,
+        emotion: emotionDataForEntry.value, // Use the numerical value
         content: entry.content,
         images: entry.images || []
       });
+      // Set flag for existing entry and store its origin
+      setIsEditingExistingEntry(true);
+      setOriginalDay(day);
+      setOriginalIndex(entryIndex);
+      setCurrentEntryId(entry.id); // <-- Store the ID of the entry being edited
       setEditingMode(true);
       setEditType(entry.images && entry.images.length > 0 ? 'image' : 'text');
     }
   };
 
-  const handleSaveAndBack = () => {
-    // Create a new entry with the current form data
+  const handleSaveAndBack = async () => { // <-- MAKE ASYNC
     const newEntry = { ...currentEntry };
-    
-    // Find if there's already an entry for this day
-    const existingDayIndex = journalEntries.findIndex(entry => entry.day === newEntry.day);
-    
-    if (existingDayIndex !== -1) {
-      // Add to existing day
-      const updatedEntries = [...journalEntries];
-      updatedEntries[existingDayIndex].smallEntries.push(newEntry);
-      setJournalEntries(updatedEntries);
-    } else {
-      // Create a new day entry
-      setJournalEntries([
-        ...journalEntries,
-        {
-          day: newEntry.day,
-          smallEntries: [newEntry]
+    // Get the emotion label to send to the backend
+    const emotionLabel = getEmotionData(currentEntry.emotion).label;
+
+    try {
+      if (isEditingExistingEntry) {
+        // --- UPDATE EXISTING ENTRY ---
+        const payload = {
+          emotion: emotionLabel,
+          content: newEntry.content,
+          images: newEntry.images,
+        };
+
+        // Call the update API
+        await updateJournal(currentEntryId, payload);
+
+        // Update local state on success
+        const updatedEntries = journalEntries.map(entry => {
+          if (entry.day === originalDay) {
+            const updatedSmallEntries = [...entry.smallEntries];
+            updatedSmallEntries[originalIndex] = newEntry;
+            return { ...entry, smallEntries: updatedSmallEntries };
+          }
+          return entry;
+        });
+        setJournalEntries(updatedEntries);
+
+      } else {
+        // --- CREATE NEW ENTRY ---
+        const payload = {
+          poi_id: locationData.id, // The POI's ID is required for creation
+          emotion: emotionLabel,
+          content: newEntry.content,
+          images: newEntry.images,
+        };
+
+        // Call the create API
+        await createJournal(payload);
+
+        // Update local state on success
+        const existingDayIndex = journalEntries.findIndex(entry => entry.day === newEntry.day);
+
+        if (existingDayIndex !== -1) {
+          const updatedEntries = [...journalEntries];
+          updatedEntries[existingDayIndex].smallEntries.push(newEntry);
+          setJournalEntries(updatedEntries);
+        } else {
+          setJournalEntries([
+            ...journalEntries,
+            {
+              day: newEntry.day,
+              smallEntries: [newEntry]
+            }
+          ]);
         }
-      ]);
+      }
+
+      // Exit editing mode and reset tracking variables on success
+      setEditingMode(false);
+      setIsEditingExistingEntry(false);
+      setOriginalDay(null);
+      setOriginalIndex(null);
+      setCurrentEntryId(null);
+      setEditingField(null);
+
+    } catch (error) {
+      console.error("Failed to save journal entry:", error);
+      alert("Could not save your entry. Please try again.");
+      // Don't exit editing mode on error, so user can retry
     }
-    
-    // Exit editing mode
-    setEditingMode(false);
-    setEditingField(null);
   };
 
   const handleEmotionSelect = (emotion) => {
@@ -138,7 +277,6 @@ export default function LocationJournal() {
 
     const newImageUrls = [];
     for (let i = 0; i < files.length; i++) {
-      // Create a temporary URL for the selected image to display it
       const imageUrl = URL.createObjectURL(files[i]);
       newImageUrls.push(imageUrl);
     }
@@ -147,9 +285,8 @@ export default function LocationJournal() {
       ...currentEntry,
       images: [...(currentEntry.images || []), ...newImageUrls]
     });
-    
+
     setShowImageOptions(false);
-    // Reset the input value to allow selecting the same file again
     event.target.value = '';
   };
 
@@ -167,12 +304,8 @@ export default function LocationJournal() {
 
   const handleFieldChange = (value) => {
     if (editingField === 'day') {
-      // The date input gives us 'yyyy-mm-dd'. We need to convert it back to 'dd/mm/yyyy'.
-      // 1. Create a Date object from the input's value.
       const dateObject = new Date(value);
-      // 2. Format the Date object back to the desired 'dd/mm/yyyy' format.
-      const formattedDate = dateObject.toLocaleDateString('en-GB');
-      // 3. Update the state with the correctly formatted date.
+      const formattedDate = formatDate(dateObject);
       setCurrentEntry({ ...currentEntry, day: formattedDate });
     } else {
       setCurrentEntry({ ...currentEntry, [editingField]: value });
@@ -180,13 +313,7 @@ export default function LocationJournal() {
     setEditingField(null);
   };
 
-  // Function to convert emotion number to emoji
-  const getEmotionEmoji = (emotion) => {
-    const emotionEmojis = ['😢', '😔', '😐', '🙂', '😊', '😄', '😁', '🤗', '😍'];
-    return emotionEmojis[emotion] || '😐';
-  };
-
-  // If no location data was passed (e.g., from a direct link or refresh), show an error message
+  // If no location data was passed, show an error message
   if (!locationData) {
     return (
       <div className='location-journal-container'>
@@ -207,14 +334,13 @@ export default function LocationJournal() {
           <div className='location-journal-header'>
             <button className='back-button' onClick={handleBack}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
               Back
             </button>
           </div>
 
           <div className='location-journal-hero'>
-            {/* Display data passed from Journal.jsx */}
             <img src={locationData.image} alt={locationData.title} className='location-journal-image' />
             <h1 className='location-journal-title'>{locationData.title}</h1>
           </div>
@@ -226,32 +352,37 @@ export default function LocationJournal() {
                   <div className='journal-entry-header'>
                     <h3 className='journal-entry-date'>{entry.day}</h3>
                   </div>
-                  
-                  {entry.smallEntries.map((smallEntry, index) => (
-                    <div 
-                      key={index} 
-                      className='small-entry'
-                      onClick={() => handleEntryClick(entry.day, index)}
-                    >
-                      <div className='small-entry-header'>
-                        <span className='entry-time'>{smallEntry.time}</span>
-                        <span className='entry-emotion'>{getEmotionEmoji(smallEntry.emotion)}</span>
-                      </div>
-                      <p className='small-entry-content'>{smallEntry.content}</p>
-                      {smallEntry.images && smallEntry.images.length > 0 && (
-                        <div className='entry-images'>
-                          {smallEntry.images.map((image, imgIndex) => (
-                            <img 
-                              key={imgIndex} 
-                              src={image} 
-                              alt={`Entry image ${imgIndex + 1}`} 
-                              className='entry-image' 
-                            />
-                          ))}
+
+                  {entry.smallEntries.map((smallEntry, index) => {
+                    // Get emotion data for each entry
+                    const emotion = getEmotionData(smallEntry.emotion);
+                    return (
+                      <div
+                        key={index}
+                        className='small-entry'
+                        onClick={() => handleEntryClick(entry.day, index)}
+                      >
+                        <div className='small-entry-header'>
+                          <span className='entry-time'>{smallEntry.time}</span>
+                          <span className="entry-emotion-text"> - feeling {emotion.label}</span>
+                          <span className="entry-emotion-emoji">{emotion.emoji}</span>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        <p className='small-entry-content'>{smallEntry.content}</p>
+                        {smallEntry.images && smallEntry.images.length > 0 && (
+                          <div className='entry-images'>
+                            {smallEntry.images.map((image, imgIndex) => (
+                              <img
+                                key={imgIndex}
+                                src={image}
+                                alt={`Entry image ${imgIndex + 1}`}
+                                className='entry-image'
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               ))
             ) : (
@@ -264,95 +395,94 @@ export default function LocationJournal() {
 
           {/* Add Entry Button with Options */}
           <div className="add-entry-container" ref={addButtonRef}>
-            <button 
-              className={`add-entry-button ${showAddOptions ? 'active' : ''}`} 
+            <button
+              className={`add-entry-button ${showAddOptions ? 'active' : ''}`}
               onClick={handleAddEntry}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
+              <svg viewBox="0 0 24 24" fill="none" stroke="Black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="4" x2="12" y2="20"></line>
+                <line x1="4" y1="12" x2="20" y2="12"></line>
               </svg>
             </button>
 
-            {/* Add Text Option */}
-            <button 
+            <button
               className={`add-option-button ${showAddOptions ? 'show' : ''}`}
               onClick={handleAddText}
             >
-              <span>Add Text</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-            </button>
+              <span>Text</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 
-            {/* Add Image Option */}
-            <button 
-              className={`add-option-button ${showAddOptions ? 'show' : ''}`}
-              onClick={handleAddImage}
-            >
-              <span>Add Image</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
+                <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="8" y1="13" x2="16" y2="13"></line>
+                <line x1="8" y1="17" x2="16" y2="17"></line>
               </svg>
+
             </button>
           </div>
         </>
       )}
 
       {/* Editing Mode */}
-      {editingMode && (
+      {editingMode && !showEmotionPicker && !showImageOptions && (
         <div className="editing-mode-container">
           <div className='editing-header'>
             <button className='back-button' onClick={handleSaveAndBack}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
-              Back
             </button>
             <h2>Editing</h2>
           </div>
 
           <div className="editing-content">
-            {/* Day Field */}
-            {editingField === 'day' ? (
-              <input 
-                type="date" 
-                className="editing-input"
-                autoFocus
-                onBlur={(e) => handleFieldChange(e.target.value)}
-                defaultValue={currentEntry.day}
-              />
-            ) : (
-              <div className="editing-field" onClick={handleDayEdit}>
-                {currentEntry.day}
-              </div>
-            )}
+            {/* Parent container for the top row */}
+            <div className="editing-top-row">
 
-            {/* Time Field */}
-            {editingField === 'time' ? (
-              <input 
-                type="time" 
-                className="editing-input"
-                autoFocus
-                onBlur={(e) => handleFieldChange(e.target.value)}
-                defaultValue={currentEntry.time}
-              />
-            ) : (
-              <div className="editing-field" onClick={handleTimeEdit}>
-                {currentEntry.time}
+              {/* Left container for Day and Time */}
+              <div className="date-time-group">
+                {/* Day Field */}
+                {editingField === 'day' ? (
+                  <input
+                    type="date"
+                    className="editing-input editing-input-day"
+                    autoFocus
+                    onBlur={(e) => handleFieldChange(e.target.value)}
+                    defaultValue={parseDate(currentEntry.day).toISOString().split('T')[0]}
+                  />
+                ) : (
+                  <div className="editing-field editing-field-day" onClick={handleDayEdit}>
+                    {currentEntry.day}
+                  </div>
+                )}
+
+                {/* Time Field */}
+                {editingField === 'time' ? (
+                  <input
+                    type="time"
+                    className="editing-input editing-input-time"
+                    autoFocus
+                    onBlur={(e) => handleFieldChange(e.target.value)}
+                    defaultValue={currentEntry.time}
+                  />
+                ) : (
+                  <div className="editing-field editing-field-time" onClick={handleTimeEdit}>
+                    {currentEntry.time}
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* Right container for the Big Emoji */}
+              <div className="current-emotion-display">
+                {getEmotionData(currentEntry.emotion).emoji}
+              </div>
+
+            </div> {/* End of editing-top-row */}
 
             {/* Content Field */}
             {editingField === 'content' ? (
-              <textarea 
+              <textarea
                 className="editing-textarea"
                 autoFocus
                 onBlur={(e) => handleFieldChange(e.target.value)}
@@ -374,11 +504,11 @@ export default function LocationJournal() {
             )}
           </div>
 
-          {/* Bottom Controls */}
+          {/* Bottom Controls - Emotion and Image in Same Block */}
           <div className="editing-controls">
-            <div className="right-controls">
+            <div className="emotion-image-block">
               <button className="emotion-button" onClick={() => setShowEmotionPicker(true)}>
-                {getEmotionEmoji(currentEntry.emotion)}
+                {getEmotionData(currentEntry.emotion).emoji}
               </button>
 
               <button className="add-image-button" onClick={() => setShowImageOptions(true)}>
@@ -390,71 +520,80 @@ export default function LocationJournal() {
               </button>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Emotion Picker Modal */}
-          {showEmotionPicker && (
-            <div className="emotion-picker-modal">
-              <div className="emotion-picker-content">
-                <h3>Select Emotion</h3>
-                <div className="emotion-options">
-                  {['😢', '😔', '😐', '🙂', '😊', '😄', '😁', '🤗', '😍'].map((emoji, index) => (
-                    <button 
-                      key={index} 
-                      className={`emotion-option ${currentEntry.emotion === index ? 'selected' : ''}`}
-                      onClick={() => handleEmotionSelect(index)}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
+      {/* Emotion Picker Modal */}
+      {showEmotionPicker && (
+        <div className={`emotion-picker-modal ${isEmotionPickerAnimating ? 'open' : ''}`}>
+          <div className="emotion-picker-content">
+            <h3>Choose Your Emotion</h3>
+            <div className="emotion-options">
+              {emotionData.map((emotion) => (
+                <div
+                  key={emotion.value}
+                  className={`emotion-option ${currentEntry.emotion === emotion.value ? 'selected' : ''}`}
+                  onClick={() => handleEmotionSelect(emotion.value)}
+                  role="button"
+                  tabIndex="0"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleEmotionSelect(emotion.value);
+                    }
+                  }}
+                >
+                  <span className="emotion-emoji">{emotion.emoji}</span>
+                  <span className="emotion-label">{emotion.label}</span>
                 </div>
-              </div>
+              ))}
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
-          {/* Image Options Modal */}
-          {showImageOptions && (
-            <div className="image-options-modal">
-              <div className="image-options-content">
-                <h3>Add Image</h3>
-                <div className="image-options-buttons">
-                  {/* Camera Input */}
-                  <input
-                    id="camera-input"
-                    type="file"
-                    accept="image/*"
-                    capture="environment" // This attribute is key for opening the camera
-                    style={{ display: 'none' }}
-                    onChange={handleImageFileChange}
-                  />
-                  <label htmlFor="camera-input" className="image-option-button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                      <circle cx="12" cy="13" r="4"></circle>
-                    </svg>
-                    <span>Take Photo</span>
-                  </label>
+      {/* Image Options Modal */}
+      {showImageOptions && (
+        <div className={`image-options-modal ${isImageOptionsAnimating ? 'open' : ''}`}>
+          <div className="image-options-content">
+            <h3>Add Image</h3>
+            <div className="image-options-buttons">
+              {/* Camera Input */}
+              <input
+                id="camera-input"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                style={{ display: 'none' }}
+                onChange={handleImageFileChange}
+              />
+              <label htmlFor="camera-input" className="image-option-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <span>Take Photo</span>
+              </label>
 
-                  {/* Gallery Input */}
-                  <input
-                    id="gallery-input"
-                    type="file"
-                    accept="image/*"
-                    multiple // Allow selecting multiple images from the gallery
-                    style={{ display: 'none' }}
-                    onChange={handleImageFileChange}
-                  />
-                  <label htmlFor="gallery-input" className="image-option-button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                      <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                    <span>Choose from Gallery</span>
-                  </label>
-                </div>
-              </div>
+              {/* Gallery Input */}
+              <input
+                id="gallery-input"
+                type="file"
+                accept="image/*"
+                multiple
+                style={{ display: 'none' }}
+                onChange={handleImageFileChange}
+              />
+              <label htmlFor="gallery-input" className="image-option-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Choose from Gallery</span>
+              </label>
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>
