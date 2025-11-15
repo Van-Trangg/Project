@@ -13,7 +13,6 @@ function MapController({ onMapReady }) {
   useEffect(() => {
     if (map) {
       onMapReady(map);
-      //console.log('Map ready via useMap');
     }
   }, [map, onMapReady]);
   return null; // Renders nothing
@@ -58,7 +57,7 @@ export default function Map() {
 
     if (!navigator.geolocation) {
       console.warn('Geolocation is not supported by your browser');
-      loadMapsFallback(); // Define this below
+      loadMapsFallback(); 
       return;
     }
 
@@ -76,13 +75,11 @@ export default function Map() {
             const mapsList = res.data;
             setMaps(mapsList);
 
-            // NOW use the real lat/lng, not userLocation state
             return getNearestMap(lat, lng)
               .then(nearestRes => {
                 const nearestMap = nearestRes.data;
                 console.log('Nearest map:', nearestMap);
 
-                // Find the matching map from the list
                 const matchedMap = mapsList.find(m => m.id === nearestMap.id);
                 if (matchedMap) {
                   setSelectedMap(matchedMap);
@@ -204,11 +201,16 @@ const loadMapsFallback = () => {
   const validateGPS = (poi) => {
     if (!userLocation) {
       alert('User location not available');
+      setCheckinEligible(false);
+      return false;
+    } else if (!poi) {
+      alert('POI data not available');
+      setCheckinEligible(false);
       return false;
     }
     const distance = haversineDistance(userLocation.lat, userLocation.lng, poi.lat, poi.lng) * 1000; // in meters
     console.log(`Distance to POI (${poi.name}): ${distance.toFixed(2)} meters`);
-    setCheckinEligible(distance <= 100);
+    setCheckinEligible(distance <= 200);
   };
 
   return (
