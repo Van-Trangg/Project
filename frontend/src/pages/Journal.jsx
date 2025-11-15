@@ -35,9 +35,9 @@ export default function Journal() {
         // Assuming your API returns data in the format: { data: [...] }
         const response = await listJournalsByPOI();
         const fetchedLocations = response.data;
-        
+
         setLocations(fetchedLocations);
-        
+
         // Set the first location as the centered card after data is fetched
         if (fetchedLocations.length > 0) {
           setCenteredCardId(fetchedLocations[0].id);
@@ -136,14 +136,28 @@ export default function Journal() {
         <div className='location-details'>
           <button className='back-button' onClick={handleBackToJournals}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            Back
           </button>
           <img src={selectedLocation.image} alt={selectedLocation.title} className='journal-location-image' />
-           <div id='location-name'>{selectedLocation.title}</div>
+          <div id='location-name'>{selectedLocation.title}</div>
           <p className='location-description'>{selectedLocation.longDescription}</p>
-          <button className='location-action-button' onClick={handleLocationJournal}>View Journal</button>
+          <div className='location-action-button' onClick={handleLocationJournal}>
+            <svg
+              viewBox="0 0 24 24"
+              class="icon"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="13" x2="16" y2="13"></line>
+              <line x1="8" y1="17" x2="16" y2="17"></line>
+            </svg>
+
+          </div>
         </div>
       </div>
     );

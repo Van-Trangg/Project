@@ -1,10 +1,9 @@
-// LocationJournal.jsx
+//LocationJournal.jsx
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { createJournal, updateJournal } from '../api/journal'; // <-- IMPORT API FUNCTIONS
+import { createJournal, updateJournal, deleteJournal } from '../api/journal'; // IMPORT API FUNCTIONS
 import '../styles/LocationJournal.css';
 
-// This data remains the same, as it's the single source of truth for our UI.
 const emotionData = [
   { emoji: '😴', label: 'Sleepy', value: 0 },
   { emoji: '😄', label: 'Joyful', value: 1 },
@@ -43,7 +42,7 @@ export default function LocationJournal() {
   const [isImageOptionsAnimating, setIsImageOptionsAnimating] = useState(false);
   const [originalDay, setOriginalDay] = useState(null);
   const [originalIndex, setOriginalIndex] = useState(null);
-  const [currentEntryId, setCurrentEntryId] = useState(null); // <-- NEW: Track entry ID for updates
+  const [currentEntryId, setCurrentEntryId] = useState(null); // <-- Track entry ID for updates
   const [currentEntry, setCurrentEntry] = useState({
     day: formatDate(new Date()),
     time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
@@ -55,6 +54,13 @@ export default function LocationJournal() {
   const [showEmotionPicker, setShowEmotionPicker] = useState(false);
   const [showImageOptions, setShowImageOptions] = useState(false);
   const addButtonRef = useRef(null);
+  
+  // States for deletion modals
+  const [showImageDeleteModal, setShowImageDeleteModal] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState(null);
+  const [showEntryDeleteModal, setShowEntryDeleteModal] = useState(false);
+  const [entryToDelete, setEntryToDelete] = useState(null);
+  const [touchTimer, setTouchTimer] = useState(null);
 
   // Effect for Emotion Picker Animation
   useEffect(() => {
@@ -192,7 +198,7 @@ export default function LocationJournal() {
     }
   };
 
-  const handleSaveAndBack = async () => { // <-- MAKE ASYNC
+  const handleSaveAndBack = async () => {
     const newEntry = { ...currentEntry };
     // Get the emotion label to send to the backend
     const emotionLabel = getEmotionData(currentEntry.emotion).label;
@@ -209,11 +215,19 @@ export default function LocationJournal() {
         // Call the update API
         await updateJournal(currentEntryId, payload);
 
-        // Update local state on success
+        // FIX: Update local state on success, ensuring the ID is preserved
         const updatedEntries = journalEntries.map(entry => {
           if (entry.day === originalDay) {
             const updatedSmallEntries = [...entry.smallEntries];
-            updatedSmallEntries[originalIndex] = newEntry;
+            
+            // Create the entry object for the UI state, making sure it has the ID
+            const entryWithId = {
+              ...newEntry, // Includes day, time, emotion (as number), content, images
+              id: currentEntryId, // CRITICAL: Add the ID back so the next edit works
+              emotion: emotionLabel // Store emotion as a string to match the API
+            };
+            
+            updatedSmallEntries[originalIndex] = entryWithId;
             return { ...entry, smallEntries: updatedSmallEntries };
           }
           return entry;
@@ -229,10 +243,13 @@ export default function LocationJournal() {
           images: newEntry.images,
         };
 
-        // Call the create API
-        await createJournal(payload);
+        // Call the create API and get the response
+        const response = await createJournal(payload);
+        
+        // Just add the ID from the response to our new entry
+        newEntry.id = response.id;
 
-        // Update local state on success
+        // Update local state with the entry that now has an ID
         const existingDayIndex = journalEntries.findIndex(entry => entry.day === newEntry.day);
 
         if (existingDayIndex !== -1) {
@@ -270,24 +287,132 @@ export default function LocationJournal() {
     setShowEmotionPicker(false);
   };
 
-  // Handler for image file selection
+  // Handler for image file selection - Updated to convert to base64
   const handleImageFileChange = (event) => {
     const files = event.target.files;
     if (files.length === 0) return;
 
-    const newImageUrls = [];
-    for (let i = 0; i < files.length; i++) {
-      const imageUrl = URL.createObjectURL(files[i]);
-      newImageUrls.push(imageUrl);
+    // Simple size check (e.g., limit to 5MB per image)
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    
+    for (const file of files) {
+      if (file.size > MAX_SIZE) {
+        alert(`Image ${file.name} is too large. Please select images under 5MB.`);
+        event.target.value = '';
+        return;
+      }
     }
 
-    setCurrentEntry({
-      ...currentEntry,
-      images: [...(currentEntry.images || []), ...newImageUrls]
+    const newImageUrls = [];
+    
+    // Convert each file to base64
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        // The result is a base64 string
+        newImageUrls.push(e.target.result);
+        
+        // Update state after all files are processed
+        if (newImageUrls.length === files.length) {
+          setCurrentEntry({
+            ...currentEntry,
+            images: [...(currentEntry.images || []), ...newImageUrls]
+          });
+          setShowImageOptions(false);
+          event.target.value = '';
+        }
+      };
+      
+      reader.readAsDataURL(file);
     });
+  };
 
-    setShowImageOptions(false);
-    event.target.value = '';
+  // Handle image click in editing mode
+  const handleImageClick = (index) => {
+    setImageToDelete(index);
+    setShowImageDeleteModal(true);
+  };
+
+  // Confirm image deletion
+  const confirmImageDelete = () => {
+    if (imageToDelete !== null) {
+      const updatedImages = [...currentEntry.images];
+      updatedImages.splice(imageToDelete, 1);
+      setCurrentEntry({ ...currentEntry, images: updatedImages });
+      setImageToDelete(null);
+      setShowImageDeleteModal(false);
+    }
+  };
+
+  // Cancel image deletion
+  const cancelImageDelete = () => {
+    setImageToDelete(null);
+    setShowImageDeleteModal(false);
+  };
+
+  // Handle entry touch start for long press
+  const handleEntryTouchStart = (day, index) => {
+    const timer = setTimeout(() => {
+      setEntryToDelete({ day, index });
+      setShowEntryDeleteModal(true);
+    }, 800); // 800ms for long press
+    setTouchTimer(timer);
+  };
+
+  // Handle entry touch end to cancel long press if released early
+  const handleEntryTouchEnd = () => {
+    if (touchTimer) {
+      clearTimeout(touchTimer);
+      setTouchTimer(null);
+    }
+  };
+
+  // Confirm entry deletion
+  const confirmEntryDelete = async () => {
+    if (entryToDelete) {
+      try {
+        const { day, index } = entryToDelete;
+        const dayEntry = journalEntries.find(e => e.day === day);
+        
+        if (dayEntry && dayEntry.smallEntries[index]) {
+          const entryId = dayEntry.smallEntries[index].id;
+          
+          // Call the delete API
+          await deleteJournal(entryId);
+          
+          // Update local state on success
+          const updatedEntries = [...journalEntries];
+          const dayEntryIndex = updatedEntries.findIndex(e => e.day === day);
+          
+          if (dayEntryIndex !== -1) {
+            const updatedSmallEntries = [...updatedEntries[dayEntryIndex].smallEntries];
+            updatedSmallEntries.splice(index, 1);
+            
+            // If no more entries for this day, remove the day entry
+            if (updatedSmallEntries.length === 0) {
+              updatedEntries.splice(dayEntryIndex, 1);
+            } else {
+              updatedEntries[dayEntryIndex].smallEntries = updatedSmallEntries;
+            }
+            
+            setJournalEntries(updatedEntries);
+          }
+        }
+        
+        setEntryToDelete(null);
+        setShowEntryDeleteModal(false);
+      } catch (error) {
+        console.error("Failed to delete journal entry:", error);
+        alert("Could not delete your entry. Please try again.");
+      }
+    }
+  };
+
+  // Cancel entry deletion
+  const cancelEntryDelete = () => {
+    setEntryToDelete(null);
+    setShowEntryDeleteModal(false);
   };
 
   const handleDayEdit = () => {
@@ -336,7 +461,6 @@ export default function LocationJournal() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
-              Back
             </button>
           </div>
 
@@ -361,6 +485,8 @@ export default function LocationJournal() {
                         key={index}
                         className='small-entry'
                         onClick={() => handleEntryClick(entry.day, index)}
+                        onTouchStart={() => handleEntryTouchStart(entry.day, index)}
+                        onTouchEnd={handleEntryTouchEnd}
                       >
                         <div className='small-entry-header'>
                           <span className='entry-time'>{smallEntry.time}</span>
@@ -373,7 +499,7 @@ export default function LocationJournal() {
                             {smallEntry.images.map((image, imgIndex) => (
                               <img
                                 key={imgIndex}
-                                src={image}
+                                src={image} // This will work with both URLs and base64 strings
                                 alt={`Entry image ${imgIndex + 1}`}
                                 className='entry-image'
                               />
@@ -411,14 +537,11 @@ export default function LocationJournal() {
             >
               <span>Text</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-
                 <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
-
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="8" y1="13" x2="16" y2="13"></line>
                 <line x1="8" y1="17" x2="16" y2="17"></line>
               </svg>
-
             </button>
           </div>
         </>
@@ -498,7 +621,14 @@ export default function LocationJournal() {
             {currentEntry.images && currentEntry.images.length > 0 && (
               <div className="editing-images">
                 {currentEntry.images.map((image, index) => (
-                  <img key={index} src={image} alt={`Entry image ${index}`} className="editing-image" />
+                  <div key={index} className="editing-image-container">
+                    <img 
+                      src={image} // This will work with both URLs and base64 strings
+                      alt={`Entry image ${index}`} 
+                      className="editing-image" 
+                      onClick={() => handleImageClick(index)}
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -592,6 +722,34 @@ export default function LocationJournal() {
                 </svg>
                 <span>Choose from Gallery</span>
               </label>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Delete Confirmation Modal */}
+      {showImageDeleteModal && (
+        <div className="delete-modal">
+          <div className="delete-modal-content">
+            <h3>Delete Image</h3>
+            <p>Are you sure you want to delete this image?</p>
+            <div className="delete-modal-buttons">
+              <button className="cancel-button" onClick={cancelImageDelete}>Cancel</button>
+              <button className="confirm-button" onClick={confirmImageDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Entry Delete Confirmation Modal */}
+      {showEntryDeleteModal && (
+        <div className="delete-modal">
+          <div className="delete-modal-content">
+            <h3>Delete Entry</h3>
+            <p>Are you sure you want to delete this journal entry?</p>
+            <div className="delete-modal-buttons">
+              <button className="cancel-button" onClick={cancelEntryDelete}>Cancel</button>
+              <button className="confirm-button" onClick={confirmEntryDelete}>Delete</button>
             </div>
           </div>
         </div>
