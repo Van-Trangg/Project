@@ -3,7 +3,10 @@ import { api } from './apiClient';
 // API functions for journal operations
 export const listJournals = () => api.get('/journal');
 
-export const listJournalsByPOI = () => api.get('/journal/by-poi/');
+export const listJournalsByPOI = (mapId) => {
+  const params = mapId ? { map_id: mapId } : {};
+  return api.get('/journal/by-poi/', { params });
+};
 
 export const listMyJournals = (poiId) => {
   const params = poiId ? { poi_id: poiId } : {};

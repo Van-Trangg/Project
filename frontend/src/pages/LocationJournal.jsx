@@ -198,89 +198,91 @@ export default function LocationJournal() {
     }
   };
 
-  const handleSaveAndBack = async () => {
-    const newEntry = { ...currentEntry };
-    // Get the emotion label to send to the backend
-    const emotionLabel = getEmotionData(currentEntry.emotion).label;
+  // In LocationJournal.jsx
 
-    try {
-      if (isEditingExistingEntry) {
-        // --- UPDATE EXISTING ENTRY ---
-        const payload = {
-          emotion: emotionLabel,
-          content: newEntry.content,
-          images: newEntry.images,
-        };
+const handleSaveAndBack = async () => {
+  // No need to create a copy here, we can build the payload directly
+  const emotionLabel = getEmotionData(currentEntry.emotion).label;
 
-        // Call the update API
-        await updateJournal(currentEntryId, payload);
+  try {
+    if (isEditingExistingEntry) {
+      // --- UPDATE EXISTING ENTRY ---
+      const payload = {
+        emotion: emotionLabel,
+        content: currentEntry.content,
+        images: currentEntry.images,
+      };
 
-        // FIX: Update local state on success, ensuring the ID is preserved
-        const updatedEntries = journalEntries.map(entry => {
-          if (entry.day === originalDay) {
-            const updatedSmallEntries = [...entry.smallEntries];
-            
-            // Create the entry object for the UI state, making sure it has the ID
-            const entryWithId = {
-              ...newEntry, // Includes day, time, emotion (as number), content, images
-              id: currentEntryId, // CRITICAL: Add the ID back so the next edit works
-              emotion: emotionLabel // Store emotion as a string to match the API
-            };
-            
-            updatedSmallEntries[originalIndex] = entryWithId;
-            return { ...entry, smallEntries: updatedSmallEntries };
-          }
-          return entry;
-        });
-        setJournalEntries(updatedEntries);
+      // Call the update API
+      await updateJournal(currentEntryId, payload);
 
-      } else {
-        // --- CREATE NEW ENTRY ---
-        const payload = {
-          poi_id: locationData.id, // The POI's ID is required for creation
-          emotion: emotionLabel,
-          content: newEntry.content,
-          images: newEntry.images,
-        };
-
-        // Call the create API and get the response
-        const response = await createJournal(payload);
-        
-        // Just add the ID from the response to our new entry
-        newEntry.id = response.id;
-
-        // Update local state with the entry that now has an ID
-        const existingDayIndex = journalEntries.findIndex(entry => entry.day === newEntry.day);
-
-        if (existingDayIndex !== -1) {
-          const updatedEntries = [...journalEntries];
-          updatedEntries[existingDayIndex].smallEntries.push(newEntry);
-          setJournalEntries(updatedEntries);
-        } else {
-          setJournalEntries([
-            ...journalEntries,
-            {
-              day: newEntry.day,
-              smallEntries: [newEntry]
-            }
-          ]);
+      // Update local state on success
+      const updatedEntries = journalEntries.map(entry => {
+        if (entry.day === originalDay) {
+          const updatedSmallEntries = [...entry.smallEntries];
+          
+          // Create the entry object for the UI state
+          const entryWithId = {
+            ...currentEntry, // Use currentEntry directly
+            id: currentEntryId, // Ensure the ID is preserved
+            emotion: emotionLabel // Store emotion as string to match API response
+          };
+          
+          updatedSmallEntries[originalIndex] = entryWithId;
+          return { ...entry, smallEntries: updatedSmallEntries };
         }
+        return entry;
+      });
+      setJournalEntries(updatedEntries);
+
+    } else {
+      // --- CREATE NEW ENTRY ---
+      const payload = {
+        poi_id: locationData.id,
+        emotion: emotionLabel,
+        content: currentEntry.content,
+        images: currentEntry.images,
+      };
+
+      const response = await createJournal(payload);
+      const newEntryWithId = {
+        ...currentEntry, // day, time, emotion (as number), content, images
+        id: response.data.id, // <-- CRITICAL FIX: Get the ID from response.data
+        emotion: emotionLabel, // Store emotion as string to match the API
+      };
+
+      // Update local state with the entry that now has an ID
+      const existingDayIndex = journalEntries.findIndex(entry => entry.day === newEntryWithId.day);
+
+      if (existingDayIndex !== -1) {
+        const updatedEntries = [...journalEntries];
+        updatedEntries[existingDayIndex].smallEntries.push(newEntryWithId);
+        setJournalEntries(updatedEntries);
+      } else {
+        setJournalEntries([
+          ...journalEntries,
+          {
+            day: newEntryWithId.day,
+            smallEntries: [newEntryWithId]
+          }
+        ]);
       }
-
-      // Exit editing mode and reset tracking variables on success
-      setEditingMode(false);
-      setIsEditingExistingEntry(false);
-      setOriginalDay(null);
-      setOriginalIndex(null);
-      setCurrentEntryId(null);
-      setEditingField(null);
-
-    } catch (error) {
-      console.error("Failed to save journal entry:", error);
-      alert("Could not save your entry. Please try again.");
-      // Don't exit editing mode on error, so user can retry
     }
-  };
+
+    // Exit editing mode and reset tracking variables on success
+    setEditingMode(false);
+    setIsEditingExistingEntry(false);
+    setOriginalDay(null);
+    setOriginalIndex(null);
+    setCurrentEntryId(null);
+    setEditingField(null);
+
+  } catch (error) {
+    console.error("Failed to save journal entry:", error);
+    // You can show a more user-friendly error message here
+    alert("Could not save your entry. Please try again.");
+  }
+};
 
   const handleEmotionSelect = (emotion) => {
     setCurrentEntry({ ...currentEntry, emotion });

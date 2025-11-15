@@ -9,9 +9,6 @@ const CITIES = [
   { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817, image: '/src/public/Map/pq.png' },
 ];
 
-// The ALL_DATA constant is no longer needed as we will fetch from the API.
-// const ALL_DATA = [ ... ];
-
 export default function Journal() {
 
   // --- STATE MANAGEMENT ---
@@ -32,8 +29,8 @@ export default function Journal() {
       try {
         setLoading(true);
         setError(null);
-        // Assuming your API returns data in the format: { data: [...] }
-        const response = await listJournalsByPOI();
+        // FIX: Pass the selected city's id as map_id to filter the results
+        const response = await listJournalsByPOI(selectedCity.id);
         const fetchedLocations = response.data;
 
         setLocations(fetchedLocations);
@@ -51,7 +48,7 @@ export default function Journal() {
     };
 
     fetchData();
-  }, []); // Empty dependency array means this runs once on component mount
+  }, [selectedCity]); // Add selectedCity as a dependency to re-fetch when city changes
 
   // --- HANDLER FUNCTIONS ---
   const handleCityChange = (city) => {
