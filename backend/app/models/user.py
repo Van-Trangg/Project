@@ -20,3 +20,4 @@ class User(Base):
     avatar_url: Mapped[str] = mapped_column(String, default="")
 
     journals = relationship("Journal", back_populates="author")
+    transactions = relationship("Transaction", back_populates="owner")
