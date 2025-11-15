@@ -23,14 +23,18 @@ def list_journals(
 def list_journals_by_poi(
     db: DbDep,
     current_user: User = CurrentUser,
+    map_id: int = Query(None),
 ):
-    journals_by_user = (
+    query = (
         db.query(Journal)
         .options(joinedload(Journal.poi))
         .filter(Journal.author_id == current_user.id)
-        .order_by(Journal.created_at.desc())
-        .all()
     )
+    
+    if map_id is not None:
+        query = query.filter(Journal.poi.has(POI.map_id == map_id))
+    
+    journals_by_user = query.order_by(Journal.created_at.desc()).all()
 
     if not journals_by_user:
         return []
