@@ -1,10 +1,11 @@
 .map-page {
+  position: sticky;
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(#ACC729 20%, #F5F9F0 100%);
-  min-height: 100vh;
   color: #344e41;
-  position: relative;
-  /* padding-bottom: 70px; */
+  display: flex;
+  max-height: 100dvh;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -13,12 +14,9 @@
   position: sticky;
   width: 100%;
   height: 15dvh;
-  top: 0;
-  background: linear-gradient(#ACC729 39%, #F5F9F0 100%);
+  background: linear-gradient(#ACC729 39%, #F5F9F0 130%);
   display: flex;
   align-items: center;
-  z-index: 1000;
-  padding: 0 16px;
 }
 
 /* Left spacer — takes all available space on the left */
@@ -48,9 +46,7 @@
   transition: background 0.2s;
   flex-shrink: 0;
 }
-.dropdown-toggle:hover {
-  transform: translateY(-2px);
-}
+
 .dropdown-arrow {
   width: 40px;
   height: 40px;
@@ -60,20 +56,10 @@
 
 /* Map Container */
 .map-container {
-  position: sticky;
-  height: 100vh;
-  width: 100%;
-}
-
-.map-placeholder {
-  background: transparent;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
+  height: 85dvh;
   position: relative;
+  width: 100%;
 }
-
 .map-loading {
   display: flex;
   align-items: center;
@@ -109,18 +95,16 @@
   transform: translate(-50%, -50%);
 }
 
-/* Popup Overlay */
-/* Overlay (darkens background) */
 .pin-popup-overlay {
   position: fixed;
   inset: 0;
   background: rgba(255, 255, 255, 0.4);
   display: flex;
-  flex-direction: column;     /* ← vertical stack */
-  justify-content: flex-end;  /* ← push card to bottom */
+  flex-direction: column;     
+  justify-content: flex-end;  
   align-items: center;
   z-index: 1000;
-  padding-top: 80px;          /* space for top status bar */
+  padding-top: 80px;          
   overflow-y: scroll;
 }
 
@@ -139,6 +123,16 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  animation: slideUp 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* Image at top */
@@ -152,7 +146,6 @@
   border-radius: 30px 30px 0 0;
 }
 
-/* Close X */
 .popup-close-btn {
   position: absolute;
   top: 20px;
@@ -171,10 +164,8 @@
   z-index: 10;
 }
 
-/* Green curved content area */
-/* Content – grows to fill space */
 .popup-content {
-  flex: 0;                         /* ← takes remaining space */
+  flex: 0;                       
   background: #556B2F;
   color: white;
   padding-left: 20px;
@@ -251,19 +242,20 @@
   transform: translateY(0);
 }
 
-/* FULL-SCREEN OVERLAY – COVERS MAP & NAVBAR */
 .city-fullscreen-overlay {
   position: fixed;
   width: 100%;
-  height: 100dvh;
+  height: 85dvh;
   background: linear-gradient(#F5F9F0 25%, #C6D870 100%);
-  z-index: 9999; /* Above everything */
+  z-index: 9999; 
   display: flex;
   flex-direction: column;
-  animation: fadeIn 0.3s ease;
-  overflow: hidden; /* Prevent double scroll */
+  overflow: hidden; 
   position: relative;
+  animation: fadeIn 0.25s ease-in;
 }
+
+
 .overlay-inner {
   flex: 1;
   width: 100%;
@@ -278,7 +270,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 50px;
-  padding: 70px 70px;
+  padding: 60px 60px;
   justify-items: center;
 }
 
@@ -290,9 +282,27 @@
   justify-items: center;
   padding: 0;
   width: 100%;
+  transition: transform 0.3s ease;
+  transform: scale(1); 
 }
 .city-card:hover {
-  transform: scale(1.05); /* Slight zoom on hover */
+  transform: scale(1.1); 
+}
+
+.city-card:hover .city-image {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .city-image {
@@ -320,8 +330,34 @@
   to { opacity: 1; }
 }
 
+.map-center-bubble {
+  position: fixed;
+  right: 13px;
+  bottom: 13px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border-color: transparent;
+  background-color: #F5F9F0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.55);
+  z-index: 1000;
+  align-content: center;
+}
+
+.map-center-bubble:hover {
+  transform: scale(1.1);
+  transform: translateX(-10%);
+  transform: translateY(-10%);
+}
+
+.target-icon { 
+  height: 25px;
+  width: 25px;
+}
+
 .check-in-page {
   display: flex;
+  height: 100dvh;
   flex-direction: column;
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(#ACC729 20%, #F5F9F0 100%);
@@ -332,7 +368,7 @@
 }
 
 .top-bar {
-  margin-top: 16px;
+  margin-top: 15px;
   margin-left: 5dvw;
   height: 18dvh;
   font-size: 25px;
@@ -340,6 +376,8 @@
 }
 
 .exit-btn {
+  height: 18px;
+  width: 18px;
   background: transparent;
   border: 0px;
 }
@@ -413,13 +451,13 @@
 
 .popup-card {
   position: relative;
+  left: 0;
   bottom: 0;
+  align-self: center;
   display: flex;
   flex-direction: column;
   align-items: center;  
   margin-top: auto;
-  left: 50%;
-  transform: translateX(-50%);
   width: 90vw;
   height: 30vh;
   min-height: 300px;
@@ -427,11 +465,24 @@
   border-radius: 30px 30px 0 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   background: #556B2F; /* fallback */
+  animation: slideUp 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 .spark {
   position: absolute;
-  left: 2.8%;
+  left: 5%;
+  top: 1%;
   padding-top: 30px;
+  height: 70px;
+  animation: wiggle 3s ease-in-out infinite;
 }
 .first-rew {
   align-self: flex-start;
@@ -449,7 +500,7 @@
 }
 
 .point {
-  display:flex;
+  display: flex;
   flex-direction: row;
   align-self: flex-start;
   margin-left: 18%;
@@ -458,7 +509,56 @@
   color: #F0F9CA;
   gap: 8px;
   margin-top: 10px;
+  animation: countUp 1s ease-out, wiggle 3s ease-in-out;
 }
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-5deg);
+  }
+  20% {
+    transform: rotateZ(3deg);
+  }
+  25% {
+    transform: rotateZ(-3deg);
+  }
+  30% {
+    transform: rotateZ(2deg);
+  }
+  35% {
+    transform: rotateZ(-2deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
+.popup-card.checked-in .spark,
+.popup-card.checked-in .ecopoint-icon {
+  opacity: 0.6; 
+}
+.popup-card.checked-in .spark {
+  animation: none;
+}
+.popup-card.checked-in .first-rew,
+.popup-card.checked-in .point {
+  color: #A2B269; 
+}
+
 .checkin-progress-bar {
   margin-top: 20px;
   width: 100%;
@@ -469,7 +569,7 @@
   left: 10%;
   align-self: flex-start;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: #F0F9CA;
 }
 .track-bar {
@@ -487,34 +587,61 @@
   left: 1%;
   top: 50%;
   transform: translateY(-50%);
-  width: 60%;
+  max-width: 80%;
   height: 10px;
   background: #7CB342;
   border-radius: 20px;
+  animation: fillProgress 1.5s ease-out forwards;
+}
+@keyframes fillProgress {
+  from {
+    width: 0;
+  }
 }
 .expectant-bar {
   position: absolute;
   left: 1%;
   top: 50%;
   transform: translateY(-50%);
-  width: 80%;
   height: 10px;
   background: rgba(124, 179, 66, 0.65);
   border-radius: 20px;
+  opacity: 0;
+  animation: contFillProgress ease-out 2.5s forwards;
+}
+@keyframes contFillProgress {
+  from {
+    width: 0px;
+  }
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 .prog-num{
-  position: relative;
-  align-self: flex-end;
-  right: 0px;
+  position: absolute;
+  right: 11%;
   margin-top: 3px;
-  transform: translateX(+19%);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 700;
   color: #D4A722;
+}
+.prog-num-disabled{
+  position: absolute;
+  right: 11%;
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #EFF5D2;
 }
 
 /* survey */
-.back-btn {
+.checkin-back-btn {
   margin-left:7%;
   margin-top: 8%;
 }
@@ -539,6 +666,7 @@
   font-weight: 600;
   color: #F0F9CA;
   gap: 8px;
+  margin-top: 15px;
   margin-bottom: 15px;
 }
 .line-vehicle {
@@ -558,7 +686,7 @@
 }
 .vehicle-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 40px;
   padding: 30px 30px;
   justify-items: center;
@@ -617,6 +745,7 @@
   border-radius: 30px 30px 0 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   background: #556B2F; 
+  animation: slideUp 0.5s ease-in-out;
 }
 
 .popup-stat-receipt {
@@ -637,8 +766,54 @@
   display:flex;
   flex-direction: row;
   align-self: center;
-  font-size: 30px;
+  font-size: 40px;
   font-weight: 600;
   color: #F0F9CA;
   gap: 8px;
+  animation: reveal 0.8s ease-out, wiggle 2s ease-in-out 1s;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.page-transitioning {
+  opacity: 0.8;
+  transform: scale(0.98);
+  transition: opacity 0.3s, transform 0.3s ease;
+}
+.check-in-page.page-enter {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.checkin-btn-disabled {
+  display: fixed;
+  align-self: center;
+  text-align: center;
+  width: 160px;
+  color: white;
+  background: #3C4136;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 30px;
+  padding: 15px 30px;
+  margin-top: auto;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

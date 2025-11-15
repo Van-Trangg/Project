@@ -1,12 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from "react-router-dom";
-import { MaptilerLayer } from "@maptiler/leaflet-maptilersdk"
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { listPlaces, getPois, percentageChecked } from '../api/map'
 
-import { listPlaces, getPois } from '../api/map'
 import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
 import { customIcon } from '../components/Pin';
+
+function MapController({ onMapReady }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (map) {
+      onMapReady(map);
+      //console.log('Map ready via useMap');
+    }
+  }, [map, onMapReady]);
+  return null; // Renders nothing
+}
 
 export default function Map() {
   const [maps, setMaps] = useState([])
@@ -14,15 +25,15 @@ export default function Map() {
   const [pois, setPois] = useState([])
   const [loadingMaps, setLoadingMaps] = useState(true);
   const [loadingPois, setLoadingPois] = useState(false);
-  const [userId] = useState(1) // TODO: get from auth context
+  const [percentLoading, setPercentLoading] = useState(false);
+  const [percentCache, setPercentCache] = useState({});   // { poiId: percent }
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
-  
   const navigate = useNavigate();
-
   const handleCheckIn = () => {
     if (selectedPin) {
-      navigate(`/checkin/${selectedPin.id}`, { state: { poi: selectedPin, map: selectedMap } }); // go to specific check-in page
+      document.body.classList.add('page-transitioning');
+      navigate(`/checkin/${selectedPin.id}`, { state: { poi: selectedPin, map: selectedMap} }); // go to specific check-in page
     }
   }
   // Load maps
@@ -38,19 +49,54 @@ export default function Map() {
   }, [])
 
   // Load POIs when map changes
+  // useEffect(() => {
+  //   if (!selectedMap) return;
+  //   setLoadingPois(true);
+  //   if (selectedMap) {
+  //     getPois(selectedMap.id)
+  //       .then(res => setPois(res.data || []))
+  //       .catch(err => {
+  //         console.error('Failed to load POIs', err);
+  //         setPois([]);
+  //     })
+  //     .finally(() => setLoadingPois(false));
+  //   }
+  // }, [selectedMap])
+
   useEffect(() => {
     if (!selectedMap) return;
+
     setLoadingPois(true);
-    if (selectedMap) {
-      getPois(selectedMap.id, userId)
-        .then(res => setPois(res.data || []))
-        .catch(err => {
-          console.error('Failed to load POIs', err);
-          setPois([]);
+    setPercentCache({});               // clear cache for the previous city
+
+    const poisPromise = getPois(selectedMap.id);
+
+    const percentagesPromise = poisPromise.then(res => {
+      const list = res.data || [];
+      return Promise.all(
+        list.map(poi =>
+          percentageChecked(poi.id)
+            .then(r => ({ id: poi.id, percent: r.data?.percent ?? 0 }))
+            .catch(() => ({ id: poi.id, percent: 0 }))   // swallow errors
+        )
+      );
+    });
+
+    Promise.all([poisPromise, percentagesPromise])
+      .then(([poisRes, percents]) => {
+        setPois(poisRes.data || []);
+
+        const cache = {};
+        percents.forEach(p => (cache[p.id] = p.percent));
+        setPercentCache(cache);
+        console.log('Percent cache updated:', cache);
+      })
+      .catch(err => {
+        console.error('Failed to load map data', err);
+        setPois([]);
       })
       .finally(() => setLoadingPois(false));
-    }
-  }, [selectedMap, userId])
+  }, [selectedMap]);
 
   const handleCityChange = (city) => {
     setSelectedMap(city)
@@ -58,15 +104,45 @@ export default function Map() {
   }
 
   useEffect(() => {
-    if (selectedPin) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [selectedPin]);
+  }, []);
+
+  const mapRef = useRef(null);
+
+  const flyToCityCenter = (e) => {
+    e.stopPropagation();
+
+    // ---- DEBUG ----
+    console.log('fly button clicked');
+    console.log('mapRef.current =', mapRef.current);
+    console.log('selectedMap =', selectedMap);
+    // --------------
+
+    if (!mapRef.current) {
+      console.warn('Map instance not ready yet');
+      return;
+    }
+    if (!selectedMap) {
+      console.warn('No city selected');
+      return;
+    }
+
+    const lat = parseFloat(selectedMap.center_lat);
+    const lng = parseFloat(selectedMap.center_lng);
+
+    if (isNaN(lat) || isNaN(lng)) {
+      console.error('Bad coordinates', selectedMap.center_lat, selectedMap.center_lng);
+      return;
+    }
+
+    mapRef.current.flyTo([lat, lng], 13, {
+      duration: 1.2,
+      easeLinearity: 0.5,
+    });
+  };
 
   return (
   <div className="map-page">
@@ -105,58 +181,46 @@ export default function Map() {
     )}
     {!dropdownOpen && (
       <div className="map-container">
-        {/* {loading ? (
+        {loadingMaps ? (
           <div className="map-loading">Loading map…</div>
         ) : (
-          <div
-            className="map-placeholder"
-            style={{ backgroundImage: `url(${mapPlaceholder})` }}
-          >
-            {pois.map((pin) => {
-              const pos = latLngToPercent(pin.lat, pin.lng, selectedMap)
-              return (
-                <button
-                  key={pin.id}
-                  className="map-pin"
-                  style={{
-                    top: pos.top,
-                    left: pos.left,
-                  }}
-                  onClick={() => setSelectedPin(pin)}
-                >
-                  <span className="pin-icon"></span>
-                </button>
-              )
-            })}
-          </div>
-        )} */}
-      {loadingMaps ? (
-        <div className="map-loading">Loading map…</div>
-      ) :(
-      <MapContainer
-        center={[selectedMap.center_lat, selectedMap.center_lng]}
-        zoom={13}                     
-        style={{ height: '100%', width: '100%' }}
-        scrollWheelZoom={true}
-      >
-        <TileLayer
-          attribution='&copy; OpenStreetMap &copy; CARTO'
-          url="http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-        />  
-        {pois.map((pin) => (
-          <Marker
-            key={pin.id}
-            position={[pin.lat, pin.lng]}
-            
-            icon = {customIcon}
-            eventHandlers={{
-              click: () => setSelectedPin(pin),
+        <>
+          <MapContainer
+            center={[selectedMap.center_lat, selectedMap.center_lng]}
+            zoom={13}                     
+            style={{ height: '100%', width: '100%' }}
+            scrollWheelZoom={true}
+            whenCreated={(map) => { 
+              mapRef.current = map;
+              console.log('Map instance saved'); 
             }}
           >
-          </Marker>
-        ))}
-      </MapContainer>
-    )}
+            <TileLayer
+              attribution='&copy; OpenStreetMap &copy; CARTO'
+              url="http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            />  
+            {pois.map((pin) => (
+              <Marker
+                key={pin.id}
+                position={[pin.lat, pin.lng]}
+                
+                icon = {customIcon}
+                eventHandlers={{
+                  click: () => setSelectedPin(pin),
+                }}
+              >
+              </Marker>
+            ))}
+            <MapController onMapReady={(map) => { mapRef.current = map; }} />
+          </MapContainer>
+          <button 
+            className = 'map-center-bubble'
+            onClick={flyToCityCenter}
+          >
+            <img src = '/src/public/focus.png' className = 'target-icon'></img>
+          </button>
+        </>    
+        )}
       </div>
     )}
     {/* Pin Popup */}
@@ -175,7 +239,8 @@ export default function Map() {
         <div className="popup-content">
           <h3 className="popup-title">{selectedPin.name}</h3>
           <div className="popup-stat">
-            {selectedPin.score + '%'|| '10%'} of users have checked in here
+            {percentLoading ? '…' : percentCache[selectedPin?.id] !== undefined
+            ? `${percentCache[selectedPin.id]}%`: '–'} of users have checked in here
           </div>
           <p className="popup-desc">{selectedPin.description}</p>
         </div>

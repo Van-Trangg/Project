@@ -17,9 +17,43 @@ const ALL_DATA = [
     description: 'A pristine island home to hundreds of playful monkeys.',
     longDescription: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.',
     image: 'https://static.vinwonders.com/2022/03/dao-khi-nha-trang.jpg',
-    entries: [ // Entries are nested inside the location object
-      { id: 101, date: 'October 25, 2025', title: 'First Visit', content: 'This was my first time visiting this place. The scenery was breathtaking and I enjoyed every moment of my stay here.', image: 'https://picsum.photos/seed/dao-khi-1/300/200.jpg' },
-      { id: 102, date: 'November 5, 2025', title: 'Monkey Feeding', content: 'I had an amazing encounter with the local wildlife today. I saw so many different species and learned a lot about their habitat.', image: 'https://picsum.photos/seed/dao-khi-2/300/200.jpg' }
+    entries: [
+      {
+        day: '25/10/2025',
+        smallEntries: [
+          {
+            time: '09:30 AM',
+            emotion: 7,
+            content: 'This was my first time visiting this place. The scenery was breathtaking and I enjoyed every moment of my stay here.',
+            images: [
+              'https://picsum.photos/seed/dao-khi-1/300/200.jpg',
+              'https://picsum.photos/seed/dao-khi-1/300/200.jpg',
+              'https://picsum.photos/seed/dao-khi-1/300/200.jpg'
+            ]
+          },
+          {
+            time: '10:30 AM',
+            emotion: 7,
+            content: 'This was my first time visiting this place. The scenery was breathtaking and I enjoyed every moment of my stay here.',
+            images: [
+              'https://picsum.photos/seed/dao-khi-1/300/200.jpg'
+            ]
+          }
+        ]
+      },
+      {
+        day: '05/11/2025',
+        smallEntries: [
+          {
+            time: '02:15 PM',
+            emotion: 8,
+            content: 'I had an amazing encounter with the local wildlife today. I saw so many different species and learned a lot about their habitat.',
+            images: [
+              'https://picsum.photos/seed/dao-khi-2/300/200.jpg'
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -28,8 +62,20 @@ const ALL_DATA = [
     description: 'A vast, serene mangrove forest, a UNESCO Biosphere Reserve.',
     longDescription: 'Khám phá vẻ đẹp của một trong những khu rừng ngập mặn quan trọng nhất thế giới. Khu dự trữ sinh quyển của UNESCO là nơi sinh sống của đa dạng sinh vật và cung cấp một lối thoát khỏi thành phố ồn ào, yên bình.',
     image: 'https://picsum.photos/seed/mangrove/800/600.jpg',
-    entries: [ // Entries are nested inside the location object
-      { id: 201, date: 'September 15, 2025', title: 'Kayaking Adventure', content: 'Explored the mangrove forest by kayak. It was so peaceful and beautiful.', image: 'https://picsum.photos/seed/mangrove-1/300/200.jpg' }
+    entries: [
+      {
+        day: '15/09/2025',
+        smallEntries: [
+          {
+            time: '10:30 AM',
+            emotion: 6,
+            content: 'Explored the mangrove forest by kayak. It was so peaceful and beautiful.',
+            images: [
+              'https://picsum.photos/seed/mangrove-1/300/200.jpg'
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -38,7 +84,7 @@ const ALL_DATA = [
     description: 'A protected area for diverse native wildlife.',
     longDescription: 'Trải nghiệm sự đa dạng sinh vật hoang dã trong môi trường sống tự nhiên của chúng. Đây là một khu bảo tồn phải đến cho những ai yêu thích thiên nhiên, nơi bạn có thể nhìn thấy các loài động vật quý hiếm và tìm hiểu về nỗ lực bảo tồn chúng.',
     image: 'https://picsum.photos/seed/wildlife/800/600.jpg',
-    entries: [] // This location has no entries yet
+    entries: []
   },
   {
     id: 4,
@@ -46,7 +92,7 @@ const ALL_DATA = [
     description: 'A journey through the iconic Mekong Delta.',
     longDescription: 'Bắt đầu cuộc phiêu lưu qua những con sông uốn lượn của đồng bằng. Trải nghiệm văn hóa địa phương, tham quan các chợ nổi và tận hưởng cảnh quan tuyệt đẹp của khu vực đặc trưng này.',
     image: 'https://picsum.photos/seed/river/800/600.jpg',
-    entries: [] // This location has no entries yet
+    entries: []
   }
 ];
 

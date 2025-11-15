@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { listRewardsForUser, listRewards } from '../api/reward'
+import { useNavigate } from 'react-router-dom'
+import { listBadgesForUser, listBadges } from '../api/reward'
 import BadgeCard from '../components/BadgeCard'
 import '../styles/Badges.css'
-
+import backIcon from '../public/back.png'
+import { baseURL } from '../api/apiClient'
 function groupByThreshold(items){
   const map = {}
   items.forEach(it => {
@@ -15,26 +17,34 @@ function groupByThreshold(items){
 }
 
 export default function Badges(){
+  const navigate = useNavigate()
   const [badges, setBadges] = useState([])
-  const [groups, setGroups] = useState([])
+  const [versions, setVersions] = useState([])
   const [user, setUser] = useState(null)
   const [selected, setSelected] = useState(null)
+  const imgFor = (img) => {
+    if (!img) return null
+    const s = String(img)
+    if (s.startsWith('http') || s.startsWith('/')) return img
+    return `${baseURL}/badges/${img}`
+  }
 
   useEffect(()=>{
     // try to fetch user-specific rewards (includes unlocked flag and eco_points)
-    listRewardsForUser().then(r => {
-      const payload = r.data || { rewards: [] }
-      setUser({ eco_points: payload.eco_points })
-      setBadges(payload.rewards || [])
-      setGroups(groupByThreshold(payload.rewards || []))
+    listBadgesForUser().then(r => {
+      const payload = r.data || { versions: [] }
+        setUser({
+            eco_points: payload.eco_points,
+            total_eco_points:payload.eco_points
+        })
+      setVersions(payload.versions || [])
     }).catch(()=>{
       // fallback to public listing if user not authenticated
-      listRewards().then(r => {
-        setBadges(r.data || [])
-        setGroups(groupByThreshold(r.data || []))
+      listBadges().then(r => {
+        // public listing returns an array of versions (from backend)
+        setVersions(r.data || [])
       }).catch(()=>{
-        setBadges([])
-        setGroups([])
+        setVersions([])
       })
     })
   }, [])
@@ -54,17 +64,22 @@ export default function Badges(){
 
   return (
     <div className="badges-page">
+
       <header className="badges-header">
+      {/* top-left back button to match other pages */}
+      <button className="back-btn" onClick={() => navigate('/profile')} title="Back">
+        <img src={backIcon} alt="Back" />
+      </button>
         <h1>Badges</h1>
-        <p className="badges-sub">Collect badges by reaching milestones. Your current points: <strong>{user ? user.eco_points : '—'}</strong></p>
+        <p className="badges-sub">Collect badges by reaching milestones. Your current points: <strong>{user ? user.total_eco_points : '—'}</strong></p>
       </header>
 
       <div className="badges-grid">
-        {groups.map(group => (
-          <section className="badge-group" key={group.threshold}>
-            <h3 className="group-title">Unlock at {group.threshold} pts</h3>
-            <div className="group-list">
-              {group.items.map(b => (
+        {versions.map(v => (
+          <section className="badge-version" key={v.version}>
+            <h2 className="version-title">{v.title || `Version ${v.version}`}</h2>
+            <div className="version-list">
+              {v.badges.map(b => (
                 <BadgeCard key={b.id} badge={b} unlocked={isUnlocked(b)} onClick={handleClick} />
               ))}
             </div>
@@ -76,18 +91,21 @@ export default function Badges(){
         <div className="badge-modal" onClick={closeModal}>
           <div className="badge-modal-inner" onClick={e=>e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}>✕</button>
-            <div className="modal-stamp">
-              <div className="stamp-large">{selected.badge ? selected.badge.charAt(0) : '🏅'}</div>
-            </div>
-            <h2 className="modal-title">{selected.badge}</h2>
-            <div className="modal-info">Requires <strong>{selected.threshold}</strong> pts to unlock.</div>
-            <div className="modal-actions">
-              {isUnlocked(selected.threshold) ? (
-                <button className="btn primary">Unlocked</button>
+
+            <div className="modal-image-wrap">
+              {imgFor(selected.image) ? (
+                <img className="modal-image" src={imgFor(selected.image)} alt={selected.badge} />
               ) : (
-                <button className="btn disabled">Locked</button>
+                <div className="stamp-large">{selected.badge ? selected.badge.charAt(0) : '🏅'}</div>
               )}
             </div>
+
+            <div className="modal-title-pill">{selected.badge}</div>
+            <div className="modal-sub">
+              <strong>Obtained on {new Date().toLocaleDateString()}</strong>
+            </div>
+
+            <div className="modal-desc">{selected.description}</div>
           </div>
         </div>
       )}

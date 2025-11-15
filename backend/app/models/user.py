@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.database import Base
 
@@ -18,6 +18,9 @@ class User(Base):
     eco_points: Mapped[int] = mapped_column(Integer, default=0) 
     total_eco_points: Mapped[int] = mapped_column(Integer, default=0, index=True) 
     avatar_url: Mapped[str] = mapped_column(String, default="")
+    phone_public: Mapped[bool] = mapped_column(Boolean, default=True)
+    address_public: Mapped[bool] = mapped_column(Boolean, default=True)
+    email_public: Mapped[bool] = mapped_column(Boolean, default=True)
 
     journals = relationship("Journal", back_populates="author")
     transactions = relationship("Transaction", back_populates="owner")

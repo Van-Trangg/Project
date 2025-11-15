@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react'
-import { checkin, confirmVehicle } from '../api/map'
+import { checkin, confirmVehicle, checked, getProgress, percentageChecked } from '../api/map'
+import { getProfile } from '../api/profile'
 import '../styles/Map.css'
 
 const VEHICLES = {
-  // walk: { name: "Walk", bonus: 20, image: 'src/public/Map/walk.png' },
   bike: { name: "Bicycle", bonus: 20, image: '/src/public/Map/bike.png' },
   bus: { name: "Bus", bonus: 10, image: '/src/public/Map/bus.png' },
   ev_scooter: { name: "Motorbike", bonus: 0, image: '/src/public/Map/scooter.png' },
@@ -16,26 +16,77 @@ export default function CheckIn() {
   const { poi, map } = state || {};
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [step, setStep] = useState("confirm");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [earnedPoints, setEarnedPoints] = useState(0);
+  const [currentProgress, setCurrentProgress] = useState(0);
+  const [percentCheckedIn, setPercent] = useState(0);
+  const [maxProgress, setMaxProgress] = useState(0);
   const [receipt, setReceipt] = useState(null)
-  const [userId] = useState(0) // from auth
+  const [checkedIn, setCheckedIn] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   
+  // Load user profile
+  useEffect(() => {
+    setLoadingProfile(true);
+    getProfile()
+      .then(r => setUser(r.data))
+      .catch(err => {
+          console.error('Failed to load profile', err)
+      })
+    console.log('User profile loaded in check-in page');
+    console.log(user);
+    checked(poi.id)
+      .then(res => {
+        setCheckedIn(res.data.checked);
+      })
+      .catch(err => {
+          console.error('Failed to check check-in status', err);
+      })
+    getProgress()
+      .then(res => {
+        setCurrentProgress(res.data.progressCurrent);
+        setMaxProgress(res.data.progressMax);
+      })
+      .catch(err => {
+          console.error('Failed to load progress', err)
+      })
+    percentageChecked(poi.id)
+      .then(res => {
+        setPercent(res.data.percent);
+      })
+      .catch(err => {
+          console.error('Failed to load percentage checked-in', err)
+      })
+      .finally(setLoadingProfile(false));
+  }, [])
+
+  //Animation
+  useEffect(() => {
+    document.body.classList.remove('page-transitioning');
+    
+    const pageContent = document.querySelector('.check-in-page');
+    if (pageContent) {
+      pageContent.classList.add('page-enter');
+    }
+  }, []);
+
   // Mock GPS
   const mockGps = {
     user_lat: poi.lat + 0.0001,
     user_lng: poi.lng + 0.0001
   }
+
   const handleCheckIn = async () => {
     if (isCheckingIn) return;
 
     setIsCheckingIn(true);
     try {
       const res = await checkin({
-        user_id: userId,
+        user_id: user.id,
         poi_id: poi.id,
+        //Caafn theem route laays user latlng
         user_lat: mockGps.user_lat,
         user_lng: mockGps.user_lng,
       });
@@ -44,9 +95,8 @@ export default function CheckIn() {
     if (!res?.data) {
       throw new Error("Invalid response from server");
     }
-
     setReceipt(res.data);
-    setStep('survey');
+    setStep('receipt');
     } catch (err) {
       // Safely extract error message
       const message = err.response?.data?.detail || err.message || "Check-in failed. Please try again.";
@@ -58,7 +108,8 @@ export default function CheckIn() {
   };
 
   const handleCheckInTemp = () => {
-    setStep('survey');
+    window.scrollTo(0, 0);
+    setStep('receipt');
   }
 
   const handleConfirmVehicle = async () => {
@@ -78,24 +129,9 @@ export default function CheckIn() {
 
   if (!poi) return <div>Location not found</div>
 
-// const handleConfirmTransport = () => {
-//     if (selectedTransport == Transports[1] || selectedTransport == Transports[3]) {
-//       setEarnedPoints(150);
-//     }
-//     if (selectedTransport && selectedTransport.id !== 0) {
-//       setShowSurvey(false);
-//       setShowReceipt(true);
-//     }
-//   }
-
 const handleCancel = () => {
-  setSelectedVehicle(null);
-  setEarnedPoints(0);
   navigate(-1); 
 }
-
-  //sau này check state người dùng đã checkin tại đây chưa => tắt hiển thị expectant bar + làm mờ chữ
-  const bonusTest = false;
 
   return (
     <div className = 'check-in-page'>
@@ -122,31 +158,45 @@ const handleCancel = () => {
             ></div>
             <div className = 'location-name'>{poi.name}</div>
             <div className="popup-stat-checkin">
-              {poi.score + '%' || '20%'} of users have checked in here
+              {percentCheckedIn + '%' || '20%'} of users have checked in here
             </div>
           </div>
-          <div className = 'popup-card'>
+          <div className = {`popup-card ${checkedIn ? 'checked-in' : ''}`}>
             <img src = '/src/public/spark.png' className = 'spark'></img>
             <span className = 'first-rew'>First Check-in Reward</span>
             <div className = 'point'>
-              <span>100</span>
+              <span>{poi.score}</span>
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
             <div className = 'checkin-progress-bar'>
               <div className = 'prog-title'>Progress until next title</div>
               <span className = 'track-bar'>
-                <span className = 'fill-bar'></span>
-                <span className = 'expectant-bar'></span>
+                <span 
+                className = 'fill-bar'
+                style={{ width: `${(currentProgress / maxProgress) * 100}%` }}
+                > </span>
+                {!checkedIn && (
+                  <span className = 'expectant-bar'
+                  style={{ width: `${((currentProgress + poi.score*3) / maxProgress) * 100}%` }}
+                  ></span>)}
               </span>
-              <div className = 'prog-num'>1600+ 200/2000</div>
+              {!checkedIn ? (
+                <div className = 'prog-num'>{currentProgress + '+' + poi.score + '/' + maxProgress}</div>
+              ) : (
+                <div className = 'prog-num-disabled'>{currentProgress+ '/' + maxProgress}</div>
+              )}
             </div>
-            <button className="checkin-btn" onClick={handleCheckInTemp}>Confirm</button>
+            {!checkedIn ? (
+              <button className="checkin-btn" onClick={handleCheckIn}>Confirm</button>
+            ) : (
+              <button className="checkin-btn-disabled">Checked in</button>
+            )}
           </div>
         </>
       )}
-      {step === 'survey' && (
+      {/* {step === 'survey' && (
       <>
-        <button className = 'back-btn' onClick = {() => {
+        <button className = 'exit-btn' onClick = {() => {
           setSelectedVehicle(null) ; 
           setStep('confirm')
           }}
@@ -187,25 +237,24 @@ const handleCancel = () => {
           Submit
         </button>
       </>
-      )}
+      )} */}
       {step === 'receipt' && (
         <div className = 'receipt'>
           <div className = 'spacer'></div>
           <div className = 'vehicle-message'>
-              {/* sau khi backend them user thi bonusTest doi thanh receipt.vehicle_bonus === 0 */}
-              {bonusTest && (
-                <>
-                  <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
-                  <div className = 'point-survey'>
-                    <span>receipt.vehicle_bonus</span>
-                    <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
-                  </div>
-                  <span className = 'line-vehicle'></span>
-                </>
-              )}
+              {/* {bonusTest && (
+              //   <>
+              //     <p className = 'congratulatory'>Congratulations!<br/>For your green effort, you have received a bonus of</p>
+              //     <div className = 'point-survey'>
+              //       <span>{poi.score}</span>
+              //       <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
+              //     </div>
+              //     <span className = 'line-vehicle'></span>
+              //   </>
+              // )} */}
               <p className = 'congratulatory'>At this location, you have gained a total of</p>
               <div className = 'point-survey'>
-                <span>receipt.total_points</span>
+                <span className = 'checkin-score'> {poi.score}</span>
                 <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
               </div>
               <p className = 'congratulatory'>Impressive!<br/>Thank you for your commitment towards improving our environment.</p>
@@ -216,8 +265,7 @@ const handleCancel = () => {
               Your new balance
             </div>
             <div className = 'total-balance'>
-              <span>user.balance</span> 
-              {/* Cần API lấy balance ở đây */}
+              <span>{user.eco_points}</span> 
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
             <button className="checkin-btn" onClick={handleCancel}>Confirm</button>

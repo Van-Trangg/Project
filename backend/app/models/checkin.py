@@ -11,8 +11,6 @@ class Checkin(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     distance_m = Column(Float, nullable=False)
     earned_points = Column(Integer, nullable=False)
-    vehicle_type = Column(String, nullable=True)
-    vehicle_bonus = Column(Integer, default=0)
     receipt_no = Column(String, nullable=False, unique=True)
 
 # Unique constraint: mỗi user chỉ được check-in 1 lần tại 1 POI

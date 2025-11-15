@@ -15,8 +15,9 @@ router = APIRouter()
 #
 @router.get(
     "/", 
-    response_model=List[reward_schema.Reward], # Trả về 1 DANH SÁCH
-    response_model_by_alias=True # Bật chế độ alias
+    response_model=List[reward_schema.Reward], # Trả về 1 DANH SÁCH Reward
+    response_model_by_alias=True, # <-- Quan trọng: Bật chế độ alias
+    tags=["rewards"] # <-- Lấy từ nhánh mới
 )
 def get_all_rewards():
     """
