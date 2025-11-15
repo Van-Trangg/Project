@@ -23,3 +23,22 @@ class JournalOut(JournalBase):
 
     class Config:
         from_attributes = True
+
+class JournalSummary(BaseModel):
+    id: int
+    time: str
+    emotion: EmotionEnum
+    content: str
+    images: list[str]
+
+class JournalByDay(BaseModel):
+    day: str
+    smallEntries: list[JournalSummary]
+
+class JournalByPOI(BaseModel):
+    id: int
+    title: str
+    description: str
+    longDescription: str
+    image: str
+    entries: list[JournalByDay]
