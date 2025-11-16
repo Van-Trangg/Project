@@ -23,3 +23,4 @@ class User(Base):
     email_public: Mapped[bool] = mapped_column(Boolean, default=True)
 
     journals = relationship("Journal", back_populates="author")
+    transactions = relationship("Transaction", back_populates="owner")

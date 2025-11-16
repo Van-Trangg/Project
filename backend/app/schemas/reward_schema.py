@@ -27,3 +27,12 @@ class RedeemResponse(BaseModel):
     class Config:
         from_attributes = True
         populate_by_name = True
+# Định nghĩa cấu trúc của MỘT mục lịch sử
+class HistoryItem(BaseModel):
+    id: int
+    title: str
+    amount: int
+    type: str # "positive" hoặc "negative"
+
+    class Config:
+        from_attributes = True

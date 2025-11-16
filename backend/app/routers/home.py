@@ -6,7 +6,6 @@ from app import models
 from app.db.database import get_db
 from app.core.security import get_current_user
 
-# (KHÔNG import leaderboard_crud nữa)
 
 router = APIRouter()
 
