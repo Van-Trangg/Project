@@ -9,13 +9,13 @@ from app.models.map import Map
 from app.models.poi import POI
 from app.models.user import User
 from app.models.checkin import Checkin
-
+from app.core.security import hash_password
 
 # --- Password Hashing ---
-pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
+#pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+#def hash_password(password: str) -> str:
+    #return pwd_context.hash(password)
 
 
 # --- Helper ---
