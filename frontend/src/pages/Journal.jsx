@@ -1,7 +1,7 @@
 // Journal.jsx
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { listJournals } from '../api/journal' // Assuming this API exists
+import { listJournalsByPOI } from '../api/journal' // Assuming this API exists
 import '../styles/Journal.css'
 
 const CITIES = [
@@ -9,112 +9,56 @@ const CITIES = [
   { id: 2, name: 'Phu Quoc', lat: 21.028511, lng: 105.804817, image: '/src/public/Map/pq.png' },
 ];
 
-// ALL DATA: A single source of truth for all locations and their entries.
-const ALL_DATA = [
-  {
-    id: 1,
-    title: 'Đảo Khỉ',
-    description: 'A pristine island home to hundreds of playful monkeys.',
-    longDescription: 'Đảo Khỉ Cần Giờ là điểm đến lý tưởng cho những ai yêu thích thiên nhiên và khám phá thế giới động vật hoang dã. Chỉ cách trung tâm Sài Gòn khoảng 50km, đảo Khỉ Cần Giờ thu hút du khách bởi hàng nghìn chú khỉ tinh nghịch cùng không gian rừng ngập mặn xanh mát, yên bình.',
-    image: 'https://static.vinwonders.com/2022/03/dao-khi-nha-trang.jpg',
-    entries: [
-      {
-        day: '25/10/2025',
-        smallEntries: [
-          {
-            time: '09:30 AM',
-            emotion: 7,
-            content: 'This was my first time visiting this place. The scenery was breathtaking and I enjoyed every moment of my stay here.',
-            images: [
-              'https://picsum.photos/seed/dao-khi-1/300/200.jpg',
-              'https://picsum.photos/seed/dao-khi-1/300/200.jpg',
-              'https://picsum.photos/seed/dao-khi-1/300/200.jpg'
-            ]
-          },
-          {
-            time: '10:30 AM',
-            emotion: 7,
-            content: 'This was my first time visiting this place. The scenery was breathtaking and I enjoyed every moment of my stay here.',
-            images: [
-              'https://picsum.photos/seed/dao-khi-1/300/200.jpg'
-            ]
-          }
-        ]
-      },
-      {
-        day: '05/11/2025',
-        smallEntries: [
-          {
-            time: '02:15 PM',
-            emotion: 8,
-            content: 'I had an amazing encounter with the local wildlife today. I saw so many different species and learned a lot about their habitat.',
-            images: [
-              'https://picsum.photos/seed/dao-khi-2/300/200.jpg'
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: 'Can Gio Mangrove',
-    description: 'A vast, serene mangrove forest, a UNESCO Biosphere Reserve.',
-    longDescription: 'Khám phá vẻ đẹp của một trong những khu rừng ngập mặn quan trọng nhất thế giới. Khu dự trữ sinh quyển của UNESCO là nơi sinh sống của đa dạng sinh vật và cung cấp một lối thoát khỏi thành phố ồn ào, yên bình.',
-    image: 'https://picsum.photos/seed/mangrove/800/600.jpg',
-    entries: [
-      {
-        day: '15/09/2025',
-        smallEntries: [
-          {
-            time: '10:30 AM',
-            emotion: 6,
-            content: 'Explored the mangrove forest by kayak. It was so peaceful and beautiful.',
-            images: [
-              'https://picsum.photos/seed/mangrove-1/300/200.jpg'
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 3,
-    title: 'Wildlife Sanctuary',
-    description: 'A protected area for diverse native wildlife.',
-    longDescription: 'Trải nghiệm sự đa dạng sinh vật hoang dã trong môi trường sống tự nhiên của chúng. Đây là một khu bảo tồn phải đến cho những ai yêu thích thiên nhiên, nơi bạn có thể nhìn thấy các loài động vật quý hiếm và tìm hiểu về nỗ lực bảo tồn chúng.',
-    image: 'https://picsum.photos/seed/wildlife/800/600.jpg',
-    entries: []
-  },
-  {
-    id: 4,
-    title: 'River Adventure',
-    description: 'A journey through the iconic Mekong Delta.',
-    longDescription: 'Bắt đầu cuộc phiêu lưu qua những con sông uốn lượn của đồng bằng. Trải nghiệm văn hóa địa phương, tham quan các chợ nổi và tận hưởng cảnh quan tuyệt đẹp của khu vực đặc trưng này.',
-    image: 'https://picsum.photos/seed/river/800/600.jpg',
-    entries: []
-  }
-];
-
 export default function Journal() {
-  const [items, setItems] = useState([]);
-  useEffect(() => { listJournals().then(r => setItems(r.data)) }, []);
+
+  // --- STATE MANAGEMENT ---
+  const [locations, setLocations] = useState([]); // State to hold API data
+  const [loading, setLoading] = useState(true);     // State for loading status
+  const [error, setError] = useState(null);         // State for error handling
 
   const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState(CITIES[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [centeredCardId, setCenteredCardId] = useState(ALL_DATA[0].id);
+  const [centeredCardId, setCenteredCardId] = useState(null); // Initialize to null
   const [selectedLocation, setSelectedLocation] = useState(null);
   const scrollContainerRef = useRef(null);
 
+  // --- API DATA FETCHING ---
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        // FIX: Pass the selected city's id as map_id to filter the results
+        const response = await listJournalsByPOI(selectedCity.id);
+        const fetchedLocations = response.data;
+
+        setLocations(fetchedLocations);
+
+        // Set the first location as the centered card after data is fetched
+        if (fetchedLocations.length > 0) {
+          setCenteredCardId(fetchedLocations[0].id);
+        }
+      } catch (err) {
+        console.error("Failed to fetch journal locations:", err);
+        setError("Failed to load locations. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedCity]); // Add selectedCity as a dependency to re-fetch when city changes
+
+  // --- HANDLER FUNCTIONS ---
   const handleCityChange = (city) => {
     setSelectedCity(city);
     setDropdownOpen(false);
   };
 
   const handleLocationClick = (locationId) => {
-    // Find the full location object from our single data source
-    const locationDetails = ALL_DATA.find(l => l.id === locationId);
+    // Find the full location object from the fetched API data
+    const locationDetails = locations.find(l => l.id === locationId);
     if (locationDetails) {
       setSelectedLocation(locationDetails);
     }
@@ -131,8 +75,11 @@ export default function Journal() {
     }
   };
 
-  // IntersectionObserver to detect the centered card
+  // --- INTERSECTION OBSERVER ---
   useEffect(() => {
+    // Don't run the observer if locations are still loading or empty
+    if (loading || locations.length === 0) return;
+
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
@@ -157,30 +104,63 @@ export default function Journal() {
       cards.forEach(card => observer.unobserve(card));
       observer.disconnect();
     };
-  }, [dropdownOpen, selectedLocation]);
+  }, [loading, locations, dropdownOpen, selectedLocation]); // Added dependencies
 
   // --- CONDITIONAL RENDERING ---
-  // If a location is selected, show the location details view
+
+  // 1. Show a loading message while fetching data
+  if (loading) {
+    return (
+      <div className='journal-container'>
+        <div className="loading-message">Loading locations...</div>
+      </div>
+    );
+  }
+
+  // 2. Show an error message if the API call fails
+  if (error) {
+    return (
+      <div className='journal-container'>
+        <div className="error-message">{error}</div>
+      </div>
+    );
+  }
+
+  // 3. If a location is selected, show the location details view
   if (selectedLocation) {
     return (
       <div className='journal-container'>
         <div className='location-details'>
           <button className='back-button' onClick={handleBackToJournals}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            Back
           </button>
           <img src={selectedLocation.image} alt={selectedLocation.title} className='journal-location-image' />
-           <div id='location-name'>{selectedLocation.title}</div>
+          <div id='location-name'>{selectedLocation.title}</div>
           <p className='location-description'>{selectedLocation.longDescription}</p>
-          <button className='location-action-button' onClick={handleLocationJournal}>View Journal</button>
+          <div className='location-action-button' onClick={handleLocationJournal}>
+            <svg
+              viewBox="0 0 24 24"
+              class="icon"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="13" x2="16" y2="13"></line>
+              <line x1="8" y1="17" x2="16" y2="17"></line>
+            </svg>
+
+          </div>
         </div>
       </div>
     );
   }
 
-  // Otherwise, show the main journal list view
+  // 4. Otherwise, show the main journal list view using fetched data
   return (
     <div className='journal-container'>
       <h1 id='title'>Journal</h1>
@@ -231,7 +211,8 @@ export default function Journal() {
           <p className='jn_des'>Ready to write down your experience?</p>
           <div className='place_pad' ref={scrollContainerRef}>
             <div className="horizontal-scroll-container">
-              {ALL_DATA.map(location => (
+              {/* Use the 'locations' state from the API instead of ALL_DATA */}
+              {locations.map(location => (
                 <div
                   key={location.id}
                   className={`journal-card ${location.id !== centeredCardId ? 'inactive' : ''}`}

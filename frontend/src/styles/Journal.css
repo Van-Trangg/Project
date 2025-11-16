@@ -165,7 +165,12 @@
 }
 
 .location-action-button {
-  position: absolute;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 60px;
+  height: 60px;
+  position: fixed;
   right: 20px;
   bottom: 20px;
   background-color: #7CB342;
@@ -191,4 +196,11 @@
   background-color: #7CB342;
   border-radius: 32px;
   padding: 10px 20px;
+}
+
+.location-action-button svg {
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  color: #000;
 }

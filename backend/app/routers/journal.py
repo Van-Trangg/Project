@@ -23,14 +23,18 @@ def list_journals(
 def list_journals_by_poi(
     db: DbDep,
     current_user: User = CurrentUser,
+    map_id: int = Query(None),
 ):
-    journals_by_user = (
+    query = (
         db.query(Journal)
         .options(joinedload(Journal.poi))
         .filter(Journal.author_id == current_user.id)
-        .order_by(Journal.created_at.desc())
-        .all()
     )
+    
+    if map_id is not None:
+        query = query.filter(Journal.poi.has(POI.map_id == map_id))
+    
+    journals_by_user = query.order_by(Journal.created_at.desc()).all()
 
     if not journals_by_user:
         return []
@@ -59,10 +63,13 @@ def list_journals_by_poi(
         for journal in journals:
             journal_date = journal.created_at.date()
             
+            # Normalize the emotion value to title case
+            normalized_emotion = journal.emotion.title() if journal.emotion else "Neutral"
+            
             summary = JournalSummary(
                 id=journal.id,
                 time=journal.created_at.strftime("%I:%M %p"), 
-                emotion=journal.emotion,
+                emotion=normalized_emotion,  # Use the normalized value
                 content=journal.content,
                 images=journal.images,
             )
@@ -91,7 +98,6 @@ def list_journals_by_poi(
         result_list.append(poi_summary)
 
     return result_list
-
 @router.get("/my", response_model=list[JournalOut])
 def list_my_journals(
     db: DbDep,
