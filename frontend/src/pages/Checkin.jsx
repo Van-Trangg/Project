@@ -4,16 +4,16 @@ import { checkin, confirmVehicle, checked, getProgress, percentageChecked } from
 import { getProfile } from '../api/profile'
 import '../styles/Map.css'
 
-const VEHICLES = {
-  bike: { name: "Bicycle", bonus: 20, image: '/src/public/Map/bike.png' },
-  bus: { name: "Bus", bonus: 10, image: '/src/public/Map/bus.png' },
-  ev_scooter: { name: "Motorbike", bonus: 0, image: '/src/public/Map/scooter.png' },
-  car: { name: "Car", bonus: 0, image: '/src/public/Map/car.png' }
-}
+// const VEHICLES = {
+//   bike: { name: "Bicycle", bonus: 20, image: '/src/public/Map/bike.png' },
+//   bus: { name: "Bus", bonus: 10, image: '/src/public/Map/bus.png' },
+//   ev_scooter: { name: "Motorbike", bonus: 0, image: '/src/public/Map/scooter.png' },
+//   car: { name: "Car", bonus: 0, image: '/src/public/Map/car.png' }
+// }
 
 export default function CheckIn() {
   const { state } = useLocation();  
-  const { poi, map } = state || {};
+  const { poi, map, user_location } = state || {};
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
@@ -30,6 +30,7 @@ export default function CheckIn() {
   // Load user profile
   useEffect(() => {
     setLoadingProfile(true);
+    console.log({poi, map, user_location});
     getProfile()
       .then(r => setUser(r.data))
       .catch(err => {
@@ -72,12 +73,6 @@ export default function CheckIn() {
     }
   }, []);
 
-  // Mock GPS
-  const mockGps = {
-    user_lat: poi.lat + 0.0001,
-    user_lng: poi.lng + 0.0001
-  }
-
   const handleCheckIn = async () => {
     if (isCheckingIn) return;
 
@@ -86,9 +81,8 @@ export default function CheckIn() {
       const res = await checkin({
         user_id: user.id,
         poi_id: poi.id,
-        //Caafn theem route laays user latlng
-        user_lat: mockGps.user_lat,
-        user_lng: mockGps.user_lng,
+        user_lat: user_location.lat,
+        user_lng: user_location.lng,
       });
 
     // Validate response
