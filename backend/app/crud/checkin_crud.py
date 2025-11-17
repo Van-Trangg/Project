@@ -25,7 +25,7 @@ def create_checkin(
     """Tạo check-in mới, cộng điểm user & tăng checked_users (atomic & concurrency-safe)."""
 
     try:
-        # --- 1️⃣ Tạo bản ghi check-in ---
+        # 1️⃣ Tạo bản ghi check-in
         checkin = Checkin(
             user_id=user_id,
             poi_id=poi_id,
@@ -35,29 +35,34 @@ def create_checkin(
         )
         session.add(checkin)
 
-        # --- 2️⃣ Cộng điểm cho user ---
+        # 2️⃣ Cộng điểm cho user
         user = session.get(User, user_id)
         if user:
-            current_points = getattr(user, "points", 0)
-            user.points = current_points + earned_points
+            user.eco_points = getattr(user, "eco_points", 0) + earned_points
+            user.total_eco_points = getattr(user, "total_eco_points", 0) + earned_points
+            user.monthly_points = getattr(user, "monthly_points", 0) + earned_points
+            user.check_ins = getattr(user, "check_ins", 0) + 1
 
-        # --- 3️⃣ Atomic update cho POI.checked_users ---
+        # 3️⃣ Atomic update cho POI.checked_users
         session.execute(
             update(POI)
             .where(POI.id == poi_id)
             .values(checked_users=(POI.checked_users + 1))
         )
 
-        # --- 4️⃣ Commit tất cả trong cùng 1 transaction ---
+        # 4️⃣ Commit tất cả trong cùng 1 transaction
         session.commit()
         session.refresh(checkin)
 
-        total_points = user.points if user else earned_points
+        # 👉 Dùng total_eco_points (hoặc eco_points tùy bạn chọn chuẩn)
+        total_points = user.total_eco_points if user else earned_points
+
         return checkin, total_points
 
     except Exception as e:
         session.rollback()
         raise e
+
 
 
 
