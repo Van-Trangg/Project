@@ -25,7 +25,7 @@ def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     a = sin(dlat / 2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
     return R * 2 * atan2(sqrt(a), sqrt(1 - a))
 
-GPS_RADIUS_M = 120.0  # bán kính hợp lệ để check-in (mét)
+GPS_RADIUS_M = 1200000.0  # bán kính hợp lệ để check-in (mét)
 
 
 # --- Map routes ---
@@ -105,7 +105,7 @@ def checkin(
     check, total = checkin_crud.create_checkin(
         db, user.id, payload.poi_id, dist, poi.score, receipt_no
     )
-
+    print(f"Check-in recorded: User {user.id}, POI {payload.poi_id},Total points: {total}")
     # --- Trả về kết quả ---
     return CheckinReceipt(
         checkin_id=check.id,

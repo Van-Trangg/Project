@@ -4,6 +4,8 @@ from app.models.checkin import Checkin
 from app.models.user import User
 from sqlalchemy import update
 from app.models.poi import POI
+from math import ceil
+
 
 def user_has_checked(session: Session, user_id: int, poi_id: int) -> bool:
     """Kiểm tra xem user đã check-in tại POI chưa"""
@@ -56,14 +58,37 @@ def create_checkin(
 
         # 👉 Dùng total_eco_points (hoặc eco_points tùy bạn chọn chuẩn)
         total_points = user.total_eco_points if user else earned_points
-
+        print(f"User {user_id} checked in POI {poi_id}, total points: {total_points}")
         return checkin, total_points
 
     except Exception as e:
         session.rollback()
         raise e
 
+def recompute_scores(session: Session):
+    # Tổng số user
+    total_users = session.query(func.count(User.id)).scalar()
 
+    if total_users == 0:
+        return
+
+    pois = session.query(POI).all()
+
+    for poi in pois:
+        # Đếm số user đã checkin POI này
+        count_checked = session.query(func.count(Checkin.id)) \
+                          .filter(Checkin.poi_id == poi.id) \
+                          .scalar()
+
+        # Tỷ lệ %
+        
+        percent = (count_checked / total_users) 
+        raw_score = 100 * (2 - percent)
+
+        # làm tròn lên thành số tròn chục
+        poi.score = ceil(raw_score / 10) * 10
+        print(f"Recomputed score for POI {poi.id} ({poi.name}): {poi.score}")
+    session.commit()
 
 
 def count_checked_users_for_poi(session: Session, poi_id: int) -> int:
@@ -82,3 +107,32 @@ def count_total_users(session: Session) -> int:
     """Đếm tổng số user trong hệ thống."""
     stmt = select(func.count(User.id))
     return session.execute(stmt).scalar_one()
+
+def recompute_for_poi(session, poi_id: int):
+    """Tính lại điểm cho 1 POI dựa trên tỷ lệ % user đã check-in."""
+
+    # Tổng số user
+    total_users = session.query(func.count(User.id)).scalar()
+    if total_users == 0:
+        return
+
+    # POI cần tính
+    poi = session.get(POI, poi_id)
+    if not poi:
+        return
+
+    # Số user đã check-in POI này
+    checked_users = (
+        session.query(func.count(Checkin.id))
+        .filter(Checkin.poi_id == poi_id)
+        .scalar()
+    )
+
+    percent = (checked_users / total_users)
+    raw_score = 100 * (2 - percent)
+
+    # làm tròn lên thành số tròn chục
+    poi.score = ceil(raw_score / 10) * 10
+    
+
+    session.commit()
