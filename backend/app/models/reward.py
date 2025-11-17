@@ -5,7 +5,6 @@ from app.db.database import Base
 class Reward(Base):
     __tablename__ = "rewards"
 
-    # Đây là các cột (fields) MỚI
     # Dùng snake_case (chuẩn của database)
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)

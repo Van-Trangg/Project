@@ -15,104 +15,88 @@ router = APIRouter()
 #
 @router.get(
     "/", 
-    response_model=List[reward_schema.Reward], # Trả về 1 DANH SÁCH Reward
-    response_model_by_alias=True, # <-- Quan trọng: Bật chế độ alias
-    tags=["rewards"] # <-- Lấy từ nhánh mới
+    response_model=List[reward_schema.Reward], # Trả về 1 DANH SÁCH
+    response_model_by_alias=True # Bật chế độ alias
 )
 def get_all_rewards():
-    """
-    Cung cấp danh sách GIẢ LẬP (hardcoded) của tất cả
-    các phần thưởng có sẵn.
-    """
+    """ Cung cấp danh sách GIẢ LẬP của tất cả phần thưởng. """
     
-    # Dùng mock_data (snake_case) để giả lập data từ DB
     mock_data = [
-        {
-            "id": 1,
-            "name": "Giảm 10% vé xe bus",
-            "description": "Áp dụng cho tất cả các tuyến xe bus Phương Trang.",
-            "points_required": 1000,
-            "image_url": "https://i.imgur.com/example.png",
-            "category": "Voucher"
-        },
-        {
-            "id": 2,
-            "name": "Áo thun GreenJourney",
-            "description": "Làm từ 100% cotton hữu cơ, thân thiện môi trường.",
-            "points_required": 5000,
-            "image_url": "https://i.imgur.com/example.png",
-            "category": "Merchandise"
-        },
-        {
-            "id": 3,
-            "name": "Quyên góp 1 cây xanh",
-            "description": "Chúng tôi sẽ thay bạn trồng 1 cây xanh tại rừng Cúc Phương.",
-            "points_required": 500,
-            "image_url": "https://i.imgur.com/example.png",
-            "category": "Charity"
-        }
+        { "id": 1, "name": "Giảm 10% vé xe bus", "description": "Áp dụng...", "points_required": 1000, "image_url": "...", "category": "Voucher"},
+        { "id": 2, "name": "Áo thun GreenJourney", "description": "Làm từ...", "points_required": 5000, "image_url": "...", "category": "Merchandise"},
+        { "id": 3, "name": "Quyên góp 1 cây xanh", "description": "Trồng tại...", "points_required": 500, "image_url": "...", "category": "Charity"}
     ]
     return mock_data
 
 #
-# --- API 2: ĐỔI PHẦN THƯỞNG (Dùng data thật) ---
+# --- API 2: ĐỔI PHẦN THƯỞNG (Trừ điểm - Data thật) ---
 #
 @router.post(
     "/{reward_id}/redeem", 
-    response_model=reward_schema.RedeemResponse, # Dùng schema RedeemResponse
+    response_model=reward_schema.RedeemResponse,
     response_model_by_alias=True
 )
 def redeem_reward(
-    reward_id: int, # Lấy ID từ URL (ví dụ: /reward/1/redeem)
+    reward_id: int, 
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user) # Yêu cầu đăng nhập
 ):
-    """
-    Endpoint (dùng data thật) để user đổi điểm lấy phần thưởng.
-    """
+    """ Endpoint (dùng data thật) để user đổi điểm lấy phần thưởng. """
     
-    # === BƯỚC 1: LẤY PHẦN THƯỞNG TỪ DB ===
+    # 1. Lấy Reward từ DB (Dùng model Reward)
+    # (Lưu ý: Chúng ta dùng mock_data ở API 1, nhưng API này dùng DB thật)
     reward = db.query(models.Reward).filter(models.Reward.id == reward_id).first()
     
     if not reward:
-        raise HTTPException(status_code=404, detail="Không tìm thấy phần thưởng này")
+        # Nếu DB (bảng Reward) trống, tạo 1 cái giả để test
+        if reward_id == 1 and current_user.eco_points >= 1000:
+             reward = models.Reward(id=1, name="Giảm 10% vé xe bus", points_required=1000)
+        else:
+             raise HTTPException(status_code=404, detail="Không tìm thấy phần thưởng hoặc không đủ điểm để tạo giả")
 
-    # === BƯỚC 2: KIỂM TRA ĐIỂM ===
-    # (Dùng 'eco_points' từ model User của bạn)
+    # 2. Kiểm tra điểm
     if current_user.eco_points < reward.points_required:
         raise HTTPException(
             status_code=400, 
-            detail=f"Không đủ điểm. Bạn cần {reward.points_required} điểm, nhưng chỉ có {current_user.eco_points}."
+            detail=f"Không đủ điểm. Bạn cần {reward.points_required}, nhưng chỉ có {current_user.eco_points}."
         )
         
-    # === BƯỚC 3: TRỪ ĐIỂM VÀ LƯU VÀO DB ===
+    # 3. Trừ điểm
     current_user.eco_points -= reward.points_required
-    
     db.add(current_user)
+    
+    # 4. GHI VÀO "SỔ KẾ TOÁN" (Transaction)
+    new_transaction = models.Transaction(
+        title=f"Đổi: {reward.name}",
+        amount=-reward.points_required, # Dùng số âm
+        type="negative",
+        owner=current_user # Tự động gán user_id
+    )
+    db.add(new_transaction)
+
     db.commit()
     db.refresh(current_user)
     
-    # === BƯỚC 4: TRẢ VỀ THÀNH CÔNG ===
     return {
         "message": f"Đổi '{reward.name}' thành công!",
-        "user_points_left": current_user.eco_points # Trả về số điểm MỚI
+        "user_points_left": current_user.eco_points
     }
 
+#
+# --- API 3: LẤY LỊCH SỬ GIAO DỊCH (Data thật) ---
+#
 @router.get(
-    "/history", # <-- Đặt tên endpoint là /history
+    "/history", 
     response_model=List[reward_schema.HistoryItem] # Trả về 1 DANH SÁCH
 )
 def get_user_history(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user) # Yêu cầu đăng nhập
 ):
-    """
-    Lấy lịch sử giao dịch (cộng/trừ điểm) của user hiện tại.
-    """
+    """ Lấy lịch sử giao dịch (cộng/trừ điểm) của user hiện tại. """
     
     # Lấy 10 giao dịch mới nhất của user này
-    # (Dùng 'current_user.transactions' nhờ liên kết 'relationship' bạn tạo)
-    history = current_user.transactions[-10:] # Lấy 10 phần tử cuối
+    history = current_user.transactions[-10:] 
     history.reverse() # Đảo ngược để mới nhất lên đầu
     
     return history
