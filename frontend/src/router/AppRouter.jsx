@@ -21,6 +21,7 @@ import ViewProfile from '../pages/ViewProfile'
 import HistoryPage from '../pages/HistoryPage'
 import DetailPage from '../pages/DetailPage'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import PlantingTrees from '../pages/PlantingTrees.jsx'
 
 export default function AppRouter(){
   return (
@@ -49,6 +50,7 @@ export default function AppRouter(){
           <Route path="/history" element={<HistoryPage/>} />
           <Route path="/detail" element={<DetailPage/>} />
           <Route path="/badges" element={<Badges/>} />
+          <Route path="/planting-trees" element={<PlantingTrees/>} />
           <Route path="/location/:id" element={<LocationJournal/>} />
         </Routes>
       </div>

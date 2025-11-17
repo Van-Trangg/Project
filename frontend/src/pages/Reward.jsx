@@ -51,7 +51,7 @@ export default function Reward() {
             <button className="btn-secondary">How to earn</button>
             <button className="btn-primary" onClick={() => navigate('/leaderboard')}>Leaderboard</button>
           </div>
-          <button className="btn-plant">Planting Trees</button>
+          <button className="btn-plant" onClick={() => navigate('/planting-trees')}>Planting Trees</button>
         </div>
 
         {/* --- LỊCH SỬ GIAO DỊCH --- */}

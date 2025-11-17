@@ -1,0 +1,135 @@
+/* src/styles/PlantingTrees.css */
+
+/* 1. NỀN TRANG (Gradient xanh -> trắng) */
+.planting-page {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(180deg, #ACC729 0%, #F5F9F0 99%);
+  min-height: 100vh;
+  padding-bottom: 90px;
+  position: relative;
+}
+
+/* 2. HEADER */
+.planting-header {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  color: #000000;
+}
+.planting-header .back-arrow {
+  font-size: 28px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 18px;
+}
+.planting-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* 3. NỘI DUNG CHÍNH */
+.planting-content {
+  padding: 24px;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Căn giữa mọi thứ */
+}
+
+/* === 4. CÁI KHUNG BO GÓC BẠN CẦN === */
+.stats-frame {
+  display: flex;
+  width: 100%;
+  background: #F0F9CA; /* Màu nền xanh lá nhạt */
+  
+  /* Bo 2 góc trên (Top-Left, Top-Right, Bottom-Right, Bottom-Left) */
+  border-radius: 24px 24px 24px 24px; /* Bo tròn cả 4 góc cho đẹp, hoặc 24px 24px 0 0 nếu chỉ muốn trên */
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 32px; /* Đẩy hình cây xuống xa một chút */
+}
+
+.stat-item {
+  flex: 1; /* Chia đôi khung */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #556B2F; /* Chữ xanh đậm */
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #333;
+}
+
+/* Vạch ngăn giữa */
+.stat-divider {
+  width: 2px;
+  background-color: #D9E6A3;
+  margin: 16px 0;
+}
+
+/* 5. HÌNH ẢNH CÂY */
+.tree-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.tree-image-container img {
+  width: 80%;       /* Chỉnh độ to nhỏ của cây */
+  max-width: 280px; 
+  height: auto;
+  /* Hiệu ứng cây nhún nhảy */
+  animation: floatTree 3s ease-in-out infinite;
+}
+
+.tree-planting-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 24px;
+  text-align: center;
+}
+
+/* 6. NÚT PLANT NOW */
+.btn-plant-tree {
+  width: 100%;
+  max-width: 300px;
+  padding: 16px;
+  margin-top: 16px;
+  
+  /* Gradient nút bấm */
+  background: linear-gradient(90deg, #8BC34A 0%, #ACC729 100%);
+  color: #ffffff;
+  
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(139, 195, 74, 0.4);
+  transition: transform 0.1s;
+}
+
+.btn-plant-tree:active {
+  transform: scale(0.98);
+}
+
+/* Hiệu ứng cây bay nhẹ */
+@keyframes floatTree {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
