@@ -11,14 +11,22 @@ def get_public_user_profile(
     db: DbDep
 ):
     user = db.get(User, id)
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
+    rank = db.query(User).filter(User.eco_points > user.eco_points).count() + 1
+    user_response = UserOut.model_validate(user)
+    
+    user_response.rank = rank
+    
     if not user.phone_public:
-        user.phone = None
+        user_response.phone = None
         
     if not user.address_public:
-        user.address = None
+        user_response.address = None
         
     if not user.email_public:
-        user.email = None
-    return user
+        user_response.email = None
+        
+    return user_response

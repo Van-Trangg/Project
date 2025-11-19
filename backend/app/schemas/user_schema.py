@@ -25,6 +25,7 @@ class UserOut(BaseModel):
     phone_public: bool
     address_public: bool
     email_public: bool
+    rank: int | None = None
     class Config:
         from_attributes = True
 class ForgotPasswordRequest(BaseModel):

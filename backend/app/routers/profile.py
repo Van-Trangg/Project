@@ -10,7 +10,12 @@ from app.core.file_storage import upload_avatar
 router = APIRouter()
 
 @router.get("/", response_model=UserOut)
-def my_profile(current_user: User = Depends(TokenDep)):
+def my_profile(
+    current_user: User = Depends(TokenDep),
+    db: DbDep = None
+ ):
+    rank = db.query(User).filter(User.eco_points > current_user.eco_points).count() + 1
+    current_user.rank = rank
     return current_user
 
 
