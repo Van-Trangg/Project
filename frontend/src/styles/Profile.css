@@ -85,6 +85,7 @@
   left: 50%;
   bottom: -50px;
   transform: translateX(-50%);
+  z-index: 10;
 }
 
 .avatar-placeholder {
@@ -93,6 +94,21 @@
   background-color: #dfe4dc;
   border-radius: 28px;
   border: 4px solid #fff;
+}
+ 
+/* Ensure any <img> inside avatar containers is clipped to the rounded frame */
+.avatar-placeholder,
+.edit-avatar {
+  overflow: hidden;
+}
+
+.avatar-placeholder img,
+.edit-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
 }
 
 .camera-btn {
