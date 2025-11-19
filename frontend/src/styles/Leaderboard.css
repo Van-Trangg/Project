@@ -63,6 +63,12 @@
   background: #ccc;
   border-radius: 50%;
 }
+.list_avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
 .top-info .name {
   font-size: 14px;
   margin-top: 4px;
