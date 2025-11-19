@@ -171,7 +171,7 @@ const handleCancel = () => {
                 > </span>
                 {!checkedIn && (
                   <span className = 'expectant-bar'
-                  style={{ width: `${((currentProgress + poi.score*3) / maxProgress) * 100}%` }}
+                  style={{ width: `${((currentProgress + poi.score) / maxProgress) * 100}%` }}
                   ></span>)}
               </span>
               {!checkedIn ? (
@@ -259,7 +259,7 @@ const handleCancel = () => {
               Your new balance
             </div>
             <div className = 'total-balance'>
-              <span>{user.eco_points}</span> 
+              <span>{user.eco_points + poi.score}</span> 
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
             <button className="checkin-btn" onClick={handleCancel}>Confirm</button>
