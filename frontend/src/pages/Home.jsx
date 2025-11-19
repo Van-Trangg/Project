@@ -104,6 +104,27 @@ export default function Home() {
     dailyRewards = []
   } = data;
 
+  const handleClaimReward = (index) => {
+    const selectedReward = data.dailyRewards[index];
+
+    // Chỉ xử lý nếu là "Hôm nay" và "Chưa nhận"
+    if (selectedReward.isToday && !selectedReward.claimed) {
+      
+      // 1. Copy data cũ ra biến mới
+      const newData = { ...data };
+      
+      // 2. Đánh dấu là đã nhận
+      newData.dailyRewards[index].claimed = true;
+      
+      // 3. Cộng điểm (tùy chọn, để số nhảy ngay lập tức)
+      newData.ecopoints += selectedReward.points;
+
+      // 4. Cập nhật lại giao diện
+      setData(newData);
+
+    }
+  };
+
   const progressPercent = (progressCurrent / progressMax) * 100;
 
   return (
@@ -176,14 +197,16 @@ export default function Home() {
           </div>
         </div>
         <div className="horizontal-scroll-list">
-          {dailyRewards.map((reward) => (
+          {dailyRewards.map((reward, index) => (
             <div
               key={reward.date}
               className={`
                 reward-card 
-                ${reward.isToday ? 'today' : ''}
+                ${reward.claimed ? 'claimed' : (reward.isToday ? 'today' : '')}
                 ${reward.claimed ? 'claimed' : ''}
               `}
+              onClick={() => handleClaimReward(index)}
+              style={{ cursor: (reward.isToday && !reward.claimed) ? 'pointer' : 'default' }}
             >
               <span className="points">{reward.points}</span>
               <img src={ecopointsIcon} alt="leaf" className="reward-leaf-icon" />
