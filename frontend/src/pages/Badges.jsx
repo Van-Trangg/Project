@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listBadgesForUser, listBadges } from '../api/reward'
 import BadgeCard from '../components/BadgeCard'
@@ -32,6 +32,94 @@ export default function Badges(){
     if (s.startsWith('http') || s.startsWith('/')) return img
     // Use full backend static URL so images load when frontend served from dev server
     return `${baseURL}/badges/${img}`
+  }
+
+  // modal image rotation (drag to rotate around Y axis)
+  const [modalRotation, setModalRotation] = useState(0)
+  const [modalDragging, setModalDragging] = useState(false)
+  const modalDraggingRef = useRef(false)
+  const modalStartX = useRef(0)
+  const modalStartRotation = useRef(0)
+  const modalMoved = useRef(false)
+  // Increase modal sensitivity so large image rotates more with less pointer movement
+  const MODAL_SENSITIVITY = 1.0
+
+  // inertia refs
+  const modalVelocityRef = useRef(0) // deg per ms
+  const modalLastXRef = useRef(0)
+  const modalLastTimeRef = useRef(0)
+  const modalAnimRef = useRef(null)
+
+  // smoothing: use exponential decay (friction) during inertia
+  // Lower friction => slower decay => smoother, longer spin
+  const FRICTION = 0.0009 // per ms; smaller value = longer, smoother inertia
+
+  const onModalPointerMove = (e) => {
+    if (!modalDraggingRef.current) return
+    const clientX = (e && e.clientX) || 0
+    const delta = clientX - modalStartX.current
+    if (Math.abs(delta) > 3) modalMoved.current = true
+
+    const nextRot = modalStartRotation.current + delta * MODAL_SENSITIVITY
+    setModalRotation(nextRot)
+
+    // compute instantaneous velocity (px per ms) and convert to deg/ms
+    const now = performance.now()
+    const lastT = modalLastTimeRef.current || now
+    const lastX = modalLastXRef.current || clientX
+    const dt = Math.max(1, now - lastT)
+    const dx = clientX - lastX
+    const velPxPerMs = dx / dt
+    // apply a light EMA for velocity for smoother feeling
+    const instVel = velPxPerMs * MODAL_SENSITIVITY
+    // increase smoothing (more weight to previous velocity) for steadier inertia
+    modalVelocityRef.current = modalVelocityRef.current * 0.92 + instVel * 0.08
+    modalLastXRef.current = clientX
+    modalLastTimeRef.current = now
+  }
+
+  const stopModalInertia = () => {
+    if (modalAnimRef.current) {
+      cancelAnimationFrame(modalAnimRef.current)
+      modalAnimRef.current = null
+    }
+    modalVelocityRef.current = 0
+  }
+
+  const onModalPointerUp = (e) => {
+    if (!modalDraggingRef.current) return
+    modalDraggingRef.current = false
+    setModalDragging(false)
+    window.removeEventListener('pointermove', onModalPointerMove)
+    window.removeEventListener('pointerup', onModalPointerUp)
+
+    // if there was movement, start inertia using RAF with exponential decay
+    if (modalMoved.current && Math.abs(modalVelocityRef.current) > 0.0002) {
+      let v = modalVelocityRef.current
+      let lastTs = null
+      const step = (ts) => {
+        if (lastTs == null) lastTs = ts
+        const dt = ts - lastTs
+        lastTs = ts
+        // update rotation
+        setModalRotation(r => r + v * dt)
+        // apply friction (exponential decay)
+        v = v * Math.exp(-FRICTION * dt)
+        // stop when velocity is tiny
+        if (Math.abs(v) > 0.0002) {
+          modalAnimRef.current = requestAnimationFrame(step)
+        } else {
+          modalAnimRef.current = null
+          modalVelocityRef.current = 0
+        }
+      }
+      if (modalAnimRef.current) cancelAnimationFrame(modalAnimRef.current)
+      modalAnimRef.current = requestAnimationFrame(step)
+    }
+
+    modalMoved.current = false
+    modalLastTimeRef.current = 0
+    modalLastXRef.current = 0
   }
 
   useEffect(()=>{
@@ -106,7 +194,26 @@ export default function Badges(){
 
             <div className="modal-image-wrap">
               {imgFor(selected.image) ? (
-                <img className="modal-image" src={imgFor(selected.image)} alt={selected.badge} />
+                <img
+                  className="modal-image"
+                  src={imgFor(selected.image)}
+                  alt={selected.badge}
+                  onPointerDown={(e) => {
+                    // start dragging rotation for modal image
+                    // cancel any running inertia
+                    stopModalInertia()
+                    modalDraggingRef.current = true
+                    modalMoved.current = false
+                    modalStartX.current = e.clientX || 0
+                    modalStartRotation.current = modalRotation
+                    modalLastXRef.current = modalStartX.current
+                    modalLastTimeRef.current = performance.now()
+                    setModalDragging(true)
+                    window.addEventListener('pointermove', onModalPointerMove)
+                    window.addEventListener('pointerup', onModalPointerUp)
+                  }}
+                  style={{ transform: `rotateY(${modalRotation}deg)`, transition: modalDragging ? 'none' : 'transform 360ms ease-out', transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
+                />
               ) : (
                 <div className="stamp-large">{selected.badge ? selected.badge.charAt(0) : '🏅'}</div>
               )}
