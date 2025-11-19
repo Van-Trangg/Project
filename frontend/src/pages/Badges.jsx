@@ -4,7 +4,7 @@ import { listBadgesForUser, listBadges } from '../api/reward'
 import BadgeCard from '../components/BadgeCard'
 import '../styles/Badges.css'
 import backIcon from '../public/back.png'
-import { baseURL } from '../api/apiClient'
+
 function groupByThreshold(items){
   const map = {}
   items.forEach(it => {
@@ -26,17 +26,15 @@ export default function Badges(){
     if (!img) return null
     const s = String(img)
     if (s.startsWith('http') || s.startsWith('/')) return img
-    return `${baseURL}/badges/${img}`
+    return `/badges/${img}`
   }
 
   useEffect(()=>{
-    // try to fetch user-specific rewards (includes unlocked flag and eco_points)
+    // try to fetch user-specific badges (includes unlocked flag and eco_points)
     listBadgesForUser().then(r => {
       const payload = r.data || { versions: [] }
-        setUser({
-            eco_points: payload.eco_points,
-            total_eco_points:payload.eco_points
-        })
+      // keep both keys so UI can read either `eco_points` or `total_eco_points`
+      setUser({ eco_points: payload.eco_points, total_eco_points: payload.eco_points })
       setVersions(payload.versions || [])
     }).catch(()=>{
       // fallback to public listing if user not authenticated

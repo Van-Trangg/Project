@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/apiClient'
 import '../styles/Profile.css'
 import defaultAva from '../public/avt.png'
+import BadgeCard from '../components/BadgeCard'
+import { listBadges } from '../api/reward'
 
 export default function ViewProfile(){
   const { id } = useParams()
@@ -10,6 +12,9 @@ export default function ViewProfile(){
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [badgeVersions, setBadgeVersions] = useState([])
+  const [badgesLoading, setBadgesLoading] = useState(false)
+  const [badgesError, setBadgesError] = useState(null)
 
   useEffect(() => {
     if (!id) { setError('No user id'); setLoading(false); return }
@@ -22,6 +27,28 @@ export default function ViewProfile(){
       })
       .finally(() => setLoading(false))
   }, [id])
+
+  // Load all badges and mark unlocked based on this user's total points
+  useEffect(() => {
+    if (!user) return
+    setBadgesLoading(true)
+    setBadgesError(null)
+    listBadges()
+      .then(r => {
+        const data = r && r.data ? r.data : []
+        const points = user.total_eco_points || user.eco_points || 0
+        const versions = (data || []).map(v => ({
+          ...v,
+          badges: (v.badges || []).map(b => ({ ...b, unlocked: points >= (b.threshold || 0) }))
+        }))
+        setBadgeVersions(versions)
+      })
+      .catch(e => {
+        console.error('Could not load badges', e)
+        setBadgesError(e)
+      })
+      .finally(() => setBadgesLoading(false))
+  }, [user])
 
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="loading">Could not load profile.</div>
@@ -80,6 +107,28 @@ export default function ViewProfile(){
               <div className="info-value"><span className="value-text">{emailVal || '-'}</span></div>
             </div>
           </div>
+        </div>
+      
+        <div className="section badges-section">
+          <h3>Badges</h3>
+          {badgesLoading ? (
+            <div className="loading">Loading badges...</div>
+          ) : badgesError ? (
+            <div className="loading">Could not load badges.</div>
+          ) : !badgeVersions || badgeVersions.length === 0 ? (
+            <p>No badges available.</p>
+          ) : (
+            badgeVersions.map(v => (
+              <div key={v.version || v.title} className="badge-version">
+                <h4>{v.title}</h4>
+                <div className="badges-grid" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  {(v.badges || []).map(b => (
+                    <BadgeCard key={b.id} badge={b} unlocked={!!b.unlocked} />
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
