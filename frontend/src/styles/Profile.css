@@ -381,12 +381,13 @@
 }
 
 .edit-cover {
+  /* Match the main profile cover placeholder for consistent shape/position */
   width: 100%;
-  height: 160px;
+  height: 180px;
   background-image: linear-gradient(#eaf4e2,#ffffff);
-  border-bottom-left-radius: 120px;
-  border-bottom-right-radius: 120px;
-  margin-top: 6px;
+  border-bottom-left-radius: 80px;
+  border-bottom-right-radius: 80px;
+  margin-top: 0; /* align with .cover-placeholder positioning */
   background-size: cover;
   background-position: center;
 }
@@ -420,7 +421,8 @@
   display: flex;
   justify-content: center;
   position: relative;
-  margin-top: 20px;
+  /* move the avatar up so it overlaps the cover more like in the profile view */
+  margin-top: -50px;
 }
 
 .edit-avatar {

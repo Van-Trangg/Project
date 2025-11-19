@@ -65,7 +65,7 @@ export default function Badges(){
 
       <header className="badges-header">
       {/* top-left back button to match other pages */}
-      <button className="back-btn" onClick={() => navigate('/profile')} title="Back">
+      <button className="back-btn" onClick={() => navigate('/profile')} title="Back" style={{ zIndex: 1000 }}>
         <img src={backIcon} alt="Back" />
       </button>
         <h1>Badges</h1>

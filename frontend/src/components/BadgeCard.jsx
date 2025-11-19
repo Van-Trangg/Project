@@ -1,8 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import crownIcon from '../public/crown.png'
 import { baseURL } from '../api/apiClient'
 export default function BadgeCard({ badge, unlocked, onClick, className = '' }){
   const cost = badge.threshold || 0
+  const [spinning, setSpinning] = useState(false)
+
+  const handleClick = () => {
+    // start spin animation
+    try {
+      setSpinning(true)
+      if (onClick) onClick(badge)
+      // stop spinning after animation duration (800ms)
+      setTimeout(() => setSpinning(false), 900)
+    } catch (e) {
+      setSpinning(false)
+    }
+  }
   // image can be either:
   // - a full URL (starts with 'http'),
   // - an absolute public path (starts with '/'), e.g. '/back.png',
@@ -17,7 +30,7 @@ const imgSrc = badge && badge.image
     : null
 
   return (
-    <div className={`badge-card ${unlocked ? 'unlocked' : 'locked'} ${className}`} onClick={() => onClick && onClick(badge)}>
+    <div className={`badge-card ${unlocked ? 'unlocked' : 'locked'} ${spinning ? 'spinning' : ''} ${className}`} onClick={handleClick}>
       <div className="stamp">
         {imgSrc ? (
           <img src={imgSrc} alt={badge.badge || 'badge'} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
