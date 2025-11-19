@@ -109,7 +109,7 @@ export default function ViewProfile(){
           </div>
         </div>
       
-        <div className="section badges-section">
+        <div className="badges-section">
           <h3>Badges</h3>
           {badgesLoading ? (
             <div className="loading">Loading badges...</div>
@@ -118,16 +118,20 @@ export default function ViewProfile(){
           ) : !badgeVersions || badgeVersions.length === 0 ? (
             <p>No badges available.</p>
           ) : (
-            badgeVersions.map(v => (
-              <div key={v.version || v.title} className="badge-version">
-                <h4>{v.title}</h4>
-                <div className="badges-grid" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  {(v.badges || []).map(b => (
-                    <BadgeCard key={b.id} badge={b} unlocked={!!b.unlocked} />
-                  ))}
+            badgeVersions.map(v => {
+              const owned = (v.badges || []).filter(b => !!b.unlocked)
+              if (!owned || owned.length === 0) return null
+              return (
+                  <div key={v.version || v.title} className="badge-version">
+                      <h4 style={{ marginLeft: 20, textAlign: 'left', width: '90%', maxWidth: 720 }}>{v.title || `Version ${v.version}`}</h4>
+                  <div className="badges-grid" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                    {owned.map(b => (
+                      <BadgeCard key={b.id} badge={b} unlocked={true} />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))
+              )
+            })
           )}
         </div>
       </div>
