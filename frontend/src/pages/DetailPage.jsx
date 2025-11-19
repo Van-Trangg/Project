@@ -1,11 +1,16 @@
 // src/pages/DetailPage.jsx
 
-import React from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/DetailPage.css';
 import ecopointsIcon from '../public/ecopoint.png'
 
 export default function DetailPage() {
+
+  const [showModal, setShowModal] = useState(false);
+
+  const [isRedeemed, setIsRedeemed] = useState(false);
+
   const navigate = useNavigate();
 
   const currentPromo = {
@@ -22,6 +27,11 @@ export default function DetailPage() {
     { id: 2, title: 'Promotion', icon: '/placeholder-promo-icon.png' },
     { id: 3, title: 'Promotion', icon: '/placeholder-promo-icon.png' },
   ];
+
+  const handleConfirmRedeem = () => {
+    setShowModal(false); // Tắt popup
+    setIsRedeemed(true);
+  };
 
   return (
     <div className="promo-detail-page">
@@ -57,7 +67,13 @@ export default function DetailPage() {
             <span className="deadline-label">Redemption deadline:</span> {currentPromo.deadline}
           </p>
           <p className="promo-description">{currentPromo.description}</p>
-          <button className="btn-redeem">Redeem</button>
+          <button className={`btn-redeem ${isRedeemed ? 'redeemed' : ''}`}onClick={() => {
+              if (!isRedeemed) setShowModal(true); // Chỉ mở popup nếu chưa đổi
+            }}
+            disabled={isRedeemed} // (Tùy chọn) Không cho bấm lại
+          >
+            {isRedeemed ? 'Redeemed' : 'Redeem'}
+          </button>
         </div>
 
         {/* === PHẦN "YOU MIGHT ALSO LIKE" (Giữ nguyên) === */}
@@ -75,6 +91,19 @@ export default function DetailPage() {
           </div>
         </div>
       </div>
+    {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <p className="modal-text">
+              Use <span className="highlight-text">10000 Ecopoints</span> to redeem this reward?
+            </p>
+            <div className="modal-actions">
+              <button className="btn-modal-no" onClick={() => setShowModal(false)}>No</button>
+              <button className="btn-modal-yes" onClick={handleConfirmRedeem}>Yes</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

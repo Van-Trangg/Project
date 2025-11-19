@@ -170,3 +170,98 @@
   color: #333;
   line-height: 1.3;
 }
+/* === POPUP MODAL === */
+
+/* Lớp phủ mờ toàn màn hình */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Màu đen mờ 60% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999 !important; /* Đảm bảo nằm trên cùng */
+  padding: 24px; /* Để không dính sát mép màn hình điện thoại */
+}
+
+/* Hộp nội dung popup */
+.modal-box {
+  background-color: #EFF5D2; /* Màu nền vàng xanh nhạt giống theme */
+  width: 100%;
+  max-width: 320px;
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: popIn 0.3s ease; /* Hiệu ứng hiện ra nhẹ nhàng */
+}
+
+/* Text trong popup */
+.modal-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* Tô đậm số điểm */
+.modal-text .highlight-text {
+  color: #556B2F; /* Màu xanh rêu đậm */
+  font-weight: 800;
+}
+
+/* Khu vực chứa 2 nút */
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* Nút NO */
+.btn-modal-no {
+  flex: 1;
+  background-color: #ffffff;
+  color: #333;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Nút YES */
+.btn-modal-yes {
+  flex: 1;
+  background-color: #ACC729; /* Màu xanh lá */
+  color: #333; /* Hoặc #fff nếu muốn chữ trắng */
+  font-weight: 700;
+  font-size: 16px;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Hiệu ứng hiện ra */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+.btn-redeem.redeemed {
+  /* Đổi nền sang màu xám đen bạn muốn */
+  background: #3C4136 !important; 
+  
+  /* Chữ trắng */
+  color: #ffffff !important;
+  
+  /* (Tùy chọn) Đổi con trỏ chuột để biết không bấm được nữa */
+  cursor: default;
+  box-shadow: none; /* Bỏ bóng đổ cho cảm giác "chìm" xuống */
+}

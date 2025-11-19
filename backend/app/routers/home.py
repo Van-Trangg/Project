@@ -24,8 +24,8 @@ def get_real_home_data(
     rewards = [
         { "date": "25/10", "points": 10, "claimed": True, "isToday": False },
         { "date": "26/10", "points": 10, "claimed": False, "isToday": True },
-        { "date": "27/10", "points": 10, "claimed": True, "isToday": False },
-        { "date": "28/10", "points": 10, "claimed": True, "isToday": False },
+        { "date": "27/10", "points": 10, "claimed": False, "isToday": False },
+        { "date": "28/10", "points": 10, "claimed": False, "isToday": False },
     ]
 
     real_data = {
