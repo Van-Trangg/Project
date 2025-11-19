@@ -4,6 +4,7 @@ import { listBadgesForUser, listBadges } from '../api/reward'
 import BadgeCard from '../components/BadgeCard'
 import '../styles/Badges.css'
 import backIcon from '../public/back.png'
+import newBackIcon from '../public/new_back.png'
 
 function groupByThreshold(items){
   const map = {}
@@ -18,6 +19,8 @@ function groupByThreshold(items){
 
 export default function Badges(){
   const navigate = useNavigate()
+  const [backHovering, setBackHovering] = useState(false)
+  const [backActive, setBackActive] = useState(false)
   const [badges, setBadges] = useState([])
   const [versions, setVersions] = useState([])
   const [user, setUser] = useState(null)
@@ -65,8 +68,17 @@ export default function Badges(){
 
       <header className="badges-header">
       {/* top-left back button to match other pages */}
-      <button className="back-btn" onClick={() => navigate('/profile')} title="Back" style={{ zIndex: 1000 }}>
-        <img src={backIcon} alt="Back" />
+      <button
+        className="back-btn"
+        onClick={() => { setBackActive(true); navigate('/profile'); setTimeout(()=>setBackActive(false), 150) }}
+        onMouseEnter={() => setBackHovering(true)}
+        onMouseLeave={() => { setBackHovering(false); setBackActive(false) }}
+        onMouseDown={() => setBackActive(true)}
+        onMouseUp={() => setBackActive(false)}
+        title="Back"
+        style={{ zIndex: 1000, transform: backHovering ? 'translateY(-2px) scale(1.03)' : 'none', transition: 'transform .12s ease' }}
+      >
+        <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
       </button>
         <h1>Badges</h1>
         <p className="badges-sub">Collect badges by reaching milestones. Your current points: <strong>{user ? user.total_eco_points : '—'}</strong></p>
