@@ -4,8 +4,22 @@ import { baseURL } from '../api/apiClient'
 export default function BadgeCard({ badge, unlocked, onClick, className = '' }){
   const cost = badge.threshold || 0
 
+  const [shaking, setShaking] = useState(false)
+
   const handleClick = () => {
-    if (onClick) onClick(badge)
+    // If unlocked, perform the normal action
+    if (unlocked) {
+      if (onClick) onClick(badge)
+      return
+    }
+    // If locked, trigger a shake to indicate it's not available
+    try {
+      setShaking(true)
+      // stop shaking after animation (~420ms)
+      setTimeout(() => setShaking(false), 420)
+    } catch (e) {
+      setShaking(false)
+    }
   }
   // image can be either:
   // - a full URL (starts with 'http'),
@@ -21,7 +35,7 @@ const imgSrc = badge && badge.image
     : null
 
   return (
-    <div className={`badge-card ${unlocked ? 'unlocked' : 'locked'} ${className}`} onClick={handleClick}>
+    <div className={`badge-card ${unlocked ? 'unlocked' : 'locked'} ${shaking ? 'shake' : ''} ${className}`} onClick={handleClick}>
       <div className="stamp">
         {imgSrc ? (
           <img src={imgSrc} alt={badge.badge || 'badge'} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />

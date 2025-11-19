@@ -4,6 +4,7 @@ import { listBadgesForUser, listBadges } from '../api/reward'
 import BadgeCard from '../components/BadgeCard'
 import '../styles/Badges.css'
 import backIcon from '../public/back.png'
+import { baseURL } from '../api/apiClient'
 import newBackIcon from '../public/new_back.png'
 
 function groupByThreshold(items){
@@ -29,7 +30,8 @@ export default function Badges(){
     if (!img) return null
     const s = String(img)
     if (s.startsWith('http') || s.startsWith('/')) return img
-    return `/badges/${img}`
+    // Use full backend static URL so images load when frontend served from dev server
+    return `${baseURL}/badges/${img}`
   }
 
   useEffect(()=>{
