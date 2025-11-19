@@ -10,6 +10,7 @@ import newBackIcon from '../public/new_back.png'
 import exitIcon from '../public/exit.png'
 import newExitIcon from '../public/new_exit.png'
 import viewAllIcon from '../public/view_all.png'
+import defaultAva from '../public/avt.png'
 import '../styles/Profile.css'
 
 export default function Profile() {
@@ -129,15 +130,13 @@ export default function Profile() {
                 </button>
 
                 <div className="avatar-wrapper">
-                    {}
-                    <div
-                        className="avatar-placeholder"
-                        style={user.avatar_url ? {
-                            backgroundImage: `url(${user.avatar_url})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        } : {}}
-                    >
+                    <div className="avatar-placeholder">
+                        <img
+                            src={(user.avatar_url && user.avatar_url !== "null") ? user.avatar_url : defaultAva}
+                            alt="Avatar"
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultAva }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', display: 'block' }}
+                        />
                     </div>
                 </div>
             </div>
