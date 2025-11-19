@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/apiClient'
 import '../styles/Profile.css'
+import defaultAva from '../public/avt.png'
 
 export default function ViewProfile(){
   const { id } = useParams()
@@ -39,7 +40,14 @@ export default function ViewProfile(){
         <button className="back-rect" onClick={() => navigate(-1)} title="Back">←</button>
         <div className="cover-placeholder"></div>
         <div className="avatar-wrapper">
-          <div className="avatar-placeholder" style={user.avatar_url ? { backgroundImage: `url(${user.avatar_url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}} />
+          <div className="avatar-placeholder">
+            <img
+              src={user.avatar_url || defaultAva}
+              alt="Avatar"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultAva }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', display: 'block' }}
+            />
+          </div>
         </div>
       </div>
 

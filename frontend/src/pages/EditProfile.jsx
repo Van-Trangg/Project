@@ -4,6 +4,7 @@ import { getProfile, updateProfile, updateProfileMultipart } from '../api/profil
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import camIcon from '../public/camera.png'
+import defaultAva from '../public/avt.png'
 import showIcon from "../public/show.png"
 import dontEyeIcon from "../public/don't_eye.png"
 import '../styles/Profile.css'
@@ -122,14 +123,14 @@ export default function EditProfile() {
       </div>
 
       <div className="edit-avatar-wrapper">
-        <div
-            className="edit-avatar"
-            style={{ 
-              backgroundImage: `url(${preview || form.avatar_url || ''})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
+        <div className="edit-avatar">
+          <img
+            src={preview || form.avatar_url || defaultAva}
+            alt="Avatar"
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultAva }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', display: 'block' }}
           />
+        </div>
         <button
           className="camera-small"
           type="button"
