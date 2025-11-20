@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/apiClient'
 import '../styles/Profile.css'
 import defaultAva from '../public/avt.png'
+import backIcon from '../public/back.png'
+import newBackIcon from '../public/new_back.png'
+import coverImg from '../public/ảnh bìa.jpg'
 import BadgeCard from '../components/BadgeCard'
 import { listBadges } from '../api/reward'
 
@@ -15,6 +18,8 @@ export default function ViewProfile(){
   const [badgeVersions, setBadgeVersions] = useState([])
   const [badgesLoading, setBadgesLoading] = useState(false)
   const [badgesError, setBadgesError] = useState(null)
+  const [backHovering, setBackHovering] = useState(false)
+  const [backActive, setBackActive] = useState(false)
 
   useEffect(() => {
     if (!id) { setError('No user id'); setLoading(false); return }
@@ -64,8 +69,19 @@ export default function ViewProfile(){
   return (
     <div className="profile-page">
       <div className="profile-header">
-        <button className="back-rect" onClick={() => navigate(-1)} title="Back">←</button>
-        <div className="cover-placeholder"></div>
+        <button
+          className="back-rect"
+          onClick={() => { setBackActive(true); navigate(-1); setTimeout(()=>setBackActive(false), 180) }}
+          onMouseEnter={() => setBackHovering(true)}
+          onMouseLeave={() => { setBackHovering(false); setBackActive(false) }}
+          onMouseDown={() => setBackActive(true)}
+          onMouseUp={() => setBackActive(false)}
+          title="Back"
+          style={{ zIndex: 1000, transform: backHovering ? 'translateY(-2px) scale(1.03)' : 'none', transition: 'transform .12s ease' }}
+        >
+          <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
+        </button>
+        <div className="cover-placeholder" style={{ backgroundImage: `url(${coverImg})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3,boxShadow: "0 4px 20px rgba(0, 0, 0, 1.0)"}}></div>
         <div className="avatar-wrapper">
           <div className="avatar-placeholder">
             <img
