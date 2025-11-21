@@ -1,3 +1,6 @@
+﻿import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db
@@ -13,6 +16,30 @@ from datetime import datetime, timedelta
 router = APIRouter()
 
 
+SENDER_EMAIL = "lethuan270306@gmail.com"
+SENDER_PASSWORD = "ghpi bmwq xbfa vofq"
+
+def send_otp_email(to_email: str, otp_code: str):
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = to_email
+        msg['Subject'] = "Mã xác thực OTP của bạn"
+
+        body = f"Mã OTP của bạn là: {otp_code}. Mã này sẽ hết hạn sau 15 phút."
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Kết nối tới server Gmail (nếu dùng Outlook thì đổi host/port)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        text = msg.as_string()
+        server.sendmail(SENDER_EMAIL, to_email, text)
+        server.quit()
+        print(f"--> Email sent to {to_email}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
 reset_codes = {}
 @router.post("/register", response_model=UserOut)
 def register(payload: UserCreate, db: Session = Depends(get_db)):
@@ -25,7 +52,7 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     code = f"{random.randint(0, 9999):04d}"
     expiry = datetime.utcnow() + timedelta(minutes=15)
     reset_codes[payload.email] = {"code": code, "expiry": expiry}
-    print(f"!!! OTP reset for  {payload.email} is: {code} !!!")
+    send_otp_email(payload.email, code)    
     return user
 
 @router.post("/login")
@@ -45,6 +72,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
     expiry = datetime.utcnow() + timedelta(minutes=15)
     reset_codes[payload.email] = {"code": code, "expiry": expiry}
     print(f"!!! OTP reset for  {payload.email} is: {code} !!!") 
+    send_otp_email(payload.email, code)
     return {"message": "Reset code sent to email"}
 
 @router.post("/verify-reset")
