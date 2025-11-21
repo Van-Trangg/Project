@@ -27,8 +27,6 @@ def check_and_award_badges(db: Session, user_id: int, current_points: int):
                 )
                 db.add(new_record)
                 new_badges_awarded.append(badge)
-    
-    if new_badges_awarded:
-        db.commit()
+   
         
     return new_badges_awarded

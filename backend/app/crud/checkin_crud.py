@@ -53,8 +53,7 @@ def create_checkin(
         )
 
         # 4️⃣ Commit tất cả trong cùng 1 transaction
-        session.commit()
-        session.refresh(checkin)
+
 
         total_points = 0
         if user:
@@ -62,6 +61,10 @@ def create_checkin(
             total_points = user.total_eco_points
             # Gọi hàm check badge với điểm này
             check_and_award_badges(session, user_id, total_points)
+
+        session.commit()
+        session.refresh(checkin)
+
         print(f"User {user_id} checked in POI {poi_id}, total points: {total_points}")
         return checkin, total_points
 
