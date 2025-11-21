@@ -6,6 +6,7 @@ import Signup from '../pages/Signup'
 import Leaderboard from '../pages/Leaderboard'
 import Journal from '../pages/Journal'
 import Map from '../pages/Map'
+import Chat from '../pages/Chat'
 import CheckIn from '../pages/Checkin.jsx'
 import Profile from '../pages/Profile'
 import EditProfile from '../pages/EditProfile'
@@ -52,6 +53,7 @@ export default function AppRouter(){
           <Route path="/badges" element={<Badges/>} />
           <Route path="/planting-trees" element={<PlantingTrees/>} />
           <Route path="/location/:id" element={<LocationJournal/>} />
+          <Route path="/chat" element={<Chat/>} />
         </Routes>
       </div>
       <Footer />
