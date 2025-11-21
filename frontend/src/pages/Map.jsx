@@ -174,6 +174,11 @@ const loadMapsFallback = () => {
     }
   }
 
+  const handleChat = () => {
+    document.body.classList.add('page-transitioning');
+    navigate(`/chat`); // go to specific check-in page
+  }
+
   const flyToCityCenter = (e) => {
     e.stopPropagation();
 
@@ -301,12 +306,20 @@ const loadMapsFallback = () => {
               </Popup>
             </Marker>
           </MapContainer>
-          <button 
-            className = 'map-center-bubble'
-            onClick={flyToCityCenter}
-          >
-            <img src = '/src/public/focus.png' className = 'target-icon'></img>
-          </button>
+          <div className = 'bubble-container'>
+            <button 
+              className = 'chat-bubble'
+              onClick={handleChat}
+            >
+              <img src = '/src/public/ai.png' className = 'target-icon'></img>
+            </button>
+            <button 
+              className = 'map-center-bubble'
+              onClick={flyToCityCenter}
+            >
+              <img src = '/src/public/focus.png' className = 'target-icon'></img>
+            </button>
+          </div>
         </>    
         )}
       </div>
