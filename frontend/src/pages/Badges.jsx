@@ -17,7 +17,10 @@ function groupByThreshold(items){
   // return sorted by threshold ascending
   return Object.keys(map).map(k => ({ threshold: Number(k), items: map[k] })).sort((a,b)=>a.threshold-b.threshold)
 }
-
+const formatDate = (isoString) => {
+    if (!isoString) return '';
+    return new Date(isoString).toLocaleDateString('vi-VN');
+};
 export default function Badges(){
   const navigate = useNavigate()
   const [backHovering, setBackHovering] = useState(false)
@@ -221,7 +224,14 @@ export default function Badges(){
 
             <div className="modal-title-pill">{selected.badge}</div>
             <div className="modal-sub">
-              <strong>Obtained on {new Date().toLocaleDateString()}</strong>
+              {selected.unlocked && selected.obtained_at ? (
+                  <strong>Obtained on {formatDate(selected.obtained_at)}</strong>
+              ) : selected.unlocked ? (
+                  // Trường hợp unlocked nhưng là dữ liệu cũ chưa có ngày (migration)
+                  <strong>Unlocked</strong>
+              ) : (
+                  <strong>Locked - Reach {selected.threshold} points</strong>
+              )}
             </div>
 
             <div className="modal-desc">{selected.description}</div>

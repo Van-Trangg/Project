@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 import os
-
+from app.db.database import get_db
+from sqlalchemy.orm import Session
+from app.models.user import User
 from app.routers import (
     auth, file, home, leaderboard, journal,
     map as map_router, profile, reward, users, badges
@@ -10,7 +12,7 @@ from app.routers import (
 
 from app.db.database import init_db, SessionLocal
 from app.crud.checkin_crud import recompute_scores   # ✔ bạn import CRUD scoring vào đây
-
+from app.crud.badge_crud import check_and_award_badges
 app = FastAPI(title="GreenJourney API", version="0.1.0")
 
 # CORS for local dev
@@ -65,3 +67,28 @@ async def on_startup():
 @app.get("/")
 async def root():
     return {"status": "ok", "service": "greenjourney"}
+@app.post("/sync-all-badges-manual")
+def sync_badges_manual(db: Session = Depends(get_db)):
+    """
+    Quét toàn bộ user, kiểm tra điểm total_eco_points hiện tại
+    và cấp bù các huy hiệu còn thiếu.
+    """
+    users = db.query(User).all()
+    count = 0
+    logs = []
+
+    print(f"🔄 Starting sync for {len(users)} users...")
+
+    for user in users:
+        points = user.total_eco_points or 0
+        if points > 0:
+            # Gọi hàm check badge, hàm này sẽ tự insert vào DB nếu thiếu
+            new_badges = check_and_award_badges(db, user.id, points)
+            
+            if new_badges:
+                badge_names = [b['badge'] for b in new_badges]
+                logs.append(f"User ID {user.id} ({points} pts) -> Awarded: {badge_names}")
+                count += 1
+    
+    print(f"✅ Sync complete. Updated {count} users.")
+    return {"status": "success", "users_updated": count, "details": logs}
