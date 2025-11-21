@@ -10,11 +10,11 @@ CurrentUser = Depends(get_current_user)
 
 @router.get("", response_model=list[LeaderboardOut])
 def list_leaderboard(db: DbDep) -> list[LeaderboardOut]:
-    r = db.query(User).order_by(User.eco_points.desc()).limit(10).all()
+    r = db.query(User).order_by(User.monthly_points.desc()).limit(10).all()
     return [LeaderboardOut.model_validate({
         "id": user.id,
         "user_name": user.full_name,
-        "points": user.eco_points,
+        "points": user.monthly_points,
         "avatar": user.avatar_url,
         "rank": index + 1
     }) for (index, user) in enumerate(r)]
@@ -28,7 +28,7 @@ def my_rank(
     return LeaderboardOut.model_validate({
         "id": current_user.id,
         "user_name": current_user.full_name,
-        "points": current_user.eco_points,
+        "points": current_user.monthly_points,
         "avatar": current_user.avatar_url,
         "rank": rank
     })
