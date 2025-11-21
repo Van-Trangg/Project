@@ -109,7 +109,7 @@ export default function LocationJournal() {
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
       return new Date(dateString);
     }
-    
+
     // For format like "August 17, 2006"
     const parts = dateString.split(' ');
     if (parts.length === 3) {
@@ -118,7 +118,7 @@ export default function LocationJournal() {
       const year = parts[2];
       return new Date(`${month} ${day}, ${year}`);
     }
-    
+
     // Fallback for other formats
     return new Date(dateString);
   }
@@ -202,7 +202,7 @@ export default function LocationJournal() {
         content: entry.content,
         images: entry.images || []
       });
-      
+
       // Store the original entry ID for potential deletion
       setOriginalEntryId(entry.id);
       setEditingMode(true);
@@ -220,10 +220,27 @@ export default function LocationJournal() {
         emotion: emotionLabel,
         content: currentEntry.content,
         images: currentEntry.images,
-        // Format date as YYYY-MM-DD for JSON
-        day: formatDateForJSON(parseDate(currentEntry.day)),
-        // Ensure time is in 12-hour format with AM/PM
-        time: formatTime(new Date(`2000-01-01 ${currentEntry.time}`))
+        // Combine day and time into a single datetime field
+        created_at: (() => {
+          // Parse the day string to get a Date object
+          const date = parseDate(currentEntry.day);
+
+          // Parse the time string and update the date object
+          const timeStr = currentEntry.time;
+          const [time, period] = timeStr.split(' ');
+          const [hours, minutes] = time.split(':');
+          let hour24 = parseInt(hours);
+          if (period === 'PM' && hour24 < 12) hour24 += 12;
+          if (period === 'AM' && hour24 === 12) hour24 = 0;
+
+          date.setHours(hour24);
+          date.setMinutes(parseInt(minutes));
+
+          // Return in ISO format
+          return date.toISOString();
+        })(),
+        // Add the eco_score field with default value of 0
+        eco_score: 0
       };
       console.log(payload)
 
@@ -390,41 +407,41 @@ export default function LocationJournal() {
     setEditingField('content');
   };
 
- const handleFieldChange = (value) => {
-  if (editingField === 'day') {
-    // Create a new date object from the selected value
-    const newDate = new Date(value);
-    
-    // Get the current time from the existing entry
-    const currentTime = currentEntry.time;
-    const [time, period] = currentTime.split(' ');
-    const [hours, minutes] = time.split(':');
-    let hour24 = parseInt(hours);
-    if (period === 'PM' && hour24 < 12) hour24 += 12;
-    if (period === 'AM' && hour24 === 12) hour24 = 0;
-    
-    // Set the time on the new date
-    newDate.setHours(hour24);
-    newDate.setMinutes(parseInt(minutes));
-    newDate.setSeconds(0);
-    newDate.setMilliseconds(0);
-    
-    // Format the date for display
-    const formattedDate = formatDate(newDate);
-    setCurrentEntry({ ...currentEntry, day: formattedDate });
-  } else if (editingField === 'time') {
-    // Convert 24-hour format from input to 12-hour format with AM/PM
-    const [hours, minutes] = value.split(':');
-    const date = new Date();
-    date.setHours(parseInt(hours));
-    date.setMinutes(parseInt(minutes));
-    const formattedTime = formatTime(date);
-    setCurrentEntry({ ...currentEntry, time: formattedTime });
-  } else {
-    setCurrentEntry({ ...currentEntry, [editingField]: value });
-  }
-  setEditingField(null);
-};
+  const handleFieldChange = (value) => {
+    if (editingField === 'day') {
+      // Create a new date object from the selected value
+      const newDate = new Date(value);
+
+      // Get the current time from the existing entry
+      const currentTime = currentEntry.time;
+      const [time, period] = currentTime.split(' ');
+      const [hours, minutes] = time.split(':');
+      let hour24 = parseInt(hours);
+      if (period === 'PM' && hour24 < 12) hour24 += 12;
+      if (period === 'AM' && hour24 === 12) hour24 = 0;
+
+      // Set the time on the new date
+      newDate.setHours(hour24);
+      newDate.setMinutes(parseInt(minutes));
+      newDate.setSeconds(0);
+      newDate.setMilliseconds(0);
+
+      // Format the date for display
+      const formattedDate = formatDate(newDate);
+      setCurrentEntry({ ...currentEntry, day: formattedDate });
+    } else if (editingField === 'time') {
+      // Convert 24-hour format from input to 12-hour format with AM/PM
+      const [hours, minutes] = value.split(':');
+      const date = new Date();
+      date.setHours(parseInt(hours));
+      date.setMinutes(parseInt(minutes));
+      const formattedTime = formatTime(date);
+      setCurrentEntry({ ...currentEntry, time: formattedTime });
+    } else {
+      setCurrentEntry({ ...currentEntry, [editingField]: value });
+    }
+    setEditingField(null);
+  };
 
   // If no location data was passed, show an error message
   if (!locationData) {
