@@ -37,15 +37,12 @@ export default function LocationJournal() {
   const [showAddOptions, setShowAddOptions] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
   const [editType, setEditType] = useState('');
-  const [isEditingExistingEntry, setIsEditingExistingEntry] = useState(false);
   const [isEmotionPickerAnimating, setIsEmotionPickerAnimating] = useState(false);
   const [isImageOptionsAnimating, setIsImageOptionsAnimating] = useState(false);
-  const [originalDay, setOriginalDay] = useState(null);
-  const [originalIndex, setOriginalIndex] = useState(null);
-  const [currentEntryId, setCurrentEntryId] = useState(null); // <-- Track entry ID for updates
+  const [originalEntryId, setOriginalEntryId] = useState(null); // Track original entry ID for deletion
   const [currentEntry, setCurrentEntry] = useState({
     day: formatDate(new Date()),
-    time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+    time: formatTime(new Date()),
     emotion: 5, // Default to 'Neutral'
     content: '',
     images: []
@@ -54,7 +51,7 @@ export default function LocationJournal() {
   const [showEmotionPicker, setShowEmotionPicker] = useState(false);
   const [showImageOptions, setShowImageOptions] = useState(false);
   const addButtonRef = useRef(null);
-  
+
   // States for deletion modals
   const [showImageDeleteModal, setShowImageDeleteModal] = useState(false);
   const [imageToDelete, setImageToDelete] = useState(null);
@@ -83,14 +80,36 @@ export default function LocationJournal() {
   }, [showImageOptions]);
 
 
-  // Function to format date as "Month Day, Year"
+  // Function to format date as "Month Day, Year" for display
   function formatDate(date) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
   }
 
+  // Function to format date as "YYYY-MM-DD" for JSON
+  function formatDateForJSON(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Function to format time as "HH:MM AM/PM" for display
+  function formatTime(date) {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
+
   // Function to parse date string back to Date object
   function parseDate(dateString) {
+    // Check if it's already in YYYY-MM-DD format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return new Date(dateString);
+    }
+    
     // For format like "August 17, 2006"
     const parts = dateString.split(' ');
     if (parts.length === 3) {
@@ -99,6 +118,7 @@ export default function LocationJournal() {
       const year = parts[2];
       return new Date(`${month} ${day}, ${year}`);
     }
+    
     // Fallback for other formats
     return new Date(dateString);
   }
@@ -139,15 +159,12 @@ export default function LocationJournal() {
     setEditType('text');
     setEditingMode(true);
     setShowAddOptions(false);
-    // Set flag for new entry
-    setIsEditingExistingEntry(false);
-    setOriginalDay(null);
-    setOriginalIndex(null);
-    setCurrentEntryId(null); // <-- Reset ID for new entries
+    // Reset for new entry
+    setOriginalEntryId(null);
     // Reset form for new entry
     setCurrentEntry({
       day: formatDate(new Date()),
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      time: formatTime(new Date()),
       emotion: 5, // Default to 'Neutral'
       content: '',
       images: []
@@ -158,15 +175,12 @@ export default function LocationJournal() {
     setEditType('image');
     setEditingMode(true);
     setShowAddOptions(false);
-    // Set flag for new entry
-    setIsEditingExistingEntry(false);
-    setOriginalDay(null);
-    setOriginalIndex(null);
-    setCurrentEntryId(null); // <-- Reset ID for new entries
+    // Reset for new entry
+    setOriginalEntryId(null);
     // Reset form for new entry
     setCurrentEntry({
       day: formatDate(new Date()),
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      time: formatTime(new Date()),
       emotion: 5, // Default to 'Neutral'
       content: '',
       images: []
@@ -182,107 +196,54 @@ export default function LocationJournal() {
       const emotionDataForEntry = getEmotionData(entry.emotion);
 
       setCurrentEntry({
-        day: day,
+        day: day, // Keep the original day format from the entry
         time: entry.time,
         emotion: emotionDataForEntry.value, // Use the numerical value
         content: entry.content,
         images: entry.images || []
       });
-      // Set flag for existing entry and store its origin
-      setIsEditingExistingEntry(true);
-      setOriginalDay(day);
-      setOriginalIndex(entryIndex);
-      setCurrentEntryId(entry.id); // <-- Store the ID of the entry being edited
+      
+      // Store the original entry ID for potential deletion
+      setOriginalEntryId(entry.id);
       setEditingMode(true);
       setEditType(entry.images && entry.images.length > 0 ? 'image' : 'text');
     }
   };
 
-  // In LocationJournal.jsx
+  const handleSaveAndBack = async () => {
+    const emotionLabel = getEmotionData(currentEntry.emotion).label;
 
-const handleSaveAndBack = async () => {
-  // No need to create a copy here, we can build the payload directly
-  const emotionLabel = getEmotionData(currentEntry.emotion).label;
-
-  try {
-    if (isEditingExistingEntry) {
-      // --- UPDATE EXISTING ENTRY ---
-      const payload = {
-        emotion: emotionLabel,
-        content: currentEntry.content,
-        images: currentEntry.images,
-      };
-
-      // Call the update API
-      await updateJournal(currentEntryId, payload);
-
-      // Update local state on success
-      const updatedEntries = journalEntries.map(entry => {
-        if (entry.day === originalDay) {
-          const updatedSmallEntries = [...entry.smallEntries];
-          
-          // Create the entry object for the UI state
-          const entryWithId = {
-            ...currentEntry, // Use currentEntry directly
-            id: currentEntryId, // Ensure the ID is preserved
-            emotion: emotionLabel // Store emotion as string to match API response
-          };
-          
-          updatedSmallEntries[originalIndex] = entryWithId;
-          return { ...entry, smallEntries: updatedSmallEntries };
-        }
-        return entry;
-      });
-      setJournalEntries(updatedEntries);
-
-    } else {
-      // --- CREATE NEW ENTRY ---
+    try {
+      // Always create a new entry
       const payload = {
         poi_id: locationData.id,
         emotion: emotionLabel,
         content: currentEntry.content,
         images: currentEntry.images,
+        // Format date as YYYY-MM-DD for JSON
+        day: formatDateForJSON(parseDate(currentEntry.day)),
+        // Ensure time is in 12-hour format with AM/PM
+        time: formatTime(new Date(`2000-01-01 ${currentEntry.time}`))
       };
+      console.log(payload)
 
-      const response = await createJournal(payload);
-      const newEntryWithId = {
-        ...currentEntry, // day, time, emotion (as number), content, images
-        id: response.data.id, // <-- CRITICAL FIX: Get the ID from response.data
-        emotion: emotionLabel, // Store emotion as string to match the API
-      };
+      // Create the new entry
+      await createJournal(payload);
 
-      // Update local state with the entry that now has an ID
-      const existingDayIndex = journalEntries.findIndex(entry => entry.day === newEntryWithId.day);
-
-      if (existingDayIndex !== -1) {
-        const updatedEntries = [...journalEntries];
-        updatedEntries[existingDayIndex].smallEntries.push(newEntryWithId);
-        setJournalEntries(updatedEntries);
-      } else {
-        setJournalEntries([
-          ...journalEntries,
-          {
-            day: newEntryWithId.day,
-            smallEntries: [newEntryWithId]
-          }
-        ]);
+      // If we were editing an existing entry, delete the old one
+      if (originalEntryId) {
+        await deleteJournal(originalEntryId);
       }
+
+      // Navigate back to refresh the data
+      navigate(-1);
+
+    } catch (error) {
+      console.error("Failed to save journal entry:", error);
+      // You can show a more user-friendly error message here
+      alert("Could not save your entry. Please try again.");
     }
-
-    // Exit editing mode and reset tracking variables on success
-    setEditingMode(false);
-    setIsEditingExistingEntry(false);
-    setOriginalDay(null);
-    setOriginalIndex(null);
-    setCurrentEntryId(null);
-    setEditingField(null);
-
-  } catch (error) {
-    console.error("Failed to save journal entry:", error);
-    // You can show a more user-friendly error message here
-    alert("Could not save your entry. Please try again.");
-  }
-};
+  };
 
   const handleEmotionSelect = (emotion) => {
     setCurrentEntry({ ...currentEntry, emotion });
@@ -296,7 +257,7 @@ const handleSaveAndBack = async () => {
 
     // Simple size check (e.g., limit to 5MB per image)
     const MAX_SIZE = 5 * 1024 * 1024; // 5MB in bytes
-    
+
     for (const file of files) {
       if (file.size > MAX_SIZE) {
         alert(`Image ${file.name} is too large. Please select images under 5MB.`);
@@ -306,15 +267,15 @@ const handleSaveAndBack = async () => {
     }
 
     const newImageUrls = [];
-    
+
     // Convert each file to base64
     Array.from(files).forEach(file => {
       const reader = new FileReader();
-      
+
       reader.onload = (e) => {
         // The result is a base64 string
         newImageUrls.push(e.target.result);
-        
+
         // Update state after all files are processed
         if (newImageUrls.length === files.length) {
           setCurrentEntry({
@@ -325,7 +286,7 @@ const handleSaveAndBack = async () => {
           event.target.value = '';
         }
       };
-      
+
       reader.readAsDataURL(file);
     });
   };
@@ -376,32 +337,32 @@ const handleSaveAndBack = async () => {
       try {
         const { day, index } = entryToDelete;
         const dayEntry = journalEntries.find(e => e.day === day);
-        
+
         if (dayEntry && dayEntry.smallEntries[index]) {
           const entryId = dayEntry.smallEntries[index].id;
-          
+
           // Call the delete API
           await deleteJournal(entryId);
-          
+
           // Update local state on success
           const updatedEntries = [...journalEntries];
           const dayEntryIndex = updatedEntries.findIndex(e => e.day === day);
-          
+
           if (dayEntryIndex !== -1) {
             const updatedSmallEntries = [...updatedEntries[dayEntryIndex].smallEntries];
             updatedSmallEntries.splice(index, 1);
-            
+
             // If no more entries for this day, remove the day entry
             if (updatedSmallEntries.length === 0) {
               updatedEntries.splice(dayEntryIndex, 1);
             } else {
               updatedEntries[dayEntryIndex].smallEntries = updatedSmallEntries;
             }
-            
+
             setJournalEntries(updatedEntries);
           }
         }
-        
+
         setEntryToDelete(null);
         setShowEntryDeleteModal(false);
       } catch (error) {
@@ -429,16 +390,41 @@ const handleSaveAndBack = async () => {
     setEditingField('content');
   };
 
-  const handleFieldChange = (value) => {
-    if (editingField === 'day') {
-      const dateObject = new Date(value);
-      const formattedDate = formatDate(dateObject);
-      setCurrentEntry({ ...currentEntry, day: formattedDate });
-    } else {
-      setCurrentEntry({ ...currentEntry, [editingField]: value });
-    }
-    setEditingField(null);
-  };
+ const handleFieldChange = (value) => {
+  if (editingField === 'day') {
+    // Create a new date object from the selected value
+    const newDate = new Date(value);
+    
+    // Get the current time from the existing entry
+    const currentTime = currentEntry.time;
+    const [time, period] = currentTime.split(' ');
+    const [hours, minutes] = time.split(':');
+    let hour24 = parseInt(hours);
+    if (period === 'PM' && hour24 < 12) hour24 += 12;
+    if (period === 'AM' && hour24 === 12) hour24 = 0;
+    
+    // Set the time on the new date
+    newDate.setHours(hour24);
+    newDate.setMinutes(parseInt(minutes));
+    newDate.setSeconds(0);
+    newDate.setMilliseconds(0);
+    
+    // Format the date for display
+    const formattedDate = formatDate(newDate);
+    setCurrentEntry({ ...currentEntry, day: formattedDate });
+  } else if (editingField === 'time') {
+    // Convert 24-hour format from input to 12-hour format with AM/PM
+    const [hours, minutes] = value.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours));
+    date.setMinutes(parseInt(minutes));
+    const formattedTime = formatTime(date);
+    setCurrentEntry({ ...currentEntry, time: formattedTime });
+  } else {
+    setCurrentEntry({ ...currentEntry, [editingField]: value });
+  }
+  setEditingField(null);
+};
 
   // If no location data was passed, show an error message
   if (!locationData) {
@@ -476,7 +462,7 @@ const handleSaveAndBack = async () => {
               journalEntries.map(entry => (
                 <div key={entry.day} className='journal-entry'>
                   <div className='journal-entry-header'>
-                    <h3 className='journal-entry-date'>{entry.day}</h3>
+                    <h3 className='journal-entry-date'>{formatDate(parseDate(entry.day))}</h3>
                   </div>
 
                   {entry.smallEntries.map((smallEntry, index) => {
@@ -574,11 +560,15 @@ const handleSaveAndBack = async () => {
                     className="editing-input editing-input-day"
                     autoFocus
                     onBlur={(e) => handleFieldChange(e.target.value)}
-                    defaultValue={parseDate(currentEntry.day).toISOString().split('T')[0]}
+                    defaultValue={(() => {
+                      // Handle both YYYY-MM-DD and "Month Day, Year" formats
+                      const date = parseDate(currentEntry.day);
+                      return date.toISOString().split('T')[0];
+                    })()}
                   />
                 ) : (
                   <div className="editing-field editing-field-day" onClick={handleDayEdit}>
-                    {currentEntry.day}
+                    {formatDate(parseDate(currentEntry.day))}
                   </div>
                 )}
 
@@ -589,7 +579,16 @@ const handleSaveAndBack = async () => {
                     className="editing-input editing-input-time"
                     autoFocus
                     onBlur={(e) => handleFieldChange(e.target.value)}
-                    defaultValue={currentEntry.time}
+                    defaultValue={(() => {
+                      // Convert 12-hour format with AM/PM to 24-hour format for the input
+                      const timeStr = currentEntry.time;
+                      const [time, period] = timeStr.split(' ');
+                      const [hours, minutes] = time.split(':');
+                      let hour24 = parseInt(hours);
+                      if (period === 'PM' && hour24 < 12) hour24 += 12;
+                      if (period === 'AM' && hour24 === 12) hour24 = 0;
+                      return `${hour24.toString().padStart(2, '0')}:${minutes}`;
+                    })()}
                   />
                 ) : (
                   <div className="editing-field editing-field-time" onClick={handleTimeEdit}>
@@ -624,10 +623,10 @@ const handleSaveAndBack = async () => {
               <div className="editing-images">
                 {currentEntry.images.map((image, index) => (
                   <div key={index} className="editing-image-container">
-                    <img 
+                    <img
                       src={image} // This will work with both URLs and base64 strings
-                      alt={`Entry image ${index}`} 
-                      className="editing-image" 
+                      alt={`Entry image ${index}`}
+                      className="editing-image"
                       onClick={() => handleImageClick(index)}
                     />
                   </div>
