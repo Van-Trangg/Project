@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import '../styles/Chat.css';
-import { sendMessage } from '../api/map';
+import { sendMessage, resetChat } from '../api/map';
 import { getProfile } from '../api/profile';
 
 export default function Chatbot() {
@@ -21,6 +21,15 @@ export default function Chatbot() {
             messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
     };
+
+    useEffect(() => {
+        document.body.classList.remove('page-transitioning');
+        
+        const pageContent = document.querySelector('.chatbot-page');
+        if (pageContent) {
+        pageContent.classList.add('page-enter');
+        }
+    }, []);
 
     useEffect(() => {
         scrollToBottom();
@@ -60,6 +69,7 @@ export default function Chatbot() {
     // The rest of the component remains the same...
     const handleBackToMap = () => {
         document.body.classList.add('page-transitioning');
+        resetChat();
         navigate('/map');
     };
 
@@ -128,7 +138,16 @@ export default function Chatbot() {
                             </div>
                         </div>
                     ))}
-                    {isLoading && <div className="message-content bot-message message-pending">...</div>}
+                    {isLoading && 
+                    <div className="message-wrapper bot-wrapper">
+                        <div className="message-header bot-header">
+                            <>
+                                <img src = 'src/public/ecopoint.png' height = "20px" width = "20px"></img>
+                                <span>Navi</span>
+                            </>
+                        </div>
+                        <div className='message-content bot-message'>...</div>
+                    </div>}
                     <div className = 'chat-bottom-spacer' ref={messagesEndRef} />
                 </div>
                 <div className="chat-input-area">
