@@ -1,4 +1,10 @@
 ### Frontend - Updated 
+```bash
+cd backend
+kích hoạt virtual enviroment
+pip install -q -U google-genai
+### Frontend - Updated 
+```bash
 cd frontend
 npm install
 npm install leaflet react-leaflet@4 
