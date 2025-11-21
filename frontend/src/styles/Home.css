@@ -407,3 +407,43 @@
   margin-top: auto;
   margin-bottom: auto;
 }
+/* === KHU VỰC NÚT TEST (DEV ONLY - Xóa khi làm xong) === */
+.dev-cheat-box {
+  position: fixed;
+  bottom: 85px; /* Nằm trên thanh menu dưới cùng 1 chút */
+  left: 24px;
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-cheat {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-cheat:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn-cheat:active {
+  transform: scale(0.95);
+}
+
+/* Màu đỏ cho nút Hack mạnh */
+.btn-cheat.red {
+  background: linear-gradient(135deg, #ff5f6d 0%, #ffc371 100%);
+}
+
+/* Màu xám cho nút Reset */
+.btn-cheat.gray {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
