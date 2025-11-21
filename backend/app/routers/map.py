@@ -9,6 +9,9 @@ from app.models.poi import POI
 from app.models.map import Map
 from app.models.checkin import Checkin
 from app.models.user import User
+
+from app.models.transaction import Transaction 
+
 from app.schemas.map_schema import MapOut, PoiOut
 from app.schemas.checkin_schema import CheckinRequest, CheckinReceipt
 from app.crud import map_crud, checkin_crud
@@ -106,16 +109,36 @@ def checkin(
         db, user.id, payload.poi_id, dist, poi.score, receipt_no
     )
 
+    # - Logic đồng bộ với Reward & Home 
+    
+    # A. Cộng điểm vào tổng tích lũy (để thanh Level bên Home tăng lên)
+    if user.total_eco_points is None:
+        user.total_eco_points = 0
+    user.total_eco_points += poi.score
+
+    # B. Tạo Transaction (Để hiện lịch sử bên trang Reward)
+    new_trans = Transaction(
+        user_id=user.id,
+        title=f"Check-in: {poi.name}",  # Hiện tên địa điểm
+        amount=poi.score,
+        type="positive"  # Đánh dấu là cộng tiền (+)
+    )
+    db.add(new_trans)
+    
+    # C. Lưu tất cả thay đổi vào Database
+    db.commit()
+    db.refresh(user)
+    
+
     # --- Trả về kết quả ---
     return CheckinReceipt(
         checkin_id=check.id,
         poi_name=poi.name,
         distance_m=round(dist, 1),
         earned_points=poi.score,
-        total_points=total,
+        total_points=user.eco_points, # Trả về số dư thật mới nhất
         receipt_no=receipt_no,
     )
-
 
 
 @router.get("/poi/{poi_id}/checked", response_model=dict)
