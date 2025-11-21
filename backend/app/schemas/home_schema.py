@@ -15,14 +15,11 @@ class DailyReward(BaseModel):
 # Định nghĩa cấu trúc HomeDataResponse
 class HomeDataResponse(BaseModel):
     user_name: str = Field(..., alias='userName')
-    
-    # === BƯỚC SỬA LỖI ===
-    # Thêm alias cho các trường này,
-    # ngay cả khi tên nó giống hệt
+
+    avatar_url: str | None = Field(None, alias='avatarUrl')
     ecopoints: int = Field(..., alias='ecopoints') 
     badges: int = Field(..., alias='badges')
     rank: int = Field(..., alias='rank')
-    # === KẾT THÚC SỬA LỖI ===
     
     check_ins: int = Field(..., alias='checkIns')
     
@@ -35,4 +32,4 @@ class HomeDataResponse(BaseModel):
 
     class Config:
         from_attributes = True
-        populate_by_name = True
+        populate_by_name = True 
