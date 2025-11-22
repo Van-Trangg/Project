@@ -12,7 +12,7 @@ from app.core.security import get_current_user
 router = APIRouter()
 
 # ==========================================
-# 1. CÁC SCHEMA (Định nghĩa dữ liệu input/output)
+# 1. CÁC SCHEMA
 # ==========================================
 
 class HistoryItem(BaseModel):
@@ -20,7 +20,7 @@ class HistoryItem(BaseModel):
     title: str
     amount: int
     type: str 
-    # created_at: datetime # Có thể thêm nếu muốn hiển thị ngày giờ
+    created_at: datetime # <--- [MỚI] Thêm ngày giờ để hiển thị chi tiết
 
 class PromoItem(BaseModel):
     id: int
@@ -58,6 +58,19 @@ def calculate_level(total_points: int):
 # 3. CÁC API ENDPOINT
 # ==========================================
 
+# --- [MỚI] API LẤY TOÀN BỘ LỊCH SỬ ---
+@router.get("/history", response_model=List[HistoryItem])
+def get_full_history(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Lấy tất cả, sắp xếp mới nhất lên đầu
+    full_history = db.query(models.Transaction)\
+        .filter(models.Transaction.user_id == current_user.id)\
+        .order_by(models.Transaction.created_at.desc())\
+        .all()
+    return full_history
+
 # --- API: Nhận thưởng điểm danh ---
 @router.post("/claim-reward")
 def claim_daily_reward(
@@ -69,10 +82,8 @@ def claim_daily_reward(
     if current_user.last_check_in_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    # [LƯU Ý] Đặt lại là 10 sau khi test xong
     points_to_add = 10 
     
-    # 1. Cộng điểm User
     current_user.eco_points += points_to_add
     if current_user.total_eco_points is None:
         current_user.total_eco_points = 0
@@ -81,7 +92,7 @@ def claim_daily_reward(
     current_user.last_check_in_date = today
     current_user.check_ins += 1 
 
-    # 2. Lưu lịch sử giao dịch (Transaction)
+    # Lưu Transaction
     new_trans = models.Transaction(
         user_id=current_user.id,
         title="Điểm danh hàng ngày",
@@ -93,7 +104,6 @@ def claim_daily_reward(
     db.commit()
     db.refresh(current_user)
 
-    # Trả về info mới nhất
     current_total = current_user.total_eco_points
     new_level_info = calculate_level(current_total)
 
@@ -106,26 +116,24 @@ def claim_daily_reward(
         "message": "Nhận thưởng thành công!"
     }
 
-# --- API: Đổi quà (Trừ điểm) ---
+# --- API: Đổi quà ---
 @router.post("/redeem")
 def redeem_reward(
     request: RedeemRequest,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    # Kiểm tra đủ điểm không
     if current_user.eco_points < request.price:
         return {"success": False, "message": "Bạn không đủ điểm!"}
 
-    # 1. Trừ điểm
     current_user.eco_points -= request.price
 
-    # 2. Lưu lịch sử giao dịch
+    # Lưu Transaction
     new_trans = models.Transaction(
         user_id=current_user.id,
         title=f"Đổi quà: {request.title}",
         amount=request.price,
-        type="negative" # Đánh dấu là trừ tiền
+        type="negative"
     )
     db.add(new_trans)
 
@@ -138,14 +146,13 @@ def redeem_reward(
         "message": f"Đổi '{request.title}' thành công!"
     }
 
-# --- API: Lấy dữ liệu trang chủ ---
+# --- API: Trang Home ---
 @router.get("/", response_model=home_schema.HomeDataResponse)
 def get_real_home_data(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     rank = db.query(models.User).filter(models.User.eco_points > current_user.eco_points).count() + 1
-    
     current_total = current_user.total_eco_points if current_user.total_eco_points else 0
     level_info = calculate_level(current_total)
     
@@ -188,7 +195,7 @@ def get_real_home_data(
         "dailyRewards": rewards
     }
 
-# --- API: Lấy dữ liệu trang Reward ---
+# --- API: Trang Reward ---
 @router.get("/rewards", response_model=RewardResponse)
 def get_reward_data(
     db: Session = Depends(get_db),
@@ -196,8 +203,7 @@ def get_reward_data(
 ):
     real_balance = current_user.eco_points
 
-    # Lấy lịch sử giao dịch THẬT từ Database
-
+    # Lấy 10 cái mới nhất
     real_history = db.query(models.Transaction)\
         .filter(models.Transaction.user_id == current_user.id)\
         .order_by(models.Transaction.created_at.desc())\
