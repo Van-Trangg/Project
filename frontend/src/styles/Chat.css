@@ -19,7 +19,7 @@
 }
 
 .chat-header {
-    height: 15dvh;
+    height: 10dvh;
     position: sticky;
     top: 0;
     left: 0;
@@ -60,7 +60,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-bottom: 60px;
+    padding-bottom: 10dvh;
 }   
 .message-header {
     display: flex;
@@ -119,7 +119,7 @@
 .chat-input-area {
     position: fixed;
     background: transparent;
-    bottom: 0;
+    bottom: 3dvh;
     margin-top: 10px;
     display: flex;
     padding: 10px;
