@@ -6,6 +6,7 @@ import Signup from '../pages/Signup'
 import Leaderboard from '../pages/Leaderboard'
 import Journal from '../pages/Journal'
 import Map from '../pages/Map'
+import Chat from '../pages/Chat'
 import CheckIn from '../pages/Checkin.jsx'
 import Profile from '../pages/Profile'
 import EditProfile from '../pages/EditProfile'
@@ -21,6 +22,7 @@ import ViewProfile from '../pages/ViewProfile'
 import HistoryPage from '../pages/HistoryPage'
 import DetailPage from '../pages/DetailPage'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import PlantingTrees from '../pages/PlantingTrees.jsx'
 
 export default function AppRouter(){
   return (
@@ -49,7 +51,9 @@ export default function AppRouter(){
           <Route path="/history" element={<HistoryPage/>} />
           <Route path="/detail" element={<DetailPage/>} />
           <Route path="/badges" element={<Badges/>} />
+          <Route path="/planting-trees" element={<PlantingTrees/>} />
           <Route path="/location/:id" element={<LocationJournal/>} />
+          <Route path="/chat" element={<Chat/>} />
         </Routes>
       </div>
       <Footer />

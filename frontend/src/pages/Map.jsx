@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import { listPlaces, getPois, percentageChecked, getNearestMap } from '../api/map'
 
 import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
-import { customIcon } from '../components/Pin';
+import { customIcon, customIconHere } from '../components/Pin';
 
 function MapController({ onMapReady }) {
   const map = useMap();
@@ -115,6 +115,14 @@ const loadMapsFallback = () => {
 };
 
   // Load POIs and their check-in percentages when selectedMap changes
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedPin]);
+
   useEffect(() => {
     if (!selectedMap || loadingPois || percentLoading) return;
 
@@ -166,37 +174,37 @@ const loadMapsFallback = () => {
     }
   }
 
+  const handleChat = () => {
+    document.body.classList.add('page-transitioning');
+    navigate(`/chat`); // go to specific check-in page
+  }
+
   const flyToCityCenter = (e) => {
     e.stopPropagation();
-
-    // ---- DEBUG ----
-    console.log('fly button clicked');
-    console.log('mapRef.current =', mapRef.current);
-    console.log('selectedMap =', selectedMap);
-    // --------------
 
     if (!mapRef.current) {
       console.warn('Map instance not ready yet');
       return;
     }
-    if (!selectedMap) {
-      console.warn('No city selected');
+    if (!userLocation) {
+      console.warn('No information about user location');
+      // Fall back to city center
+      mapRef.current.flyTo([selectedMap.center_lat, selectedMap.center_lng], 13, {
+        duration: 1.2,
+      });
+      setUserMarker(null); // Hide user marker if no location
       return;
     }
 
-    const lat = parseFloat(selectedMap.center_lat);
-    const lng = parseFloat(selectedMap.center_lng);
+    const lat = parseFloat(userLocation.lat);
+    const lng = parseFloat(userLocation.lng);
 
-    if (isNaN(lat) || isNaN(lng)) {
-      console.error('Bad coordinates', selectedMap.center_lat, selectedMap.center_lng);
-      return;
-    }
+    // Fly to user location
+    mapRef.current.flyTo([lat, lng], 16, {
+      duration: 1.5,
+  });
 
-    mapRef.current.flyTo([lat, lng], 13, {
-      duration: 1.2,
-      easeLinearity: 0.5,
-    });
-  };
+};
 
   const validateGPS = (poi) => {
     if (!userLocation) {
@@ -210,22 +218,24 @@ const loadMapsFallback = () => {
     }
     const distance = haversineDistance(userLocation.lat, userLocation.lng, poi.lat, poi.lng) * 1000; // in meters
     console.log(`Distance to POI (${poi.name}): ${distance.toFixed(2)} meters`);
-    setCheckinEligible(distance <= 200);
+    setCheckinEligible(distance <= 200000);
   };
 
   return (
   <div className="map-page">
     <div className="location-bar">
       <div className="spacer"></div>
-      <span className="location-text">{selectedMap?.name || 'Loading...'}</span>
-      <button 
-        className="dropdown-toggle"
-        onClick={() => setDropdownOpen(prev => !prev)}
-      >
-        <svg className="dropdown-arrow" viewBox="0 0 24 24">
-          <path d="M7 10l5 5 5-5z" />
-        </svg>
-      </button>
+      <div className = {`location-box ${dropdownOpen ? 'dropdown' : ''}`}>
+        <span className="location-text">{selectedMap?.name || 'Loading...'}</span>
+        <button 
+          className="dropdown-toggle"
+          onClick={() => setDropdownOpen(prev => !prev)}
+        >
+          <svg className="dropdown-arrow" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z" />
+          </svg>
+        </button>
+      </div>
       <div className="spacer"></div>
     </div>
     {dropdownOpen && ( 
@@ -284,13 +294,32 @@ const loadMapsFallback = () => {
               </Marker>
             ))}
             <MapController onMapReady={(map) => { mapRef.current = map; }} />
+            <Marker
+              position={[userLocation.lat, userLocation.lng]}
+              icon={customIconHere}
+              zIndexOffset={1000} // Appear on top
+            >
+              <Popup>
+                <div style={{ textAlign: 'center', fontWeight: 'bold'}}>
+                  You are here
+                </div>
+              </Popup>
+            </Marker>
           </MapContainer>
-          <button 
-            className = 'map-center-bubble'
-            onClick={flyToCityCenter}
-          >
-            <img src = '/src/public/focus.png' className = 'target-icon'></img>
-          </button>
+          <div className = 'bubble-container'>
+            <button 
+              className = 'chat-bubble'
+              onClick={handleChat}
+            >
+              <img src = '/src/public/ai.png' className = 'target-icon'></img>
+            </button>
+            <button 
+              className = 'map-center-bubble'
+              onClick={flyToCityCenter}
+            >
+              <img src = '/src/public/focus.png' className = 'target-icon'></img>
+            </button>
+          </div>
         </>    
         )}
       </div>

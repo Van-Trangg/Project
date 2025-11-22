@@ -1,8 +1,8 @@
-// src/components/Home.jsx
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css'; 
+
+// Import hình ảnh
 import ecopointsIcon from '../public/ecopoint.png';
 import sunIcon from '../public/sun.png';
 import treeIcon from '../public/tree.png';
@@ -20,8 +20,11 @@ import leaderboardSolidIcon from '../public/leaderboard-solid.png'
 export default function Home() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true); // <-- 1. THÊM STATE LOADING
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // URL API gốc
+  const API_BASE_URL = 'http://127.0.0.1:8000';
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -29,39 +32,33 @@ export default function Home() {
       setError(null);
       
       try {
-        // 1. Lấy token mà file Login.jsx đã lưu
-        const token = localStorage.getItem('access_token'); // <-- Tên key LẤY TỪ LOGIN.JSX
+        const token = localStorage.getItem('access_token');
 
-        // 2. Kiểm tra xem đã đăng nhập chưa
         if (!token) {
           setError("Bạn chưa đăng nhập. Đang chuyển về trang Login...");
           setLoading(false);
-          // Chuyển về trang login sau 2 giây
           setTimeout(() => navigate('/login'), 2000); 
           return;
         }
 
-        // 3. Gửi token trong Headers (ĐÂY LÀ PHẦN SỬA LỖI 401)
-        const response = await fetch('http://127.0.0.1:8000/home', {
+        // Gọi API lấy dữ liệu trang chủ
+        // Lưu ý: Nếu bên Backend bạn để prefix là /home thì giữ nguyên /home
+        const response = await fetch(`${API_BASE_URL}/home`, {
           method: 'GET',
           headers: {
-            // "Giơ thẻ" (token) cho "người gác cổng"
             'Authorization': `Bearer ${token}` 
           }
         }); 
 
         if (!response.ok) {
           if (response.status === 401) {
-            // Lỗi 401 (Token sai hoặc hết hạn)
             setError("Token không hợp lệ. Vui lòng đăng nhập lại.");
-            localStorage.removeItem('access_token'); // Xóa token hỏng
+            localStorage.removeItem('access_token');
             setTimeout(() => navigate('/login'), 2000);
           } else {
-            // Các lỗi khác (500, v.v.)
             throw new Error('Lỗi mạng hoặc server (Backend sập?)');
           }
         } else {
-          // THÀNH CÔNG!
           const data = await response.json();
           setData(data); 
         }
@@ -75,24 +72,16 @@ export default function Home() {
     };
 
     fetchHomeData();
-  }, [navigate]);// Chỉ chạy 1 lần
+  }, [navigate]);
 
-  // --- SỬA LẠI THỨ TỰ CHECK ---
-
-  // 1. Check Loading (Luôn check đầu tiên)
+  // --- RENDERING STATES ---
   if (loading) return <div className="loading">Loading...</div>;
-
-  // 2. Check Lỗi (Check thứ 2)
-  if (error) return <div className="loading">Lỗi: {error} (Backend của bạn đã chạy chưa?)</div>;
-
-  // 3. Check Data (Check cuối cùng)
-  // (Nếu không loading, không lỗi, mà vẫn không có data thì là lỗi)
+  if (error) return <div className="loading">Lỗi: {error}</div>;
   if (!data) return <div className="loading">Không có dữ liệu.</div>;
 
-
-  // [AN TOÀN] Bây giờ data chắc chắn có
   const {
     userName,
+    avatarUrl,
     ecopoints,
     badges,
     rank,
@@ -104,20 +93,83 @@ export default function Home() {
     dailyRewards = []
   } = data;
 
+  // --- HÀM XỬ LÝ NHẬN THƯỞNG ---
+const handleClaimReward = async (index) => {
+    const selectedReward = data.dailyRewards[index];
+
+    // Chỉ xử lý nếu là "Hôm nay" và "Chưa nhận"
+    if (selectedReward.isToday && !selectedReward.claimed) {
+      
+      // --- BƯỚC 1: Cập nhật GIẢ LẬP ngay lập tức (Để user thấy mượt) ---
+      const newData = { ...data };
+      newData.dailyRewards[index].claimed = true;
+      newData.ecopoints += selectedReward.points; 
+      
+      // [FIX LỖI] Cộng luôn vào thanh tiến trình tạm thời
+      newData.progressCurrent += selectedReward.points; 
+      
+      setData(newData); // Cập nhật giao diện lần 1
+
+      // --- BƯỚC 2: Gọi API và cập nhật THẬT (Danh hiệu mới, Max mới) ---
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`${API_BASE_URL}/home/claim-reward`, {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Cập nhật lại toàn bộ thông tin mới nhất từ Server trả về
+            setData(prevData => ({
+                ...prevData,
+                ecopoints: result.new_ecopoints,
+                progressCurrent: result.new_progress,
+                currentTitle: result.new_title, // <-- Danh hiệu mới sẽ hiện ngay ở đây
+                progressMax: result.new_max     // <-- Mốc max mới (VD: lên 2000)
+            }));
+            console.log("Đã cập nhật danh hiệu mới:", result.new_title);
+        }
+
+      } catch (err) {
+        console.error("Lỗi khi lưu điểm danh:", err);
+        // Nếu lỗi quá nặng thì có thể fetchHomeData() lại để đồng bộ
+      }
+    }
+  };
+
   const progressPercent = (progressCurrent / progressMax) * 100;
 
   return (
     <div className="homepage-body">
-      {/* === HEADER CHÀO MỪNG === */}
+      
+      {/* === 1. AVATAR USER (Góc phải) === */}
       <div className="profile-avatar" onClick={() => navigate('/profile')}>
-          <span className="avatar-placeholder"></span> 
+        {avatarUrl ? (
+            <img 
+              src={avatarUrl} 
+              alt="Avatar" 
+              className="avatar-img" 
+            />
+        ) : (
+            /* Placeholder nếu chưa có ảnh */
+            <span className="avatar-placeholder">
+              {userName ? userName.charAt(0).toUpperCase() : 'U'}
+            </span> 
+        )}
       </div>
+
+      {/* === 2. HEADER CHÀO MỪNG === */}
       <div className="home-header">
         <h1>Good morning, {userName}</h1>
         <p>Up for a new adventure today?</p>
       </div>
 
-      {/* === LƯỚI THỐNG KÊ 2x2 === */}
+      {/* === 3. LƯỚI THỐNG KÊ 2x2 === */}
       <div className="stats-grid">
         <div className="stat-card" onClick={() => navigate('/reward')}>
           <div className="stat-card-header">
@@ -146,10 +198,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === PHẦN TIẾN TRÌNH (PROGRESS) === */}
+      {/* === 4. PHẦN TIẾN TRÌNH (PROGRESS) === */}
       <div className="home-section">
         <div className="section-header">
-          < img src={treeIcon} alt="tree" className="progress-icon tree-icon" />
+          <img src={treeIcon} alt="tree" className="progress-icon tree-icon" />
           <div className="text-content">
             <h3>{currentTitle}</h3>
             <p>Progress until next title</p>
@@ -166,7 +218,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === PHẦN THƯỞNG HÀNG NGÀY === */}
+      {/* === 5. PHẦN THƯỞNG HÀNG NGÀY === */}
       <div className="home-section">
         <div className="section-header">
           <img src={sunIcon} alt="sun" className="section-title-icon sun-icon" />
@@ -176,14 +228,15 @@ export default function Home() {
           </div>
         </div>
         <div className="horizontal-scroll-list">
-          {dailyRewards.map((reward) => (
+          {dailyRewards.map((reward, index) => (
             <div
               key={reward.date}
               className={`
                 reward-card 
-                ${reward.isToday ? 'today' : ''}
-                ${reward.claimed ? 'claimed' : ''}
+                ${reward.claimed ? 'claimed' : (reward.isToday ? 'today' : '')}
               `}
+              onClick={() => handleClaimReward(index)}
+              style={{ cursor: (reward.isToday && !reward.claimed) ? 'pointer' : 'default' }}
             >
               <span className="points">{reward.points}</span>
               <img src={ecopointsIcon} alt="leaf" className="reward-leaf-icon" />
@@ -193,7 +246,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === THANH ĐIỀU HƯỚNG DƯỚI CÙNG (ĐÃ BỎ ICON) === */}
+      {/* === 6. THANH ĐIỀU HƯỚNG DƯỚI CÙNG === */}
       <nav className="bottom-nav">
         <button className="nav-item" onClick={() => navigate('/reward')}>
           <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />

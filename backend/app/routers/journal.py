@@ -119,7 +119,16 @@ def create_journal(
     poi = db.get(POI, payload.poi_id)
     if not poi:
         raise HTTPException(status_code=404, detail="POI not found")
-    journal = Journal(**payload.dict(), author_id=current_user.id) 
+
+    data = payload.dict(exclude_unset=True)
+
+    # Nếu FE không gửi created_at → dùng thời gian hiện tại
+    if data.get("created_at") is None:
+        from datetime import datetime
+        data["created_at"] = datetime.utcnow()
+
+    journal = Journal(**data, author_id=current_user.id)
+
     db.add(journal)
     db.commit()
     db.refresh(journal)

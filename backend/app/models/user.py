@@ -1,9 +1,11 @@
-from sqlalchemy import Integer, String, Boolean
+from sqlalchemy import Integer, String, Boolean, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.database import Base
+from datetime import date
 
 class User(Base):
     __tablename__ = "users"
+    
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     email: Mapped[str] = mapped_column(String, unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String)
@@ -21,6 +23,8 @@ class User(Base):
     phone_public: Mapped[bool] = mapped_column(Boolean, default=True)
     address_public: Mapped[bool] = mapped_column(Boolean, default=True)
     email_public: Mapped[bool] = mapped_column(Boolean, default=True)
+    
+    last_check_in_date: Mapped[date] = mapped_column(Date, nullable=True)
 
     journals = relationship("Journal", back_populates="author")
     transactions = relationship("Transaction", back_populates="owner")

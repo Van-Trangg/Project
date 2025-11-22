@@ -12,6 +12,7 @@ class JournalBase(BaseModel):
 
 class JournalCreate(JournalBase):
     poi_id: int
+    created_at: datetime.datetime | None = None
     pass
 
 class JournalUpdate(JournalBase):

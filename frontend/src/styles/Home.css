@@ -114,7 +114,7 @@
 }
 
 .stat-card .value {
-  font-size: 32px;
+  font-size: 42px;
   font-weight: 800;
   line-height: 1.1;
   
@@ -226,14 +226,12 @@
 
 
 .reward-card {
-  /* Tái sử dụng từ .badge-card.placeholder */
   width: 90px;
   height: 90px;
   border-radius: 16px;
   flex-shrink: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
   
-  /* Style riêng */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -242,12 +240,27 @@
   transition: all 0.2s ease;
   position: relative;
   
-  /* Style cho thẻ đã nhận (màu tối) */
-  background: #F0F9CA; /* Màu xanh lá rất nhạt */
-  border: 2px solid #D9E6A3; /* Thêm viền nhạt */
-  color: #A9BC96; /* Màu chữ xám/nhạt */
+  /* Màu nền xanh nhạt, chữ xám */
+  background: #F0F9CA; 
+  border: 2px solid #D9E6A3; 
+  color: #A9BC96; 
 }
 
+/* 2. TRẠNG THÁI ĐÃ NHẬN (Ngày quá khứ - Claimed) */
+.reward-card.claimed {
+  background: #465C20 !important; /* Xanh rêu đậm */
+  border-color: #465C20 !important; /* Viền trùng màu nền */
+  color: #ffffff !important;       /* Chữ trắng */
+}
+
+/* 3. TRẠNG THÁI HÔM NAY (Today) */
+.reward-card.today {
+  background: #F9E8BC !important; /* Vàng kem */
+  border-color: #D4A722 !important; /* Viền cam */
+  color: #556B2F !important;      /* Chữ xanh */
+}
+
+/* === CÁC THÀNH PHẦN BÊN TRONG === */
 .reward-card .points {
   font-size: 22px;
   font-weight: 700;
@@ -259,35 +272,32 @@
   opacity: 0.9;
 }
 
-.reward-card .leaf-icon {
-  width: 24px;
-  height: 24px;
-  align-self: flex-end;
-  /* (filter: brightness(0) invert(1); nếu là file SVG/PNG 1 màu) */
-}
-
-/* Style cho thẻ ngày hôm nay (màu sáng) */
-.reward-card.today {
-  background: #F9E8BC; /* Màu từ .photo-options */
-  color: #556B2F;
-}
-
+/* Style riêng cho ngày hôm nay để chữ date nổi bật hơn */
 .reward-card.today .date {
-  color: #D4A722; /* Màu cam cho ngày hôm nay */
+  color: #D4A722 !important;
   font-weight: 700;
   opacity: 1;
 }
 
-.reward-card.today .leaf-icon {
-  /* Tắt filter */
-  filter: none;
+/* === ICON LÁ (Luôn giữ nguyên màu gốc) === */
+.reward-card .reward-leaf-icon {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  
+  filter: none !important;
+  opacity: 1 !important;
 }
 
-.reward-card.claimed {
-  background: #465C20; /* Màu xanh rêu đậm */
-  color: #ffffff;
-  border-color: #465C20; /* Bỏ viền */
+/* Đảm bảo icon lá không bị đổi màu kể cả khi thẻ đổi màu */
+.reward-card.claimed .reward-leaf-icon,
+.reward-card.today .reward-leaf-icon {
+  filter: none !important;
 }
+
+
 
 /* === Thanh điều hướng dưới cùng === */
 .bottom-nav {
@@ -380,8 +390,8 @@
 }
 
 .reward-card .reward-leaf-icon {
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
   position: absolute;
   
   bottom: -12px; 
@@ -389,11 +399,51 @@
 }
 
 .stat-card .middle-leaf-icon {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   
   margin-left: 78px;
   
   margin-top: auto;
   margin-bottom: auto;
+}
+/* === KHU VỰC NÚT TEST (DEV ONLY - Xóa khi làm xong) === */
+.dev-cheat-box {
+  position: fixed;
+  bottom: 85px; /* Nằm trên thanh menu dưới cùng 1 chút */
+  left: 24px;
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-cheat {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-cheat:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn-cheat:active {
+  transform: scale(0.95);
+}
+
+/* Màu đỏ cho nút Hack mạnh */
+.btn-cheat.red {
+  background: linear-gradient(135deg, #ff5f6d 0%, #ffc371 100%);
+}
+
+/* Màu xám cho nút Reset */
+.btn-cheat.gray {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }

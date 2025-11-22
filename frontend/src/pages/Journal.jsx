@@ -180,7 +180,7 @@ export default function Journal() {
       {dropdownOpen && (
         <div className="dropdown_open">
           <div
-            className="overlay-inner"
+            className="overlay-inner-journal"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="city-grid">
