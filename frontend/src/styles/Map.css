@@ -256,7 +256,6 @@
   animation: fadeIn 0.25s ease-in;
 }
 
-
 .overlay-inner {
   position: relative;
   margin-top: 150px;
@@ -275,7 +274,6 @@
   padding: 60px 60px;
   justify-items: center;
 }
-
 .city-card {
   background: transparent;
   border: none;
@@ -344,8 +342,8 @@
 }
 
 .chat-bubble {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border-color: transparent;
   background: #7CB342;
@@ -354,8 +352,8 @@
 }
 
 .map-center-bubble {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border-color: transparent;
   background-color: #F5F9F0;
@@ -364,14 +362,15 @@
 }
 
 .chat-icon {
-  margin-top: 4px; 
-  height: 23px;
-  width: 23px;
+  margin-top: 6px; 
+  height: 28px;
+  width: 28px;
 }
 
 .target-icon { 
-  height: 25px;
-  width: 25px;
+  margin-top: 3px; 
+  height: 30px;
+  width: 30px;
 }
 
 .check-in-page {
@@ -393,7 +392,6 @@
   font-size: 25px;
   font-weight: bold;
 }
-
 .exit-btn {
   height: 18px;
   width: 18px;
@@ -521,7 +519,6 @@
 }
 
 .point {
-
   display: flex;
   flex-direction: row;
   align-self: flex-start;
