@@ -42,7 +42,6 @@ export default function Home() {
         }
 
         // Gọi API lấy dữ liệu trang chủ
-        // Lưu ý: Nếu bên Backend bạn để prefix là /home thì giữ nguyên /home
         const response = await fetch(`${API_BASE_URL}/home`, {
           method: 'GET',
           headers: {
@@ -94,23 +93,25 @@ export default function Home() {
   } = data;
 
   // --- HÀM XỬ LÝ NHẬN THƯỞNG ---
-const handleClaimReward = async (index) => {
+  const handleClaimReward = async (index) => {
     const selectedReward = data.dailyRewards[index];
 
     // Chỉ xử lý nếu là "Hôm nay" và "Chưa nhận"
     if (selectedReward.isToday && !selectedReward.claimed) {
       
-      // --- BƯỚC 1: Cập nhật GIẢ LẬP ngay lập tức (Để user thấy mượt) ---
+      // 1. Cập nhật giao diện NGAY LẬP TỨC (Optimistic UI)
       const newData = { ...data };
       newData.dailyRewards[index].claimed = true;
       newData.ecopoints += selectedReward.points; 
+      newData.progressCurrent += selectedReward.points;
       
-      // [FIX LỖI] Cộng luôn vào thanh tiến trình tạm thời
-      newData.progressCurrent += selectedReward.points; 
-      
-      setData(newData); // Cập nhật giao diện lần 1
+      // [QUAN TRỌNG] Tự tăng streak lên 1 để hiển thị ngay
+      newData.dailyStreak += 1; 
+      newData.checkIns += 1; // Cập nhật cả số tổng check-in nữa
 
-      // --- BƯỚC 2: Gọi API và cập nhật THẬT (Danh hiệu mới, Max mới) ---
+      setData(newData);
+
+      // 2. Gọi API ngầm để lưu vào Database thật
       try {
         const token = localStorage.getItem('access_token');
         const response = await fetch(`${API_BASE_URL}/home/claim-reward`, {
@@ -129,15 +130,18 @@ const handleClaimReward = async (index) => {
                 ...prevData,
                 ecopoints: result.new_ecopoints,
                 progressCurrent: result.new_progress,
-                currentTitle: result.new_title, // <-- Danh hiệu mới sẽ hiện ngay ở đây
-                progressMax: result.new_max     // <-- Mốc max mới (VD: lên 2000)
+                currentTitle: result.new_title, 
+                progressMax: result.new_max,
+                // [QUAN TRỌNG] Cập nhật lại streak thật từ backend để đồng bộ
+                dailyStreak: result.new_streak,
+                checkIns: result.new_streak // Giả sử checkIns = dailyStreak
             }));
-            console.log("Đã cập nhật danh hiệu mới:", result.new_title);
+            console.log("Đã cập nhật danh hiệu & streak mới");
         }
 
       } catch (err) {
         console.error("Lỗi khi lưu điểm danh:", err);
-        // Nếu lỗi quá nặng thì có thể fetchHomeData() lại để đồng bộ
+        // Nếu lỗi thì có thể rollback lại state cũ ở đây nếu cần
       }
     }
   };
@@ -156,7 +160,6 @@ const handleClaimReward = async (index) => {
               className="avatar-img" 
             />
         ) : (
-            /* Placeholder nếu chưa có ảnh */
             <span className="avatar-placeholder">
               {userName ? userName.charAt(0).toUpperCase() : 'U'}
             </span> 
