@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Reward.css'; // Tận dụng lại CSS của trang Reward
+import '../styles/HistoryPage.css'; 
 import ecopointsIcon from '../public/ecopoint.png';
 
 export default function HistoryPage() {
   const navigate = useNavigate();
+  
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // State để quản lý Modal chi tiết
+  const [selectedItem, setSelectedItem] = useState(null); // Lưu món đang được bấm vào
 
   const API_BASE_URL = 'http://127.0.0.1:8000';
 
@@ -19,7 +23,6 @@ export default function HistoryPage() {
             return;
         }
 
-        // Gọi API lấy toàn bộ lịch sử
         const response = await fetch(`${API_BASE_URL}/home/history`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -38,7 +41,6 @@ export default function HistoryPage() {
     fetchHistory();
   }, [navigate]);
 
-  // Hàm format ngày giờ cho đẹp (VD: 25/10/2023 14:30)
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -49,48 +51,95 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="rewards-page" style={{ minHeight: '100vh', background: '#f5f9f0' }}>
+    <div className="history-page" style={{position: 'relative'}}>
       
-      {/* Header */}
-      <div className="header-overlay">
-          <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
-          <h1>Transaction History</h1>
+      <div className="history-header">
+        <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
+        <h1>Transaction History</h1>
       </div>
 
-      <div className="rewards-main-content">
-        {loading ? (
-            <div style={{textAlign: 'center', padding: '20px', color: '#556B2F'}}>Loading...</div>
-        ) : history.length === 0 ? (
+      <div className="history-list-full">
+        
+        {loading && <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>Đang tải dữ liệu...</div>}
+
+        {!loading && history.length === 0 && (
             <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>Chưa có giao dịch nào.</div>
-        ) : (
-            <div className="history-list">
-                {history.map((item) => (
-                <div key={item.id} className="history-item" style={{marginBottom: '10px'}}>
-                    {/* Icon bên trái */}
-                    <div className="item-icon-placeholder" style={{background: item.type === 'positive' ? '#E8F5E9' : '#FFEBEE'}}>
-                        <span style={{fontSize: '20px'}}>
-                            {item.type === 'positive' ? '📥' : '📤'}
-                        </span>
-                    </div>
-                    
-                    {/* Nội dung giữa */}
-                    <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
-                        <span className="item-text" style={{fontWeight: 'bold'}}>{item.title}</span>
-                        <span style={{fontSize: '11px', color: '#888'}}>{formatDate(item.created_at)}</span>
-                    </div>
-
-                    {/* Số tiền bên phải */}
-                    <span className={`item-value ${item.type}`} style={{fontSize: '16px'}}>
-                        {item.type === 'positive' ? '+' : '-'}{item.amount}
-                        <div className="icon-wrapper" style={{marginLeft: '4px'}}>
-                            <img src={ecopointsIcon} alt="leaf" className="leaf-icon" />
-                        </div>
-                    </span>
-                </div>
-                ))}
-            </div>
         )}
+
+        {!loading && history.map((item) => (
+          <div 
+            key={item.id} 
+            className="history-item" 
+            style={{marginBottom: '10px', cursor: 'pointer'}}
+            onClick={() => setSelectedItem(item)} // Bấm vào thì set item này vào state
+          >
+            <div className="item-icon-placeholder" style={{background: item.type === 'positive' ? '#E8F5E9' : '#FFEBEE'}}>
+                <span style={{fontSize: '20px'}}>
+                    {item.type === 'positive' ? '📥' : '📤'}
+                </span>
+            </div>
+            
+            <div style={{flex: 1, paddingRight: '10px'}}>
+                <span className="item-text" style={{display: 'block'}}>{item.title}</span>
+                <span style={{fontSize: '12px', color: '#888'}}>
+                    {formatDate(item.created_at)}
+                </span>
+            </div>
+
+            <span className={`item-value ${item.type}`} style={{fontSize: '16px'}}>
+              <span>
+                {item.type === 'positive' ? '+' : '-'}{item.amount}
+              </span>
+              <img src={ecopointsIcon} alt="leaf" className="leaf-icon" />
+            </span>
+          </div>
+        ))}
       </div>
+
+      {/* === MODAL POPUP CHI TIẾT === */}
+      {selectedItem && (
+        <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            
+            <h3 style={{marginTop: 0, color: '#556B2F'}}>Chi tiết giao dịch</h3>
+            
+            <div style={{textAlign: 'center', margin: '20px 0'}}>
+                <div style={{
+                    width: '60px', height: '60px', borderRadius: '50%', 
+                    background: selectedItem.type === 'positive' ? '#E8F5E9' : '#FFEBEE',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '30px', margin: '0 auto 10px'
+                }}>
+                    {selectedItem.type === 'positive' ? '📥' : '📤'}
+                </div>
+                <h2 style={{margin: 0, color: selectedItem.type === 'positive' ? '#7CB342' : '#E53935'}}>
+                    {selectedItem.type === 'positive' ? '+' : '-'}{selectedItem.amount}
+                </h2>
+                <p style={{margin: '5px 0', color: '#888', fontSize: '14px'}}>Ecopoints</p>
+            </div>
+
+            <div style={{textAlign: 'left', background: '#f9f9f9', padding: '15px', borderRadius: '10px'}}>
+                <p style={{margin: '5px 0'}}><strong>Nội dung:</strong> {selectedItem.title}</p>
+                <p style={{margin: '5px 0'}}><strong>Thời gian:</strong> {formatDate(selectedItem.created_at)}</p>
+                <p style={{margin: '5px 0'}}><strong>Mã GD:</strong> #{selectedItem.id}</p>
+                <p style={{margin: '5px 0'}}><strong>Trạng thái:</strong> <span style={{color: 'green'}}>Thành công</span></p>
+            </div>
+
+            <button 
+                style={{
+                    marginTop: '20px', width: '100%', padding: '12px', 
+                    background: '#556B2F', color: 'white', border: 'none', 
+                    borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer'
+                }}
+                onClick={() => setSelectedItem(null)}
+            >
+                Đóng
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
