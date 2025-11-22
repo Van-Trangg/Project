@@ -18,18 +18,12 @@ export default function Chatbot() {
 
     const scrollToBottom = () => {
         if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+            messagesContainerRef.current.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior: 'smooth' 
+            });
         }
     };
-
-    useEffect(() => {
-        document.body.classList.remove('page-transitioning');
-        
-        const pageContent = document.querySelector('.chatbot-page');
-        if (pageContent) {
-        pageContent.classList.add('page-enter');
-        }
-    }, []);
 
     useEffect(() => {
         scrollToBottom();
@@ -66,9 +60,7 @@ export default function Chatbot() {
         }
     };
 
-    // The rest of the component remains the same...
     const handleBackToMap = () => {
-        document.body.classList.add('page-transitioning');
         resetChat();
         navigate('/map');
     };

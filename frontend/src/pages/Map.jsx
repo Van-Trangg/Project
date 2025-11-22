@@ -7,6 +7,19 @@ import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
 import { customIcon, customIconHere } from '../components/Pin';
 
+// Import hình ảnh
+import rewardOutlineIcon from '../public/reward-outline.png';
+import rewardSolidIcon from '../public/reward-solid.png';
+import homeOutlineIcon from '../public/home-outline.png';
+import homeSolidIcon from '../public/home-solid.png';
+import journalOutlineIcon from '../public/journal-outline.png';
+import journalSolidIcon from '../public/journal-solid.png';
+import mapOutlineIcon from '../public/map-outline.png';
+import mapSolidIcon from '../public/map-solid.png'
+import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
+import leaderboardSolidIcon from '../public/leaderboard-solid.png'
+
+
 function MapController({ onMapReady }) {
   const map = useMap();
 
@@ -46,6 +59,7 @@ export default function Map() {
   const [loadingPois, setLoadingPois] = useState(false);
   const [percentLoading, setPercentLoading] = useState(false);
   const [percentCache, setPercentCache] = useState({});   // { poiId: percent }
+  const [checkInCache, setcheckInCache] = useState({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
   const navigate = useNavigate();
@@ -128,7 +142,8 @@ const loadMapsFallback = () => {
 
     setLoadingPois(true);
     setPercentLoading(true);
-    setPercentCache({});               // clear cache for the previous city
+    setPercentCache({});
+    setcheckInCache({});               // clear cache for the previous city
 
     const poisPromise = getPois(selectedMap.id);
 
@@ -356,6 +371,33 @@ const loadMapsFallback = () => {
       </div>
     </div>
     )}
+    <nav className="bottom-nav">
+      <button className="nav-item" onClick={() => navigate('/reward')}>
+        <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
+        <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
+        <span>Rewards</span>
+      </button>
+      <button className="nav-item" onClick={() => navigate('/journal')}>
+        <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
+        <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
+        <span>Journal</span>
+      </button>
+      <button className="nav-item" onClick={() => navigate('/home')}>
+        <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
+        <img src={homeSolidIcon} alt="Home" className="icon-solid" />
+        <span>Home</span>
+      </button>
+      <button className="nav-item active" onClick={() => navigate('/map')}>
+        <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
+        <img src={mapSolidIcon} alt='Map' className='icon-solid' />
+        <span>Map</span>
+      </button>
+      <button className="nav-item" onClick={() => navigate('/leaderboard')}>
+        <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
+        <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
+        <span>Leaderboard</span>
+      </button>
+    </nav>
   </div>
 );
 }
