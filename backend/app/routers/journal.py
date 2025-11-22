@@ -2,6 +2,7 @@ from typing import Dict, List
 from datetime import date
 from fastapi import APIRouter, HTTPException, Query, Depends 
 from app.db.database import DbDep
+from app.models.checkin import Checkin
 from app.models.journal import Journal
 from app.models.poi import POI
 from app.schemas.journal_schema import JournalByDay, JournalByPOI, JournalCreate, JournalOut, JournalSummary, JournalUpdate
@@ -25,7 +26,9 @@ def list_journals_by_poi(
     current_user: User = CurrentUser,
     map_id: int = Query(None),
 ):
-    poi_query = db.query(POI)
+    poi_query = (db.query(POI)
+                 .join(Checkin, POI.id == Checkin.poi_id)
+                 .filter(Checkin.user_id == current_user.id))
     if map_id is not None:
         poi_query = poi_query.filter(POI.map_id == map_id)
         
