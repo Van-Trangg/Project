@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/apiClient'
 import '../styles/Profile.css'
+import defaultAva from '../public/avt.png'
+import backIcon from '../public/back.png'
+import newBackIcon from '../public/new_back.png'
+import coverImg from '../public/ảnh bìa.jpg'
+import BadgeCard from '../components/BadgeCard'
+import { listBadges } from '../api/reward'
 
 export default function ViewProfile(){
   const { id } = useParams()
@@ -9,6 +15,11 @@ export default function ViewProfile(){
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [badgeVersions, setBadgeVersions] = useState([])
+  const [badgesLoading, setBadgesLoading] = useState(false)
+  const [badgesError, setBadgesError] = useState(null)
+  const [backHovering, setBackHovering] = useState(false)
+  const [backActive, setBackActive] = useState(false)
 
   useEffect(() => {
     if (!id) { setError('No user id'); setLoading(false); return }
@@ -21,6 +32,28 @@ export default function ViewProfile(){
       })
       .finally(() => setLoading(false))
   }, [id])
+
+  // Load all badges and mark unlocked based on this user's total points
+  useEffect(() => {
+    if (!user) return
+    setBadgesLoading(true)
+    setBadgesError(null)
+    listBadges()
+      .then(r => {
+        const data = r && r.data ? r.data : []
+        const points = user.total_eco_points || user.eco_points || 0
+        const versions = (data || []).map(v => ({
+          ...v,
+          badges: (v.badges || []).map(b => ({ ...b, unlocked: points >= (b.threshold || 0) }))
+        }))
+        setBadgeVersions(versions)
+      })
+      .catch(e => {
+        console.error('Could not load badges', e)
+        setBadgesError(e)
+      })
+      .finally(() => setBadgesLoading(false))
+  }, [user])
 
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="loading">Could not load profile.</div>
@@ -36,10 +69,28 @@ export default function ViewProfile(){
   return (
     <div className="profile-page">
       <div className="profile-header">
-        <button className="back-rect" onClick={() => navigate(-1)} title="Back">←</button>
-        <div className="cover-placeholder"></div>
+        <button
+          className="back-rect"
+          onClick={() => { setBackActive(true); navigate(-1); setTimeout(()=>setBackActive(false), 180) }}
+          onMouseEnter={() => setBackHovering(true)}
+          onMouseLeave={() => { setBackHovering(false); setBackActive(false) }}
+          onMouseDown={() => setBackActive(true)}
+          onMouseUp={() => setBackActive(false)}
+          title="Back"
+          style={{ zIndex: 1000, transform: backHovering ? 'translateY(-2px) scale(1.03)' : 'none', transition: 'transform .12s ease' }}
+        >
+          <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
+        </button>
+        <div className="cover-placeholder" style={{ backgroundImage: `url(${coverImg})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3,boxShadow: "0 4px 20px rgba(0, 0, 0, 1.0)"}}></div>
         <div className="avatar-wrapper">
-          <div className="avatar-placeholder" style={user.avatar_url ? { backgroundImage: `url(${user.avatar_url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}} />
+          <div className="avatar-placeholder">
+            <img
+              src={user.avatar_url || defaultAva}
+              alt="Avatar"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultAva }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', display: 'block' }}
+            />
+          </div>
         </div>
       </div>
 
@@ -72,6 +123,32 @@ export default function ViewProfile(){
               <div className="info-value"><span className="value-text">{emailVal || '-'}</span></div>
             </div>
           </div>
+        </div>
+      
+        <div className="badges-section">
+          <h3>Badges</h3>
+          {badgesLoading ? (
+            <div className="loading">Loading badges...</div>
+          ) : badgesError ? (
+            <div className="loading">Could not load badges.</div>
+          ) : !badgeVersions || badgeVersions.length === 0 ? (
+            <p>No badges available.</p>
+          ) : (
+            badgeVersions.map(v => {
+              const owned = (v.badges || []).filter(b => !!b.unlocked)
+              if (!owned || owned.length === 0) return null
+              return (
+                  <div key={v.version || v.title} className="badge-version">
+                      <h4 style={{ marginLeft: 20, textAlign: 'left', width: '90%', maxWidth: 720 }}>{v.title || `Version ${v.version}`}</h4>
+                  <div className="badges-grid" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                    {owned.map(b => (
+                      <BadgeCard key={b.id} badge={b} unlocked={true} />
+                    ))}
+                  </div>
+                </div>
+              )
+            })
+          )}
         </div>
       </div>
     </div>

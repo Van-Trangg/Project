@@ -10,6 +10,8 @@ import newBackIcon from '../public/new_back.png'
 import exitIcon from '../public/exit.png'
 import newExitIcon from '../public/new_exit.png'
 import viewAllIcon from '../public/view_all.png'
+import defaultAva from '../public/avt.png'
+import coverImg from '../public/ảnh bìa.jpg'
 import '../styles/Profile.css'
 
 export default function Profile() {
@@ -96,7 +98,8 @@ export default function Profile() {
                     onClick={() => { setBackActive(true); navigate('/home') }}
                     onMouseEnter={() => setBackHovering(true)}
                     onMouseLeave={() => setBackHovering(false)}
-                    title="Back">
+                    title="Back"
+                    style={{ zIndex: 1000 }}>
                     <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
                 </button>
 
@@ -109,6 +112,7 @@ export default function Profile() {
                     onMouseEnter={() => setExitHovering(true)}
                     onMouseLeave={() => setExitHovering(false)}
                     title="Exit"
+                    style={{ zIndex: 1000 }}
                 >
                     <img
                         src={exitHovering ? newExitIcon : exitIcon}
@@ -116,7 +120,7 @@ export default function Profile() {
                     />
                 </button>
 
-                <div className="cover-placeholder"></div>
+                <div className="cover-placeholder" style={{ backgroundImage: `url(${coverImg})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3,boxShadow: "0 4px 20px rgba(0, 0, 0, 1.0)" }}></div>
 
                 <button
                     className="edit-btn"
@@ -129,15 +133,13 @@ export default function Profile() {
                 </button>
 
                 <div className="avatar-wrapper">
-                    {}
-                    <div
-                        className="avatar-placeholder"
-                        style={user.avatar_url ? {
-                            backgroundImage: `url(${user.avatar_url})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        } : {}}
-                    >
+                    <div className="avatar-placeholder">
+                        <img
+                            src={(user.avatar_url && user.avatar_url !== "null") ? user.avatar_url : defaultAva}
+                            alt="Avatar"
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultAva }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', display: 'block' }}
+                        />
                     </div>
                 </div>
             </div>

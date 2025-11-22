@@ -1,9 +1,8 @@
-// Leaderboard.jsx
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom'
 import "../styles/Leaderboard.css";
 import { useNavigate } from 'react-router-dom'
-import { getLeaderboard } from '../api/leaderboard'
+import { getLeaderboard, getMyRank } from '../api/leaderboard'
 
 
 function Podium({ user_name, points, rank, color, id, avatar}) {
@@ -17,7 +16,7 @@ function Podium({ user_name, points, rank, color, id, avatar}) {
     <div className="podium">
       <div className="top-info">
         <div className="avatar" onClick={handleAvatarClick}>
-          <img src={avatar} alt={`${user_name}'s avatar`} />
+          <img src={avatar} />
         </div>
         <div className="name">{user_name}</div>
         <div className="points">{points}</div>
@@ -34,23 +33,60 @@ export default function Leaderboard() {
 
   const navigate = useNavigate();
 
-  const MyAvatarDirect = () => { navigate(`/Profile`) }
   const OtherAvatarDirect = (p) => {
     navigate(`/profile/view/${p.id}`, { state: { user: p } });
   };
 
-
+  // --- UPDATED STATE ---
   const [rows, setRows] = useState([]);
-  useEffect(() => { getLeaderboard().then(r => setRows(r.data)) }, [])
-  // --- PREVENTS BLANK PAGE ---
-  // If rows is not yet an array, show a loading message
-  if (!rows || rows.length === 0) {
+  const [myRankData, setMyRankData] = useState(null); // State for your specific rank data
+  const [isLoading, setIsLoading] = useState(true);   // Unified loading state
+  const [error, setError] = useState(null);           // State for handling errors
+
+  // --- UPDATED useEffect to fetch both data sources ---
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Fetch both the leaderboard and your rank at the same time
+        const [leaderboardResponse, myRankResponse] = await Promise.all([
+          getLeaderboard(),
+          getMyRank()
+        ]);
+
+        setRows(leaderboardResponse.data);
+        setMyRankData(myRankResponse.data);
+
+      } catch (err) {
+        console.error("Failed to fetch leaderboard data:", err);
+        setError('Failed to load data. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this runs once on mount
+
+  // --- IMPROVED LOADING AND ERROR HANDLING ---
+  if (isLoading) {
     return <div className="leaderboard-container"><div style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div></div>;
+  }
+
+  if (error) {
+    return <div className="leaderboard-container"><div style={{ textAlign: 'center', marginTop: '50px', color: 'red' }}>{error}</div></div>;
+  }
+  
+  // Handle case where the leaderboard might be empty
+  if (!rows || rows.length === 0) {
+    return <div className="leaderboard-container"><div style={{ textAlign: 'center', marginTop: '50px' }}>Leaderboard is empty.</div></div>;
   }
 
   const top3 = rows.slice(0, 3);
   const others = rows.slice(3);
-  const myRank = rows.find(p => p.rank === 7);
+  // The hardcoded 'myRank' is no longer needed!
 
   return (
     <div className="leaderboard-container">
@@ -84,25 +120,26 @@ export default function Leaderboard() {
                 <div className="points">{p.points}</div>
               </div>
               <div className="avatar" onClick={() => OtherAvatarDirect(p)} >
-                <img src={p.avatar} alt={`${p.user_name}'s avatar`} />
+                <img className="list_avatar" src={p.avatar} />
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Fixed My Rank */}
-      <div className="my-rank">
-        <div className="lr">
-          <div className="label">My Rank</div>
-          <div className="rank">{myRank?.rank}</div>
+      {/* Only render this section if myRankData has been successfully fetched */}
+      {myRankData && (
+        <div className="my-rank">
+          <div className="lr">
+            <div className="label">My Rank</div>
+            <div className="rank">{myRankData.rank}</div>
+          </div>
+          <div className="avatar" onClick={() => navigate(`/Profile`)}>
+            <img src={myRankData.avatar}/>
+          </div>
+          <div className="name">{myRankData.user_name}</div>
+          <div className="points">{myRankData.points}</div>
         </div>
-        <div className="avatar" onClick={MyAvatarDirect}>
-          <img src={myRank.avatar} alt={`${myRank.user_name}'s avatar`} />
-        </div>
-        <div className="name">{myRank?.user_name}</div>
-        <div className="points">{myRank?.points}</div>
-      </div>
+      )}
     </div>
   );
 }

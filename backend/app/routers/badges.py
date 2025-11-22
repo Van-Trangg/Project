@@ -1,50 +1,62 @@
-
-from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends
 from app.core.security import get_current_user as TokenDep
 from app.models.user import User
+from sqlalchemy.orm import Session
+from app.db.database import get_db
+from app.models.badge import UserBadge
+# Import từ file data mới
+from app.core.badge_data import get_available_rewards 
 
 router = APIRouter()
 
-
-def _available_rewards():
-    return [
-        {
-            "version": 1,
-            "title": "Version 1",
-            "badges": [
-                {"id": 1, "badge": "Seedling", "threshold": 50, "image": "01.png", "rare": True, "description": "A tiny start  awarded when you earn your first 50 eco points."},
-                {"id": 2, "badge": "Sapling", "threshold": 100, "image": "02.png", "description": "You've planted the roots: reach 100 points to earn this."},
-                {"id": 3, "badge": "Evergreen", "threshold": 200, "image": "03.png", "description": "Consistent contributor  keep going to reach 200 points."},
-                {"id": 4, "badge": "Blossom", "threshold": 300, "image": "04.png", "description": "Your actions are blooming  awarded at 300 points."},
-            ]
-        },
-        {
-            "version": 2,
-            "title": "Version 2",
-            "badges": [
-                {"id": 101, "badge": "Explorer", "threshold": 20, "image": "05.png"},
-                {"id": 102, "badge": "Navigator", "threshold": 80, "image": "06.png"},
-                {"id": 103, "badge": "Voyager", "threshold": 240, "image": "07.png"}
-            ]
-        }
-    ]
-
-
 @router.get("/", tags=["badges"]) 
 def list_badges(): 
-    return _available_rewards()
+    return get_available_rewards()
 
 @router.get("/me", tags=["badges"]) 
-def list_badges_for_user(current_user: User = Depends(TokenDep)):
-    """Return badges with an `unlocked` boolean based on the user's TOTAL eco points."""
+def list_badges_for_user(
+    current_user: User = Depends(TokenDep),
+    db: Session = Depends(get_db)
+):
+    """
+    Trả về danh sách badges.
+    Logic sửa đổi: Mở khóa nếu (Có trong DB) HOẶC (Đủ điểm eco_points).
+    """
+    # 1. Lấy điểm hiện tại
     points = getattr(current_user, "total_eco_points", 0) or 0
     
+    # 2. Lấy badge đã lưu trong DB (để lấy ngày obtained_at)
+    user_badges = db.query(UserBadge).filter(UserBadge.user_id == current_user.id).all()
+    earned_map = {ub.badge_id: ub.obtained_at for ub in user_badges}
+    
     versions = []
-    for v in _available_rewards():
+    all_data = get_available_rewards()
+
+    for v in all_data:
         vv = {"version": v.get("version"), "title": v.get("title"), "badges": []}
         for b in v.get("badges", []):
             item = b.copy()
-            item["unlocked"] = points >= (b.get("threshold") or 0)
+            b_id = item["id"]
+            threshold = item.get("threshold", 0)
+
+            # 👉 LOGIC TỰ ĐỘNG MỞ KHÓA (FIX LỖI MỜ BADGE)
+            is_in_db = b_id in earned_map
+            is_enough_points = points >= threshold
+
+            if is_in_db:
+                # Trường hợp 1: Đã có trong DB (Chuẩn nhất)
+                item["unlocked"] = True
+                item["obtained_at"] = earned_map[b_id].isoformat()
+            elif is_enough_points:
+                # Trường hợp 2: Đủ điểm nhưng chưa kịp lưu vào DB (Vẫn cho hiện)
+                item["unlocked"] = True
+                item["obtained_at"] = None # Chưa có ngày cụ thể
+            else:
+                # Trường hợp 3: Chưa đủ điểm
+                item["unlocked"] = False
+                item["obtained_at"] = None
+                
             vv["badges"].append(item)
         versions.append(vv)
+        
     return {"eco_points": points, "versions": versions}

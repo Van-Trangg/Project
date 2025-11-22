@@ -12,7 +12,6 @@ from app.models.checkin import Checkin
 from app.core.security import hash_password
 from app.models.journal import Journal
 
-
 # --- Password Hashing ---
 #pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 

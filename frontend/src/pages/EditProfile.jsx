@@ -4,6 +4,8 @@ import { getProfile, updateProfile, updateProfileMultipart } from '../api/profil
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import camIcon from '../public/camera.png'
+import coverImg from '../public/ảnh bìa.jpg'
+import defaultAva from '../public/avt.png'
 import showIcon from "../public/show.png"
 import dontEyeIcon from "../public/don't_eye.png"
 import '../styles/Profile.css'
@@ -103,33 +105,37 @@ export default function EditProfile() {
         onClick={() => { setBackActive(true); handleCancel() }}
         onMouseEnter={() => setBackHovering(true)}
         onMouseLeave={() => setBackHovering(false)}
-        title="Back">
+        title="Back"
+        style={{ top: 12 }}
+      >
         <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
       </button>
 
       {/* Cover with overlayed action buttons (back/save) */}
       <div className="edit-cover-wrapper">
-        <div className="edit-cover" />
+        <div className="edit-cover" style={{ backgroundImage: `url(${coverImg})`, backgroundSize: 'cover', backgroundPosition: 'center',opacity: 0.3,boxShadow: "0 4px 20px rgba(0, 0, 0, 1.0)" }} />
         {/* Nút Back đã được gỡ khỏi đây */}
         <button
           className="save-top btn save"
           type="button"
           onClick={handleSave}
           disabled={saving}
-          title="Save">
+          title="Save"
+          style={{ top: 7 }}
+        >
           {saving ? 'Saving' : 'Save'}
         </button>
       </div>
 
       <div className="edit-avatar-wrapper">
-        <div
-            className="edit-avatar"
-            style={{ 
-              backgroundImage: `url(${preview || form.avatar_url || ''})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
+        <div className="edit-avatar">
+          <img
+            src={preview || form.avatar_url || defaultAva}
+            alt="Avatar"
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultAva }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', display: 'block' }}
           />
+        </div>
         <button
           className="camera-small"
           type="button"

@@ -21,3 +21,11 @@ export const checked = (poi_id) => {
 export const percentageChecked = (poi_id) => {
   return api.get(`map/map/poi/${poi_id}/checked/percent`)
 }
+
+export const sendMessage = (message) => {
+  return api.post('/ai/ai/chat', { message: message });
+};
+
+export const resetChat = () => {
+  return api.post('/ai/ai/reset');
+};

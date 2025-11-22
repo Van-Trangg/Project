@@ -74,10 +74,13 @@
   gap: 8px;
   cursor: pointer;
   transition: transform .12s ease, box-shadow .12s ease;
+  /* allow 3D transforms on child stamp */
+  perspective: 900px;
 }
 
 .badge-card.locked {
   opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .badge-card.unlocked {
@@ -87,6 +90,22 @@
 .badge-card:hover {
   transform: translateY(-4px);
 }
+
+/* small shake animation for badge click */
+@keyframes badge-shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+.badge-card.shake {
+  animation: badge-shake 0.42s ease;
+}
+
+/* Removed spin animation (handled in JS no longer) */
 
 /* --- Con dấu (Stamp) --- */
 
@@ -100,6 +119,9 @@
   background: linear-gradient(180deg, #fff8ea, #f1f7ee);
   box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.03);
   position: relative; /* allow absolute overlay elements like crown */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .stamp-inner {
@@ -114,6 +136,7 @@
   object-fit: cover;
   border-radius: 8px;
   display: block;
+  backface-visibility: hidden;
 }
 
 /* crown overlay for rare badges */
@@ -177,6 +200,8 @@
   font-size: 28px;
   color: #ffffff;
   cursor: pointer;
+  z-index: 40001; /* ensure close button sits above modal image and is always clickable */
+  pointer-events: auto;
 }
 
 .stamp-large {
@@ -195,7 +220,8 @@
 
 /* modal image display without extra frame */
 .modal-image-wrap { display:flex; justify-content:center; margin-top: 24px }
-.modal-image { width: min(72vw, 420px); height: auto; display:block; border-radius: 8px }
+.modal-image { width: min(72vw, 420px); height: auto; display:block; border-radius: 8px; transform-style: preserve-3d; backface-visibility: hidden; will-change: transform }
+.modal-image-wrap { perspective: 1400px }
 
 .modal-title-pill {
   display: inline-block;

@@ -10,9 +10,9 @@
     "address": "Hồ Chí Minh",
     "check_ins": 5,
     "badges_count": 2,
-    "monthly_points": 120,
-    "eco_points": 150,
-    "total_eco_points": 450,
+    "monthly_points": 200,
+    "eco_points": 500,
+    "total_eco_points": 500,
     "avatar_url": "https://example.com/avatars/a1.png"
   },
   {
@@ -26,9 +26,9 @@
     "address": "Hà Nội",
     "check_ins": 8,
     "badges_count": 3,
-    "monthly_points": 220,
-    "eco_points": 180,
-    "total_eco_points": 600,
+    "monthly_points": 310,
+    "eco_points": 800,
+    "total_eco_points": 800,
     "avatar_url": "https://example.com/avatars/b2.png"
   },
   {
@@ -42,9 +42,9 @@
     "address": "Đà Nẵng",
     "check_ins": 2,
     "badges_count": 1,
-    "monthly_points": 70,
-    "eco_points": 90,
-    "total_eco_points": 160,
+    "monthly_points": 120,
+    "eco_points": 200,
+    "total_eco_points": 200,
     "avatar_url": "https://example.com/avatars/c3.png"
   },
   {
@@ -58,9 +58,9 @@
     "address": "Cần Thơ",
     "check_ins": 10,
     "badges_count": 4,
-    "monthly_points": 310,
-    "eco_points": 250,
-    "total_eco_points": 900,
+    "monthly_points": 290,
+    "eco_points": 1000,
+    "total_eco_points": 1000,
     "avatar_url": "https://example.com/avatars/d4.png"
   },
   {
@@ -75,8 +75,8 @@
     "check_ins": 4,
     "badges_count": 2,
     "monthly_points": 150,
-    "eco_points": 130,
-    "total_eco_points": 480,
+    "eco_points": 400,
+    "total_eco_points": 400,
     "avatar_url": "https://example.com/avatars/e5.png"
   },
   {
@@ -90,9 +90,9 @@
     "address": "Nha Trang",
     "check_ins": 3,
     "badges_count": 1,
-    "monthly_points": 90,
-    "eco_points": 95,
-    "total_eco_points": 250,
+    "monthly_points": 110,
+    "eco_points": 300,
+    "total_eco_points": 300,
     "avatar_url": "https://example.com/avatars/f6.png"
   },
   {
@@ -107,8 +107,8 @@
     "check_ins": 6,
     "badges_count": 3,
     "monthly_points": 200,
-    "eco_points": 160,
-    "total_eco_points": 700,
+    "eco_points": 600,
+    "total_eco_points": 600,
     "avatar_url": "https://example.com/avatars/g7.png"
   },
   {
@@ -123,8 +123,8 @@
     "check_ins": 7,
     "badges_count": 3,
     "monthly_points": 240,
-    "eco_points": 210,
-    "total_eco_points": 810,
+    "eco_points": 700,
+    "total_eco_points": 700,
     "avatar_url": "https://example.com/avatars/h8.png"
   },
   {
@@ -139,7 +139,7 @@
     "check_ins": 9,
     "badges_count": 5,
     "monthly_points": 300,
-    "eco_points": 280,
+    "eco_points": 950,
     "total_eco_points": 950,
     "avatar_url": "https://example.com/avatars/i9.png"
   },
@@ -154,9 +154,9 @@
     "address": "Hà Nội",
     "check_ins": 2,
     "badges_count": 1,
-    "monthly_points": 80,
-    "eco_points": 75,
-    "total_eco_points": 180,
+    "monthly_points": 100,
+    "eco_points": 180,
+    "total_eco_points": 280,
     "avatar_url": "https://example.com/avatars/j10.png"
   }
 ]
