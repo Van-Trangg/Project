@@ -5,7 +5,7 @@ from app.models.user import User
 from sqlalchemy import update
 from app.models.poi import POI
 from math import ceil
-
+from app.crud.badge_crud import check_and_award_badges
 
 def user_has_checked(session: Session, user_id: int, poi_id: int) -> bool:
     """Kiểm tra xem user đã check-in tại POI chưa"""
@@ -53,11 +53,18 @@ def create_checkin(
         )
 
         # 4️⃣ Commit tất cả trong cùng 1 transaction
+
+
+        total_points = 0
+        if user:
+            # Lấy điểm mới nhất từ user sau khi refresh
+            total_points = user.total_eco_points
+            # Gọi hàm check badge với điểm này
+            check_and_award_badges(session, user_id, total_points)
+
         session.commit()
         session.refresh(checkin)
 
-        # 👉 Dùng total_eco_points (hoặc eco_points tùy bạn chọn chuẩn)
-        total_points = user.total_eco_points if user else earned_points
         print(f"User {user_id} checked in POI {poi_id}, total points: {total_points}")
         return checkin, total_points
 
