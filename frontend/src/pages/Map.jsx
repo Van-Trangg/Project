@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import { listPlaces, getPois, percentageChecked, getNearestMap, checked } from '../api/map'
 import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
-import { customIcon, customIconHere } from '../components/Pin';
+import { checkedInIcon, customIcon, customIconHere } from '../components/Pin';
 import rewardOutlineIcon from '../public/reward-outline.png';
 import rewardSolidIcon from '../public/reward-solid.png';
 import homeOutlineIcon from '../public/home-outline.png';
@@ -15,7 +15,6 @@ import mapOutlineIcon from '../public/map-outline.png';
 import mapSolidIcon from '../public/map-solid.png'
 import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
 import leaderboardSolidIcon from '../public/leaderboard-solid.png'
-
 
 function MapController({ onMapReady }) {
   const map = useMap();
@@ -318,10 +317,10 @@ export default function Map() {
             />  
             {pois.map((pin) => (
               <Marker
+                className = 'map-pin'
                 key={pin.id}
                 position={[pin.lat, pin.lng]}
-                
-                icon = {customIcon}
+                icon = {checkInCache[pin.id] ? checkedInIcon : customIcon}
                 eventHandlers={{
                   click: () => {
                     setSelectedPin(pin);
