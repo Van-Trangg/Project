@@ -223,27 +223,27 @@ export default function Journal() {
           <button className="nav-item" onClick={() => navigate('/reward')}>
             <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
             <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
-            <span>Rewards</span>
+            <span>Phần thưởng</span>
           </button>
           <button className="nav-item active" onClick={() => navigate('/journal')}>
             <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
             <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
-            <span>Journal</span>
+            <span>Nhật ký</span>
           </button>
           <button className="nav-item" onClick={() => navigate('/home')}>
             <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
             <img src={homeSolidIcon} alt="Home" className="icon-solid" />
-            <span>Home</span>
+            <span>Trang chủ</span>
           </button>
           <button className="nav-item" onClick={() => navigate('/map')}>
             <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
             <img src={mapSolidIcon} alt='Map' className='icon-solid' />
-            <span>Map</span>
+            <span>Bản đồ</span>
           </button>
           <button className="nav-item" onClick={() => navigate('/leaderboard')}>
             <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
             <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
-            <span>Leaderboard</span>
+            <span>Bảng xếp hạng</span>
           </button>
         </nav>
       </div>
@@ -253,7 +253,7 @@ export default function Journal() {
   // 4. Otherwise, show the main journal list view using fetched data
   return (
     <div className='journal-container'>
-      <h1 id='title'>Journal</h1>
+      <h1 id='title'>Nhật ký</h1>
       <div className='location_box'>
         <span className='city_name'>{selectedCity.name}</span>
         <button
@@ -298,7 +298,7 @@ export default function Journal() {
       {/* Main Journal List (shown when dropdown is closed) */}
       {!dropdownOpen && (
         <div className='location_region'>
-          <p className='jn_des'>Ready to write down your experience?</p>
+          <p className='jn_des'>Sẵn sàng kể câu chuyện của bạn?</p>
           <div className='place_pad' ref={scrollContainerRef}>
             <div className="horizontal-scroll-container">
               {/* Use the 'locations' state from the API instead of ALL_DATA */}
@@ -332,27 +332,27 @@ export default function Journal() {
         <button className="nav-item" onClick={() => navigate('/reward')}>
           <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
           <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
-          <span>Rewards</span>
+          <span>Phần thưởng</span>
         </button>
         <button className="nav-item active" onClick={() => navigate('/journal')}>
           <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
           <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
-          <span>Journal</span>
+          <span>Nhật ký</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/home')}>
           <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
           <img src={homeSolidIcon} alt="Home" className="icon-solid" />
-          <span>Home</span>
+          <span>Trang chủ</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/map')}>
           <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
           <img src={mapSolidIcon} alt='Map' className='icon-solid' />
-          <span>Map</span>
+          <span>Bản đồ</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/leaderboard')}>
           <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
           <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
-          <span>Leaderboard</span>
+          <span>Bảng xếp hạng</span>
         </button>
       </nav>
     </div>
