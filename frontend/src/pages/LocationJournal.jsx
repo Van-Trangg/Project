@@ -17,15 +17,15 @@ import addImgIcon from '../public/add_img.png';
 import addEmotionIcon from '../public/add_emotion.png';
 
 const emotionData = [
-  { emoji: '😴', label: 'Sleepy', value: 0 },
-  { emoji: '😄', label: 'Joyful', value: 1 },
-  { emoji: '😢', label: 'Miserable', value: 2 },
-  { emoji: '😊', label: 'Happy', value: 3 },
-  { emoji: '😔', label: 'Sad', value: 4 },
-  { emoji: '😐', label: 'Neutral', value: 5 },
-  { emoji: '😁', label: 'Delighted', value: 6 },
-  { emoji: '😡', label: 'Angry', value: 7 },
-  { emoji: '😕', label: 'Confused', value: 8 }
+  { emoji: '😴', label: 'Sleepy', labelVn: 'Ngủ gật', value: 0 },
+  { emoji: '😄', label: 'Joyful', labelVn: 'Vui sướng', value: 1 },
+  { emoji: '😢', label: 'Miserable', labelVn: 'Tuyệt vọng', value: 2 },
+  { emoji: '😊', label: 'Happy', labelVn: 'Hạnh phúc', value: 3 },
+  { emoji: '😔', label: 'Sad', labelVn: 'Buồn bã', value: 4 },
+  { emoji: '😐', label: 'Neutral', labelVn: 'Bình thường', value: 5 },
+  { emoji: '😁', label: 'Delighted', labelVn: 'Thích thú', value: 6 },
+  { emoji: '😡', label: 'Angry', labelVn: 'Tức giận', value: 7 },
+  { emoji: '😕', label: 'Confused', labelVn: 'Bối rối', value: 8 }
 ];
 
 // A robust helper function to get emotion data from either a string label or a number value
@@ -40,6 +40,30 @@ const getEmotionData = (input) => {
   }
   // Default fallback
   return emotionData[5];
+};
+
+// Helper function to convert time string to 24-hour format
+const convertTo24HourFormat = (timeString) => {
+  // Check if the time string is already in 24-hour format (HH:MM)
+  if (/^\d{1,2}:\d{2}$/.test(timeString)) {
+    return timeString;
+  }
+
+  // Parse the 12-hour format with AM/PM
+  const [time, period] = timeString.split(' ');
+  if (!time || !period) return timeString; // Return original if format is unexpected
+
+  const [hours, minutes] = time.split(':');
+  let hour24 = parseInt(hours, 10);
+
+  if (period.toUpperCase() === 'PM' && hour24 < 12) {
+    hour24 += 12;
+  }
+  if (period.toUpperCase() === 'AM' && hour24 === 12) {
+    hour24 = 0;
+  }
+
+  return `${hour24.toString().padStart(2, '0')}:${minutes}`;
 };
 
 export default function LocationJournal() {
@@ -92,10 +116,11 @@ export default function LocationJournal() {
   }, [showImageOptions]);
 
 
-  // Function to format date as "Month Day, Year" for display
+  // Function to format date as "DD tháng MM, YYYY" for display (e.g., "17 tháng 8, 2006")
   function formatDate(date) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+    // Use 'vi-VN' locale for Vietnamese formatting
+    return date.toLocaleDateString('vi-VN', options);
   }
 
   // Function to format date as "YYYY-MM-DD" for JSON
@@ -106,12 +131,12 @@ export default function LocationJournal() {
     return `${year}-${month}-${day}`;
   }
 
-  // Function to format time as "HH:MM AM/PM" for display
+  // Function to format time as "HH:MM" (24-hour format) for display
   function formatTime(date) {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString('en-GB', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: false // Use 24-hour format
     });
   }
 
@@ -122,7 +147,17 @@ export default function LocationJournal() {
       return new Date(dateString);
     }
 
-    // For format like "August 17, 2006"
+    // NEW: Check for Vietnamese format "DD tháng MM, YYYY"
+    const vietnameseDateRegex = /^(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})$/;
+    const match = dateString.match(vietnameseDateRegex);
+    if (match) {
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1; // JS months are 0-indexed
+      const year = parseInt(match[3], 10);
+      return new Date(year, month, day);
+    }
+
+    // Fallback for other formats (e.g., old English format like "August 17, 2006")
     const parts = dateString.split(' ');
     if (parts.length === 3) {
       const month = parts[0];
@@ -131,7 +166,7 @@ export default function LocationJournal() {
       return new Date(`${month} ${day}, ${year}`);
     }
 
-    // Fallback for other formats
+    // Final fallback
     return new Date(dateString);
   }
 
@@ -239,14 +274,12 @@ export default function LocationJournal() {
 
           // Parse the time string and update the date object
           const timeStr = currentEntry.time;
-          const [time, period] = timeStr.split(' ');
-          const [hours, minutes] = time.split(':');
-          let hour24 = parseInt(hours);
-          if (period === 'PM' && hour24 < 12) hour24 += 12;
-          if (period === 'AM' && hour24 === 12) hour24 = 0;
-
-          date.setHours(hour24);
-          date.setMinutes(parseInt(minutes));
+          // Simplified parsing for HH:MM format
+          const [hours, minutes] = timeStr.split(':');
+          date.setHours(parseInt(hours, 10));
+          date.setMinutes(parseInt(minutes, 10));
+          date.setSeconds(0);
+          date.setMilliseconds(0);
 
           // Return in ISO format
           return date.toISOString();
@@ -270,7 +303,7 @@ export default function LocationJournal() {
     } catch (error) {
       console.error("Failed to save journal entry:", error);
       // You can show a more user-friendly error message here
-      alert("Could not save your entry. Please try again.");
+      alert("Không thể lưu mục của bạn. Vui lòng thử lại.");
     }
   };
 
@@ -289,7 +322,7 @@ export default function LocationJournal() {
 
     for (const file of files) {
       if (file.size > MAX_SIZE) {
-        alert(`Image ${file.name} is too large. Please select images under 5MB.`);
+        alert(`Ảnh ${file.name} quá lớn. Vui lòng chọn ảnh dưới 5MB.`);
         event.target.value = '';
         return;
       }
@@ -396,7 +429,7 @@ export default function LocationJournal() {
         setShowEntryDeleteModal(false);
       } catch (error) {
         console.error("Failed to delete journal entry:", error);
-        alert("Could not delete your entry. Please try again.");
+        alert("Không thể xóa mục của bạn. Vui lòng thử lại.");
       }
     }
   };
@@ -426,15 +459,9 @@ export default function LocationJournal() {
 
       // Get the current time from the existing entry
       const currentTime = currentEntry.time;
-      const [time, period] = currentTime.split(' ');
-      const [hours, minutes] = time.split(':');
-      let hour24 = parseInt(hours);
-      if (period === 'PM' && hour24 < 12) hour24 += 12;
-      if (period === 'AM' && hour24 === 12) hour24 = 0;
-
-      // Set the time on the new date
-      newDate.setHours(hour24);
-      newDate.setMinutes(parseInt(minutes));
+      const [hours, minutes] = currentTime.split(':');
+      newDate.setHours(parseInt(hours, 10));
+      newDate.setMinutes(parseInt(minutes, 10));
       newDate.setSeconds(0);
       newDate.setMilliseconds(0);
 
@@ -442,13 +469,8 @@ export default function LocationJournal() {
       const formattedDate = formatDate(newDate);
       setCurrentEntry({ ...currentEntry, day: formattedDate });
     } else if (editingField === 'time') {
-      // Convert 24-hour format from input to 12-hour format with AM/PM
-      const [hours, minutes] = value.split(':');
-      const date = new Date();
-      date.setHours(parseInt(hours));
-      date.setMinutes(parseInt(minutes));
-      const formattedTime = formatTime(date);
-      setCurrentEntry({ ...currentEntry, time: formattedTime });
+      // Simplified logic: The input value is already in HH:MM format
+      setCurrentEntry({ ...currentEntry, time: value });
     } else {
       setCurrentEntry({ ...currentEntry, [editingField]: value });
     }
@@ -460,35 +482,35 @@ export default function LocationJournal() {
     return (
       <div className='location-journal-container'>
         <div className="error-message">
-          <h2>Location Data Not Found</h2>
-          <p>Please go back and select a location from the Journal list.</p>
-          <button onClick={handleBack} className="back-button">Go Back</button>
+          <h2>Không tìm thấy dữ liệu địa điểm</h2>
+          <p>Vui lòng quay lại và chọn một địa điểm từ danh sách Nhật ký.</p>
+          <button onClick={handleBack} className="back-button">Quay lại</button>
         </div>
         <nav className="bottom-nav">
           <button className="nav-item" onClick={() => navigate('/reward')}>
             <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
             <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
-            <span>Rewards</span>
+            <span>Phần thưởng</span>
           </button>
           <button className="nav-item active" onClick={() => navigate('/journal')}>
             <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
             <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
-            <span>Journal</span>
+            <span>Nhật ký</span>
           </button>
           <button className="nav-item" onClick={() => navigate('/home')}>
             <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
             <img src={homeSolidIcon} alt="Home" className="icon-solid" />
-            <span>Home</span>
+            <span>Trang chủ</span>
           </button>
           <button className="nav-item" onClick={() => navigate('/map')}>
             <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
             <img src={mapSolidIcon} alt='Map' className='icon-solid' />
-            <span>Map</span>
+            <span>Bản đồ</span>
           </button>
           <button className="nav-item" onClick={() => navigate('/leaderboard')}>
             <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
             <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
-            <span>Leaderboard</span>
+            <span>Bảng xếp hạng</span>
           </button>
         </nav>
       </div>
@@ -533,8 +555,8 @@ export default function LocationJournal() {
                         onTouchEnd={handleEntryTouchEnd}
                       >
                         <div className='small-entry-header'>
-                          <span className='entry-time'>{smallEntry.time}</span>
-                          <span className="entry-emotion-text"> - feeling {emotion.label}</span>
+                          <span className='entry-time'>{convertTo24HourFormat(smallEntry.time)}</span>
+                          <span className="entry-emotion-text"> - đang cảm thấy {emotion.labelVn}</span>
                           <span className="entry-emotion-emoji">{emotion.emoji}</span>
                         </div>
                         <p className='small-entry-content'>{smallEntry.content}</p>
@@ -557,8 +579,8 @@ export default function LocationJournal() {
               ))
             ) : (
               <div className='empty-journal'>
-                <h2>No journal entries yet</h2>
-                <p>Start documenting your experiences at {locationData.title}!</p>
+                <h2>Chưa có mục nhật ký nào</h2>
+                <p>Hãy bắt đầu ghi lại những trải nghiệm của bạn tại {locationData.title}!</p>
               </div>
             )}
           </div>
@@ -579,7 +601,7 @@ export default function LocationJournal() {
               className={`add-option-button ${showAddOptions ? 'show' : ''}`}
               onClick={handleAddText}
             >
-              <span>Text</span>
+              <span>Văn bản</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
@@ -600,7 +622,7 @@ export default function LocationJournal() {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
             </button>
-            <h2>Editing</h2>
+            <h2>Chỉnh sửa</h2>
           </div>
 
           <div className="editing-content">
@@ -617,7 +639,7 @@ export default function LocationJournal() {
                     autoFocus
                     onBlur={(e) => handleFieldChange(e.target.value)}
                     defaultValue={(() => {
-                      // Handle both YYYY-MM-DD and "Month Day, Year" formats
+                      // Handle both YYYY-MM-DD and "DD tháng MM, YYYY" formats
                       const date = parseDate(currentEntry.day);
                       return date.toISOString().split('T')[0];
                     })()}
@@ -635,16 +657,7 @@ export default function LocationJournal() {
                     className="editing-input editing-input-time"
                     autoFocus
                     onBlur={(e) => handleFieldChange(e.target.value)}
-                    defaultValue={(() => {
-                      // Convert 12-hour format with AM/PM to 24-hour format for the input
-                      const timeStr = currentEntry.time;
-                      const [time, period] = timeStr.split(' ');
-                      const [hours, minutes] = time.split(':');
-                      let hour24 = parseInt(hours);
-                      if (period === 'PM' && hour24 < 12) hour24 += 12;
-                      if (period === 'AM' && hour24 === 12) hour24 = 0;
-                      return `${hour24.toString().padStart(2, '0')}:${minutes}`;
-                    })()}
+                    defaultValue={currentEntry.time} // Simplified defaultValue
                   />
                 ) : (
                   <div className="editing-field editing-field-time" onClick={handleTimeEdit}>
@@ -670,7 +683,7 @@ export default function LocationJournal() {
               />
             ) : (
               <div className="editing-content-field" onClick={handleContentEdit}>
-                {currentEntry.content || 'Note'}
+                {currentEntry.content || 'Ghi chú'}
               </div>
             )}
 
@@ -710,7 +723,7 @@ export default function LocationJournal() {
       {showEmotionPicker && (
         <div className={`emotion-picker-modal ${isEmotionPickerAnimating ? 'open' : ''}`}>
           <div className="emotion-picker-content">
-            <h3>Choose Your Emotion</h3>
+            <h3>Chọn Cảm xúc của bạn</h3>
             <div className="emotion-options">
               {emotionData.map((emotion) => (
                 <div
@@ -727,7 +740,7 @@ export default function LocationJournal() {
                   }}
                 >
                   <span className="emotion-emoji">{emotion.emoji}</span>
-                  <span className="emotion-label">{emotion.label}</span>
+                  <span className="emotion-label">{emotion.labelVn}</span>
                 </div>
               ))}
             </div>
@@ -739,7 +752,7 @@ export default function LocationJournal() {
       {showImageOptions && (
         <div className={`image-options-modal ${isImageOptionsAnimating ? 'open' : ''}`}>
           <div className="image-options-content">
-            <h3>Add Image</h3>
+            <h3>Thêm ảnh</h3>
             <div className="image-options-buttons">
               {/* Camera Input */}
               <input
@@ -755,7 +768,7 @@ export default function LocationJournal() {
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                   <circle cx="12" cy="13" r="4"></circle>
                 </svg>
-                <span>Take Photo</span>
+                <span>Chụp ảnh</span>
               </label>
 
               {/* Gallery Input */}
@@ -773,7 +786,7 @@ export default function LocationJournal() {
                   <circle cx="8.5" cy="8.5" r="1.5"></circle>
                   <polyline points="21 15 16 10 5 21"></polyline>
                 </svg>
-                <span>Choose from Gallery</span>
+                <span>Chọn từ Thư viện</span>
               </label>
             </div>
           </div>
@@ -784,11 +797,11 @@ export default function LocationJournal() {
       {showImageDeleteModal && (
         <div className="delete-modal">
           <div className="delete-modal-content">
-            <h3>Delete Image</h3>
-            <p>Are you sure you want to delete this image?</p>
+            <h3>Xóa ảnh</h3>
+            <p>Bạn có chắc chắn muốn xóa ảnh này không?</p>
             <div className="delete-modal-buttons">
-              <button className="cancel-button" onClick={cancelImageDelete}>Cancel</button>
-              <button className="confirm-button" onClick={confirmImageDelete}>Delete</button>
+              <button className="cancel-button" onClick={cancelImageDelete}>Hủy</button>
+              <button className="confirm-button" onClick={confirmImageDelete}>Xóa</button>
             </div>
           </div>
         </div>
@@ -798,11 +811,11 @@ export default function LocationJournal() {
       {showEntryDeleteModal && (
         <div className="delete-modal">
           <div className="delete-modal-content">
-            <h3>Delete Entry</h3>
-            <p>Are you sure you want to delete this journal entry?</p>
+            <h3>Xóa mục</h3>
+            <p>Bạn có chắc chắn muốn xóa mục nhật ký này không?</p>
             <div className="delete-modal-buttons">
-              <button className="cancel-button" onClick={cancelEntryDelete}>Cancel</button>
-              <button className="confirm-button" onClick={confirmEntryDelete}>Delete</button>
+              <button className="cancel-button" onClick={cancelEntryDelete}>Hủy</button>
+              <button className="confirm-button" onClick={confirmEntryDelete}>Xóa</button>
             </div>
           </div>
         </div>
@@ -813,27 +826,27 @@ export default function LocationJournal() {
         <button className="nav-item" onClick={() => navigate('/reward')}>
           <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
           <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
-          <span>Rewards</span>
+          <span>Phần thưởng</span>
         </button>
         <button className="nav-item active" onClick={() => navigate('/journal')}>
           <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
           <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
-          <span>Journal</span>
+          <span>Nhật ký</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/home')}>
           <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
           <img src={homeSolidIcon} alt="Home" className="icon-solid" />
-          <span>Home</span>
+          <span>Trang chủ</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/map')}>
           <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
           <img src={mapSolidIcon} alt='Map' className='icon-solid' />
-          <span>Map</span>
+          <span>Bản đồ</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/leaderboard')}>
           <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
           <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
-          <span>Leaderboard</span>
+          <span>Bảng xếp hạng</span>
         </button>
       </nav>
     </div>

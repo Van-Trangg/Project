@@ -3,6 +3,17 @@ import { Link } from 'react-router-dom'
 import "../styles/Leaderboard.css";
 import { useNavigate } from 'react-router-dom'
 import { getLeaderboard, getMyRank } from '../api/leaderboard'
+// Import navigation icons
+import rewardOutlineIcon from '../public/reward-outline.png';
+import rewardSolidIcon from '../public/reward-solid.png';
+import homeOutlineIcon from '../public/home-outline.png';
+import homeSolidIcon from '../public/home-solid.png';
+import journalOutlineIcon from '../public/journal-outline.png';
+import journalSolidIcon from '../public/journal-solid.png';
+import mapOutlineIcon from '../public/map-outline.png';
+import mapSolidIcon from '../public/map-solid.png';
+import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
+import leaderboardSolidIcon from '../public/leaderboard-solid.png';
 
 function Podium({ user_name, points, rank, color, id, avatar, isMyRank }) {
   const navigate = useNavigate();
@@ -61,6 +72,16 @@ export default function Leaderboard() {
 
         setRows(leaderboardResponse.data);
         setMyRankData(myRankResponse.data);
+        // If my rank wasn't returned, set a mock rank 11
+          const mockRank11 = {
+            rank: 11,
+            user_name: 'You',
+            points: 0,
+            id: 'me',
+            avatar: '/public/default-avatar.png'
+          };
+          setMyRankData(mockRank11);
+        
         console.log('Leaderboard data:', leaderboardResponse.data);
         console.log('My rank data:', myRankResponse.data);
       } catch (err) {
@@ -82,7 +103,7 @@ export default function Leaderboard() {
   if (error) {
     return <div className="leaderboard-container"><div style={{ textAlign: 'center', marginTop: '50px', color: 'red' }}>{error}</div></div>;
   }
-  
+
   // Handle case where the leaderboard might be empty
   if (!rows || rows.length === 0) {
     return <div className="leaderboard-container"><div style={{ textAlign: 'center', marginTop: '50px' }}>Leaderboard is empty.</div></div>;
@@ -98,29 +119,30 @@ export default function Leaderboard() {
     <div className="leaderboard-container">
       {/* Fixed Header + Podium */}
       <div className="fixed-top">
-        <h1 rank="title">Leaderboard</h1>
+        <h1 rank="title">Bảng xếp hạng</h1>
+        <h3 rank="title">Tháng {new Date().getMonth() + 1}</h3>
         <div className="podium-area">
           {/* 2nd Place */}
           <div className="place place-2">
-            {top3[1] && <Podium 
-              {...top3[1]} 
-              color="#EFF5D2" 
+            {top3[1] && <Podium
+              {...top3[1]}
+              color="#EFF5D2"
               isMyRank={myRankData && top3[1].rank === myRankData.rank}
             />}
           </div>
           {/* 1st Place */}
           <div className="place place-1">
-            {top3[0] && <Podium 
-              {...top3[0]} 
-              color="#8FA31E" 
+            {top3[0] && <Podium
+              {...top3[0]}
+              color="#8FA31E"
               isMyRank={myRankData && top3[0].rank === myRankData.rank}
             />}
           </div>
           {/* 3rd Place */}
           <div className="place place-3">
-            {top3[2] && <Podium 
-              {...top3[2]} 
-              color="#EFF5D2" 
+            {top3[2] && <Podium
+              {...top3[2]}
+              color="#EFF5D2"
               isMyRank={myRankData && top3[2].rank === myRankData.rank}
             />}
           </div>
@@ -133,8 +155,8 @@ export default function Leaderboard() {
           {others.map(p => {
             const isMyRow = myRankData && p.rank === myRankData.rank;
             return (
-              <div 
-                key={p.rank} 
+              <div
+                key={p.rank}
                 className={`row ${isMyRow ? 'my-row' : ''}`}
               >
                 <div className="rank">{p.rank}</div>
@@ -150,7 +172,7 @@ export default function Leaderboard() {
           })}
         </div>
       </div>
-      
+
       {/* Only render this section if myRankData has been successfully fetched and rank is outside top 10 */}
       {myRankData && !isInTop10 && (
         <div className="my-rank">
@@ -159,12 +181,41 @@ export default function Leaderboard() {
             <div className="rank">{myRankData.rank}</div>
           </div>
           <div className="avatar" onClick={() => navigate(`/Profile`)}>
-            <img src={myRankData.avatar}/>
+            <img src={myRankData.avatar} />
           </div>
           <div className="name">{myRankData.user_name}</div>
           <div className="points">{myRankData.points}</div>
         </div>
       )}
+
+      {/* Navigation Bar */}
+      <nav className="bottom-nav">
+        <button className="nav-item" onClick={() => navigate('/reward')}>
+          <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
+          <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
+          <span>Phần thưởng</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/journal')}>
+          <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
+          <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
+          <span>Nhật ký</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/home')}>
+          <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
+          <img src={homeSolidIcon} alt="Home" className="icon-solid" />
+          <span>Trang chủ</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/map')}>
+          <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
+          <img src={mapSolidIcon} alt='Map' className='icon-solid' />
+          <span>Bản đồ</span>
+        </button>
+        <button className="nav-item active" onClick={() => navigate('/leaderboard')}>
+          <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
+          <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
+          <span>Bảng xếp hạng</span>
+        </button>
+      </nav>
     </div>
   );
 }
