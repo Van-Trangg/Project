@@ -384,6 +384,7 @@
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
+  border: 2px solid #fff; 
 }
 .profile-avatar .avatar-placeholder {
   font-size: 28px; /* Kích thước icon */
@@ -408,4 +409,11 @@
   
   margin-top: auto;
   margin-bottom: auto;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  display: block;
 }
