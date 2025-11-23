@@ -88,12 +88,12 @@ def claim_daily_reward(
     today = date.today()
     yesterday = today - timedelta(days=1)
 
-    # 1. Kiểm tra chặt chẽ: Nếu đã nhận hôm nay rồi -> Báo lỗi ngay
+
     if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    # [MERGE FIX] Đặt lại điểm thưởng là 10 (Logic chuẩn)
-    points_to_add = 10 
+
+    points_to_add = 6000 
     
     # 2. Cộng điểm
     current_user.eco_points += points_to_add
@@ -101,16 +101,16 @@ def claim_daily_reward(
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
-    # 3. Xử lý Streak (Logic từ nhánh của bạn - Giữ nguyên)
+    # 3. Xử lý Streak 
     if current_user.last_daily_reward_date == yesterday:
         current_user.streak += 1
     else:
         current_user.streak = 1
 
-    # 4. Cập nhật ngày nhận thưởng (Logic từ nhánh của bạn)
+    # 4. Cập nhật ngày nhận thưởng 
     current_user.last_daily_reward_date = today
     
-    # 5. [MERGED] Trao huy hiệu (Tính năng từ Main)
+    # 5.  Trao huy hiệu 
     check_and_award_badges(db, current_user.id, current_user.total_eco_points)
 
     # 6. Lưu Transaction
@@ -123,7 +123,6 @@ def claim_daily_reward(
     )
     db.add(new_trans)
     
-    # [MERGE FIX] Quan trọng: Lưu user để update điểm và streak
     db.add(current_user) 
 
     db.commit()
@@ -202,7 +201,7 @@ def get_real_home_data(
         
         is_claimed = False
         
-        # Logic kiểm tra ngày đã nhận (Kết hợp cả 2 cách cho chắc chắn)
+        # Logic kiểm tra ngày đã nhận 
         if current_user.last_daily_reward_date and loop_date == current_user.last_daily_reward_date:
             is_claimed = True
         elif loop_date in claimed_dates:
@@ -251,4 +250,67 @@ def get_reward_data(
         "balance": real_balance,
         "history": real_history,
         "promotions": fake_promos
+    }
+class TreeStatsResponse(BaseModel):
+    my_trees: int
+    everyone_trees: int
+
+# --- API 7: LẤY THỐNG KÊ CÂY ---
+@router.get("/tree-stats", response_model=TreeStatsResponse)
+def get_tree_stats(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Đếm số giao dịch có tiêu đề chứa chữ "Trồng cây"
+    # 1. Cây của tôi
+    my_trees = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id,
+        models.Transaction.title.contains("Trồng cây")
+    ).count()
+
+    # 2. Cây của mọi người (Cộng thêm số ảo cho đẹp nếu muốn, VD: 15000)
+    base_trees = 15830 
+    total_real_trees = db.query(models.Transaction).filter(
+        models.Transaction.title.contains("Trồng cây")
+    ).count()
+    
+    return {
+        "my_trees": my_trees,
+        "everyone_trees": base_trees + total_real_trees
+    }
+
+# --- API 8: HÀNH ĐỘNG TRỒNG CÂY (Trừ 1000 điểm) ---
+@router.post("/plant-tree")
+def plant_tree_action(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    PRICE_PER_TREE = 1000
+
+    # 1. Kiểm tra tiền
+    if current_user.eco_points < PRICE_PER_TREE:
+        return {"success": False, "message": f"Bạn cần {PRICE_PER_TREE} điểm để trồng cây!"}
+
+    # 2. Trừ tiền
+    current_user.eco_points -= PRICE_PER_TREE
+
+    # 3. Lưu lịch sử (Để tính vào thống kê cây)
+    new_trans = models.Transaction(
+        user_id=current_user.id,
+        code=generate_trans_code(),
+        title="Trồng cây xanh (Góp quỹ)",
+        amount=PRICE_PER_TREE,
+        type="negative"
+    )
+    db.add(new_trans)
+    
+    # 4. Lưu DB
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "success": True, 
+        "new_balance": current_user.eco_points,
+        "message": "Trồng cây thành công! Cảm ơn bạn đã góp xanh cho Trái Đất."
     }
