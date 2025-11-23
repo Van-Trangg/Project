@@ -24,7 +24,7 @@ class User(Base):
     address_public: Mapped[bool] = mapped_column(Boolean, default=True)
     email_public: Mapped[bool] = mapped_column(Boolean, default=True)
     
-    last_check_in_date: Mapped[date] = mapped_column(Date, nullable=True)
+    last_daily_reward_date: Mapped[date] = mapped_column(Date, nullable=True)
 
     journals = relationship("Journal", back_populates="author")
     transactions = relationship("Transaction", back_populates="owner")
