@@ -142,18 +142,17 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 20px;
-    max-width: 50px;
+    font-size: 18px;
     max-height: 40px;
 }
 .typing-indicator::after {
-    content: '...';
+    content: '• • •';
     animation: typing 1.5s infinite;
 }
 @keyframes typing {
-    0% { content: '.'; }
-    33% { content: '..'; }
-    66% { content: '...'; }
+    0% { content: '•'; }
+    33% { content: '• •'; }
+    66% { content: '• • •'; }
 }
 
 .chat-input-area {
