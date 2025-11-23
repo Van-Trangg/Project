@@ -27,6 +27,7 @@
   padding: 2rem 1rem 0;
   text-align: center;
 }
+
 #title {
   font-size: 2rem;
   font-weight: 700;
@@ -41,6 +42,7 @@
   align-items: flex-end;
   padding: 0 1rem;
 }
+
 /* ------------------------------------------------------------------ */
 /* Podium component */
 .podium {
@@ -57,12 +59,20 @@
   align-items: center;
   margin-bottom: 6px;
 }
+
 .top-info .avatar {
   width: 45px;
   height: 45px;
   background: #ccc;
   border-radius: 50%;
 }
+
+.top-info .avatar img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
 .list_avatar {
   width: 45px;
   height: 45px;
@@ -80,6 +90,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .top-info .points {
   font-size: 14px;
   font-weight: bold;
@@ -101,9 +112,17 @@
 }
 
 /* Specific heights for each pillar */
-.place-1 .base { height: 180px; }
-.place-2 .base { height: 140px; }
-.place-3 .base { height: 100px; }
+.place-1 .base {
+  height: 180px;
+}
+
+.place-2 .base {
+  height: 140px;
+}
+
+.place-3 .base {
+  height: 100px;
+}
 
 /* ------------------------------------------------------------------ */
 /* Scrollable list */
@@ -114,13 +133,22 @@
   padding: 0 5px;
   margin-top: 20px;
 }
-.scroll-section::-webkit-scrollbar { display: none; }
-.scroll-section { -ms-overflow-style: none; scrollbar-width: none; }
+
+.scroll-section::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-section {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .list {
   padding-top: 0rem;
   background: #EFF5D2;
   border-radius: 32px;
 }
+
 .row {
   display: flex;
   align-items: center;
@@ -130,24 +158,28 @@
 }
 
 .row .rank {
-  font-size: 1.2rem; 
-  font-weight: bold;   
-  margin-right: 15px; 
-  width: 30px;         
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-right: 15px;
+  width: 30px;
   text-align: center;
 }
+
 .row .user-details {
   flex: 1;
   padding-bottom: 12px;
 }
+
 .row .name {
   font-weight: 500;
 }
+
 .row .points {
   font-weight: bolder;
   font-size: 13px;
   color: #666;
 }
+
 .row::after {
   content: '';
   position: absolute;
@@ -157,9 +189,11 @@
   height: 3px;
   background-color: #C6D870;
 }
+
 .row:last-child::after {
   display: none;
 }
+
 .row .avatar {
   width: 45px;
   height: 45px;
@@ -172,10 +206,12 @@
 /* My Rank */
 .my-rank {
   position: fixed;
-.link-row {
-  text-decoration: none;
-  color: inherit;
-}
+
+  .link-row {
+    text-decoration: none;
+    color: inherit;
+  }
+
   height: 45px;
   width: 95%;
   left: 2.5%;
@@ -185,17 +221,48 @@
   background: #8FA31E;
   border-radius: 30px;
   font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0,0,0,.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
 }
+
 .my-rank .lr {
   padding-left: 5%;
 }
-.my-rank .label { margin-right: 10px; color: #000; }
-.my-rank .rank   { font-weight: bold; margin-right: 10px; text-align: center;}
-.my-rank .avatar { width: 36px; height: 36px; background: #ddd; border-radius: 50%; margin-right: 10px; }
-.my-rank .avatar img { width: 36px; height: 36px; background: #ddd; border-radius: 50%; margin-right: 10px; }
-.my-rank .name   { flex: 1; }
-.my-rank .points { font-weight: bold; margin-right: 10px;}
+
+.my-rank .label {
+  margin-right: 10px;
+  color: #000;
+}
+
+.my-rank .rank {
+  font-weight: bold;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.my-rank .avatar {
+  width: 36px;
+  height: 36px;
+  background: #ddd;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.my-rank .avatar img {
+  width: 36px;
+  height: 36px;
+  background: #ddd;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.my-rank .name {
+  flex: 1;
+}
+
+.my-rank .points {
+  font-weight: bold;
+  margin-right: 10px;
+}
 
 /* ------------------------------------------------------------------ */
 /* Bottom Navigation */
@@ -208,6 +275,7 @@
   padding: 10px 0;
   border-top: 1px solid #eee;
 }
+
 .nav-item {
   display: flex;
   flex-direction: column;
@@ -215,9 +283,11 @@
   font-size: 12px;
   color: #666;
 }
+
 .nav-item.active {
   color: #acc729;
 }
+
 .nav-icon {
   width: 24px;
   height: 24px;
@@ -225,4 +295,8 @@
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.my-row {
+  background-color: rgba(143, 163, 30, 0.2);
 }

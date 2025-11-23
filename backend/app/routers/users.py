@@ -15,7 +15,7 @@ def get_public_user_profile(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    rank = db.query(User).filter(User.eco_points > user.eco_points).count() + 1
+    rank = db.query(User).filter(User.monthly_points > user.monthly_points).count() + 1
     user_response = UserOut.model_validate(user)
     
     user_response.rank = rank

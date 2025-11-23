@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
+from app.crud.badge_crud import check_and_award_badges
 from pydantic import BaseModel
 from typing import List
 import random
@@ -104,6 +105,9 @@ def claim_daily_reward(
 
     current_total = current_user.total_eco_points
     new_level_info = calculate_level(current_total)
+
+
+
 
     return {
         "success": True, 

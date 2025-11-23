@@ -12,7 +12,7 @@ from app.routers import (
 
 from app.db.database import init_db, SessionLocal
 from app.crud.checkin_crud import recompute_scores   # ✔ bạn import CRUD scoring vào đây
-from app.crud.badge_crud import check_and_award_badges
+from app.crud.badge_crud import check_and_award_badges,sync_all_user_badge_counts
 app = FastAPI(title="GreenJourney API", version="0.1.0")
 
 # CORS for local dev
@@ -92,3 +92,10 @@ def sync_badges_manual(db: Session = Depends(get_db)):
     
     print(f"✅ Sync complete. Updated {count} users.")
     return {"status": "success", "users_updated": count, "details": logs}
+
+@app.post("/sync-counts")
+def trigger_sync_badge_counts(
+    db: Session = Depends(get_db),
+):
+    result = sync_all_user_badge_counts(db)
+    return result

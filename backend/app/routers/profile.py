@@ -14,7 +14,7 @@ def my_profile(
     current_user: User = Depends(TokenDep),
     db: DbDep = None
  ):
-    rank = db.query(User).filter(User.eco_points > current_user.eco_points).count() + 1
+    rank = db.query(User).filter(User.monthly_points > current_user.monthly_points).count() + 1
     current_user.rank = rank
     return current_user
 

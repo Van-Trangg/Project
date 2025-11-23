@@ -12,6 +12,7 @@ class MapOut(BaseModel):
 
 class PoiOut(BaseModel):
     id: int
+    slug: str  
     map_id: int
     name: str
     address: Optional[str] = None            

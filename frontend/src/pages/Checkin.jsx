@@ -138,7 +138,7 @@ const handleCancel = () => {
               > 
               <img src = '/src/public/x.png'></img>
             </button>
-            <span className = 'title'>Check-in Point</span>
+            <span className = 'title'>Điểm Check-in</span>
           </div>
           <div className = 'city-name-prof'>
             <span> {map.name}</span>
@@ -152,18 +152,18 @@ const handleCancel = () => {
             ></div>
             <div className = 'location-name'>{poi.name}</div>
             <div className="popup-stat-checkin">
-              {percentCheckedIn + '%' || '20%'} of users have checked in here
+              {percentCheckedIn + '%' || '20%'} người dùng đã check-in tại đây
             </div>
           </div>
           <div className = {`popup-card ${checkedIn ? 'checked-in' : ''}`}>
             <img src = '/src/public/spark.png' className = 'spark'></img>
-            <span className = 'first-rew'>First Check-in Reward</span>
+            <span className = 'first-rew'>Phần thuởng Check-in</span>
             <div className = 'point'>
               <span>{poi.score}</span>
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
             <div className = 'checkin-progress-bar'>
-              <div className = 'prog-title'>Progress until next title</div>
+              <div className = 'prog-title'>Tiến trình đến danh hiệu tiếp theo</div>
               <span className = 'track-bar'>
                 <span 
                 className = 'fill-bar'
@@ -181,9 +181,9 @@ const handleCancel = () => {
               )}
             </div>
             {!checkedIn ? (
-              <button className="checkin-btn" onClick={handleCheckIn}>Confirm</button>
+              <button className="checkin-btn" onClick={handleCheckIn}>Xác nhận</button>
             ) : (
-              <button className="checkin-btn-disabled">Checked in</button>
+              <button className="checkin-btn-disabled">Đã check-in</button>
             )}
           </div>
         </>
@@ -246,23 +246,23 @@ const handleCancel = () => {
               //     <span className = 'line-vehicle'></span>
               //   </>
               // )} */}
-              <p className = 'congratulatory'>At this location, you have gained a total of</p>
+              <p className = 'congratulatory'>Qua luợt check-in này, <base href="" />bạn đã nhận được tổng cộng</p>
               <div className = 'point-survey'>
                 <span className = 'checkin-score'> {poi.score}</span>
                 <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
               </div>
-              <p className = 'congratulatory'>Impressive!<br/>Thank you for your commitment towards improving our environment.</p>
+              <p className = 'congratulatory'>Tuyệt vời!<br/>Cảm ơn bạn vì đã góp phần giúp môi trường ngày một xanh hơn!</p>
           </div>
           <div className = 'spacer'></div>
           <div className = 'popup-card-receipt'>
             <div className="popup-stat-receipt">
-              Your new balance
+              Tổng điểm của bạn
             </div>
             <div className = 'total-balance'>
               <span>{user.eco_points + poi.score}</span> 
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
-            <button className="checkin-btn" onClick={handleCancel}>Confirm</button>
+            <button className="checkin-btn" onClick={handleCancel}>Xác nhận</button>
           </div>
         </div>
       )}
