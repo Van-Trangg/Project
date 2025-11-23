@@ -50,7 +50,7 @@ export default function PlantingTrees() {
         <div className="tree-image-container">
           <img src={treeImg} alt="Tree" />
           <p className="tree-planting-text">Plant a tree with 1,000 Ecopoints!</p>
-          <button className="btn-plant-tree">Plant Now</button>
+          <button className="btn-plant-tree" onClick={() => navigate('/map')}>Plant Now</button>
         </div>
 
       </div>

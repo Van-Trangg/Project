@@ -125,6 +125,8 @@
   text-shadow: 0 1px 0 #C8D6A1;
   text-align: right;
   margin-top: auto;
+
+  white-space: nowrap;
 }
 
 /* === Section chung (cho Progress & Daily Rewards) === */

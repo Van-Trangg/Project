@@ -6,6 +6,7 @@ class POI(Base):
     __tablename__ = "pois" 
 
     id = Column(Integer, primary_key=True, index=True)
+    slug = Column(String, unique=True, index=True, nullable=False)
     map_id = Column(Integer, ForeignKey("maps.id"), nullable=False, index=True)
     name = Column(String, nullable=False)
     rating = Column(Float, default=0.0)

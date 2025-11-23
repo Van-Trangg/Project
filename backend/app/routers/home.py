@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import List
 import random
 
-# Import logic xử lý huy hiệu
+# Import logic xử lý huy hiệu từ main
 from app.crud.badge_crud import check_and_award_badges
 
 from app.schemas import home_schema
@@ -92,7 +92,8 @@ def claim_daily_reward(
     if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    points_to_add = 500 
+    # [MERGE FIX] Đặt lại điểm thưởng là 10 (Logic chuẩn)
+    points_to_add = 10 
     
     # 2. Cộng điểm
     current_user.eco_points += points_to_add
@@ -100,16 +101,16 @@ def claim_daily_reward(
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
-    # 3. Xử lý Streak
+    # 3. Xử lý Streak (Logic từ nhánh của bạn - Giữ nguyên)
     if current_user.last_daily_reward_date == yesterday:
         current_user.streak += 1
     else:
         current_user.streak = 1
 
-    # 4. Cập nhật ngày nhận thưởng (Quan trọng để F5 vẫn đen)
+    # 4. Cập nhật ngày nhận thưởng (Logic từ nhánh của bạn)
     current_user.last_daily_reward_date = today
     
-    # 5. Trao huy hiệu (Nếu có)
+    # 5. [MERGED] Trao huy hiệu (Tính năng từ Main)
     check_and_award_badges(db, current_user.id, current_user.total_eco_points)
 
     # 6. Lưu Transaction
@@ -121,6 +122,8 @@ def claim_daily_reward(
         type="positive"
     )
     db.add(new_trans)
+    
+    # [MERGE FIX] Quan trọng: Lưu user để update điểm và streak
     db.add(current_user) 
 
     db.commit()
@@ -199,6 +202,7 @@ def get_real_home_data(
         
         is_claimed = False
         
+        # Logic kiểm tra ngày đã nhận (Kết hợp cả 2 cách cho chắc chắn)
         if current_user.last_daily_reward_date and loop_date == current_user.last_daily_reward_date:
             is_claimed = True
         elif loop_date in claimed_dates:
