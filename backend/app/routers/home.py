@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
-from app.crud.badge_crud import check_and_award_badges
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional 
 import random
+
+# Import logic xử lý huy hiệu (Badge)
+from app.crud.badge_crud import check_and_award_badges
 
 from app.schemas import home_schema
 from app import models
@@ -13,7 +15,7 @@ from app.core.security import get_current_user
 
 router = APIRouter()
 
-# 1. CÁC SCHEMA
+# 1. CÁC SCHEMA 
 
 class HistoryItem(BaseModel):
     id: int
@@ -27,6 +29,8 @@ class PromoItem(BaseModel):
     id: int
     title: str
     price: str
+    description: Optional[str] = None
+    deadline: Optional[str] = None
 
 class RewardResponse(BaseModel):
     balance: int
@@ -36,6 +40,14 @@ class RewardResponse(BaseModel):
 class RedeemRequest(BaseModel):
     title: str
     price: int
+
+class LocationCheckinRequest(BaseModel):
+    location_name: str 
+
+# [Thêm schema cho API Trồng cây]
+class TreeStatsResponse(BaseModel):
+    my_trees: int
+    everyone_trees: int
 
 # 2. HÀM LOGIC PHỤ TRỢ
 
@@ -76,21 +88,22 @@ def claim_daily_reward(
 ):
     today = date.today()
 
-    # [SỬA TÊN] Kiểm tra ngày nhận thưởng cuối cùng
+    # Giữ nguyên tên biến cũ last_daily_reward_date
     if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    points_to_add = 10 
+    points_to_add = 10000
     
-    # Cộng điểm
     current_user.eco_points += points_to_add
     if current_user.total_eco_points is None:
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
+    # Giữ nguyên tên biến cũ
     current_user.last_daily_reward_date = today
     
-    # Lưu Transaction
+    check_and_award_badges(db, current_user.id, current_user.total_eco_points)
+
     new_trans = models.Transaction(
         user_id=current_user.id,
         code=generate_trans_code(),
@@ -99,6 +112,7 @@ def claim_daily_reward(
         type="positive"
     )
     db.add(new_trans)
+    db.add(current_user)
 
     db.commit()
     db.refresh(current_user)
@@ -106,16 +120,14 @@ def claim_daily_reward(
     current_total = current_user.total_eco_points
     new_level_info = calculate_level(current_total)
 
-
-
-
     return {
         "success": True, 
         "new_ecopoints": current_user.eco_points,
         "new_progress": current_total,
         "new_title": new_level_info["title"],
         "new_max": new_level_info["max"],
-        "new_streak": 0, 
+        "new_badges_cnt": current_user.badges_count,
+        "new_streak": current_user.streak, 
         "message": "Nhận thưởng thành công!"
     }
 
@@ -138,6 +150,7 @@ def redeem_reward(
         type="negative"
     )
     db.add(new_trans)
+    db.add(current_user)
 
     db.commit()
     db.refresh(current_user)
@@ -159,22 +172,29 @@ def get_real_home_data(
     
     quest = {"title": level_info["title"], "progress": current_total, "max": level_info["max"]} 
     
-    rewards = []
     today = date.today()
     start_date = today - timedelta(days=1) 
+    
+    checkin_transactions = db.query(models.Transaction.created_at)\
+        .filter(
+            models.Transaction.user_id == current_user.id,
+            models.Transaction.title == "Điểm danh hàng ngày"
+        ).all()
+        
+    claimed_dates = set(t[0].date() for t in checkin_transactions)
 
+    rewards = []
     for i in range(4):
         loop_date = start_date + timedelta(days=i)
         is_today = (loop_date == today)
-        is_claimed = False
+        is_claimed = loop_date in claimed_dates
         
-        if current_user.last_daily_reward_date:
-            if loop_date <= current_user.last_daily_reward_date:
-                is_claimed = True
-        
+        if is_today and current_user.last_daily_reward_date == today:
+            is_claimed = True
+
         rewards.append({
             "date": loop_date.strftime("%d/%m"), 
-            "points": 10,
+            "points": 10, 
             "claimed": is_claimed,
             "isToday": is_today
         })
@@ -189,7 +209,7 @@ def get_real_home_data(
         "currentTitle": quest["title"],
         "progressCurrent": quest["progress"],
         "progressMax": quest["max"],
-        "dailyStreak": 0,
+        "dailyStreak": current_user.streak,
         "dailyRewards": rewards
     }
 
@@ -205,14 +225,109 @@ def get_reward_data(
         .limit(10)\
         .all()
 
-    fake_promos = [
-        {"id": 1, "title": "Voucher giảm 50% vé tháng", "price": "10.000"},
-        {"id": 2, "title": "Voucher giảm 10% vé xe buýt", "price": "1.000"},
-        {"id": 3, "title": "Ly giữ nhiệt tre ép", "price": "5.000"},
+    raw_promos = [
+        {
+            "id": 1, "title": "Vé xe buýt nội thành (1 lượt)", "price": "300", 
+            "description": "Miễn phí 100% vé xe buýt cho 1 lượt đi bất kỳ trong nội thành. Đi lại xanh chưa bao giờ dễ dàng thế!",
+            "deadline": "31/12/2025"
+        },
+        {
+            "id": 2, "title": "Voucher Phúc Long / Highlands 20k", "price": "1.000",
+            "description": "Giảm ngay 20.000đ cho hóa đơn đồ uống. Tự thưởng cho bản thân sau những hành trình xanh.",
+            "deadline": "30/06/2025"
+        },
+        {
+            "id": 3, "title": "Bộ ống hút tre tự nhiên", "price": "1.500",
+            "description": "Bộ 10 ống hút tre kèm cọ rửa. Thay thế ống hút nhựa, bảo vệ môi trường biển.",
+            "deadline": "31/12/2025"
+        },
+        {
+            "id": 4, "title": "Túi vải Canvas GreenJourney", "price": "2.500",
+            "description": "Túi Tote thời trang, bền đẹp. Người bạn đồng hành hoàn hảo để nói không với túi nilon.",
+            "deadline": "31/12/2025"
+        },
+        {
+            "id": 5, "title": "Sổ tay giấy tái chế", "price": "3.000",
+            "description": "Sổ tay làm từ 100% giấy tái chế. Nơi lưu giữ những ý tưởng xanh của bạn.",
+            "deadline": "31/12/2025"
+        },
+        {
+            "id": 6, "title": "Ly giữ nhiệt vỏ tre cao cấp", "price": "6.000",
+            "description": "Ly giữ nhiệt khắc tên, vỏ tre sang trọng. Giữ nóng/lạnh 8 tiếng. Quà tặng đẳng cấp cho Green User.",
+            "deadline": "31/12/2025"
+        },
+        {
+            "id": 7, "title": "Voucher giảm 50% vé tháng Metro", "price": "8.000",
+            "description": "Giảm 50% khi mua vé tháng tàu điện Metro. Tiết kiệm chi phí đi lại cực lớn.",
+            "deadline": "31/12/2025"
+        },
+        {
+            "id": 8, "title": "Bộ Kit Trồng Cây Mini tại nhà", "price": "10.000",
+            "description": "Gồm chậu, đất nén, hạt giống và hướng dẫn. Mang mảng xanh vào góc làm việc của bạn.",
+            "deadline": "31/12/2025"
+        }
     ]
+    def parse_price(p_item):
+        return int(p_item["price"].replace('.', ''))
+
+    sorted_promos = sorted(raw_promos, key=parse_price)
 
     return {
         "balance": real_balance,
         "history": real_history,
-        "promotions": fake_promos
+        "promotions": sorted_promos 
+    }
+
+
+
+@router.get("/tree-stats", response_model=TreeStatsResponse)
+def get_tree_stats(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Đếm số giao dịch có tiêu đề chứa chữ "Trồng cây"
+    my_trees = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id,
+        models.Transaction.title.contains("Trồng cây")
+    ).count()
+
+    base_trees = 15830 
+    total_real_trees = db.query(models.Transaction).filter(
+        models.Transaction.title.contains("Trồng cây")
+    ).count()
+    
+    return {
+        "my_trees": my_trees,
+        "everyone_trees": base_trees + total_real_trees
+    }
+
+@router.post("/plant-tree")
+def plant_tree_action(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    PRICE_PER_TREE = 1000
+
+    if current_user.eco_points < PRICE_PER_TREE:
+        return {"success": False, "message": f"Bạn cần {PRICE_PER_TREE} điểm để trồng cây!"}
+
+    current_user.eco_points -= PRICE_PER_TREE
+
+    new_trans = models.Transaction(
+        user_id=current_user.id,
+        code=generate_trans_code(),
+        title="Trồng cây xanh (Góp quỹ)",
+        amount=PRICE_PER_TREE,
+        type="negative"
+    )
+    db.add(new_trans)
+    
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "success": True, 
+        "new_balance": current_user.eco_points,
+        "message": "Trồng cây thành công! Cảm ơn bạn đã góp xanh cho Trái Đất."
     }

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from math import radians, sin, cos, sqrt, atan2
 from typing import List
 import uuid
-import random # Import random
+import random 
 
 from app.db.database import get_db
 from app.models.poi import POI
@@ -98,7 +98,6 @@ def checkin(
         db, user.id, payload.poi_id, dist, poi.score, receipt_no
     )
 
-    # ===== [LOGIC MỚI] ĐỒNG BỘ HÓA =====
     
     # A. Tăng số lượt Check-in Map (Đây mới đúng là nơi tăng biến này!)
     user.check_ins += 1 
@@ -121,7 +120,6 @@ def checkin(
     # D. Lưu DB
     db.commit()
     db.refresh(user)
-    # ===================================
 
     return CheckinReceipt(
         checkin_id=check.id,

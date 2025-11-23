@@ -23,7 +23,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // URL API gốc
   const API_BASE_URL = 'http://127.0.0.1:8000';
 
   useEffect(() => {
@@ -41,7 +40,6 @@ export default function Home() {
           return;
         }
 
-        // Gọi API lấy dữ liệu trang chủ
         const response = await fetch(`${API_BASE_URL}/home`, {
           method: 'GET',
           headers: {
@@ -58,8 +56,8 @@ export default function Home() {
             throw new Error('Lỗi mạng hoặc server (Backend sập?)');
           }
         } else {
-          const data = await response.json();
-          setData(data); 
+          const result = await response.json();
+          setData(result); 
         }
 
       } catch (error) {
@@ -73,7 +71,6 @@ export default function Home() {
     fetchHomeData();
   }, [navigate]);
 
-  // --- RENDERING STATES ---
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="loading">Lỗi: {error}</div>;
   if (!data) return <div className="loading">Không có dữ liệu.</div>;
@@ -96,24 +93,14 @@ export default function Home() {
   const handleClaimReward = async (index) => {
     const selectedReward = data.dailyRewards[index];
 
-    // Chỉ xử lý nếu là "Hôm nay" và "Chưa nhận"
-    if (selectedReward.isToday && !selectedReward.claimed) {
-      
-      // 1. Cập nhật giao diện NGAY LẬP TỨC (Optimistic UI)
-      const newData = { ...data };
-      newData.dailyRewards[index].claimed = true;
-      newData.ecopoints += selectedReward.points; 
-      newData.progressCurrent += selectedReward.points;
-      
-      // [QUAN TRỌNG] Tự tăng streak lên 1 để hiển thị ngay
-      newData.dailyStreak += 1; 
-      newData.checkIns += 1; // Cập nhật cả số tổng check-in nữa
+    // 1. Chặn click nếu không phải hôm nay hoặc đã nhận
+    if (!selectedReward.isToday) return; 
+    if (selectedReward.claimed) return; 
 
-      setData(newData);
-
-      // 2. Gọi API ngầm để lưu vào Database thật
-      try {
+    try {
         const token = localStorage.getItem('access_token');
+        
+        // 2. Gọi API Backend
         const response = await fetch(`${API_BASE_URL}/home/claim-reward`, {
             method: 'POST',
             headers: { 
@@ -125,28 +112,41 @@ export default function Home() {
         const result = await response.json();
         
         if (result.success) {
-            // Cập nhật lại toàn bộ thông tin mới nhất từ Server trả về
-            setData(prevData => ({
-                ...prevData,
-                ecopoints: result.new_ecopoints,
-                progressCurrent: result.new_progress,
-                currentTitle: result.new_title, 
-                progressMax: result.new_max,
-                // [QUAN TRỌNG] Cập nhật lại streak thật từ backend để đồng bộ
-                dailyStreak: result.new_streak,
-                checkIns: result.new_streak // Giả sử checkIns = dailyStreak
-            }));
-            console.log("Đã cập nhật danh hiệu & streak mới");
+            // 3. THÀNH CÔNG: Cập nhật state từ dữ liệu Server
+            const newData = { ...data };
+            
+            // Quan trọng: Đánh dấu ô này là ĐÃ NHẬN (claimed = true)
+            newData.dailyRewards[index].claimed = true;
+            
+            // Cập nhật các chỉ số
+            newData.ecopoints = result.new_ecopoints;
+            newData.progressCurrent = result.new_progress;
+            newData.currentTitle = result.new_title;
+            newData.progressMax = result.new_max;
+            newData.dailyStreak = result.new_streak;
+            newData.badges = result.new_badges_cnt;
+
+            setData(newData);
+        } else {
+            // Nếu server báo lỗi (VD: đã nhận rồi), hiện thông báo
+            alert(result.message || "Lỗi khi nhận thưởng.");
+            
+            // Reload lại trang để đồng bộ dữ liệu nếu bị lệch
+            if (result.message === "Hôm nay bạn đã nhận rồi!") {
+                window.location.reload();
+            }
         }
 
-      } catch (err) {
-        console.error("Lỗi khi lưu điểm danh:", err);
-        // Nếu lỗi thì có thể rollback lại state cũ ở đây nếu cần
-      }
+    } catch (err) {
+        console.error("Lỗi kết nối:", err);
+        alert("Lỗi kết nối tới server.");
     }
   };
 
-  const progressPercent = (progressCurrent / progressMax) * 100;
+  // [MERGED] Giữ lại Math.min để thanh progress không bị tràn 100%
+  const progressPercent = Math.min((progressCurrent / progressMax) * 100, 100);
+
+  // [MERGED] Thêm hàm helper getFontSize từ nhánh Main
   const getFontSize = (value) => {
     const str = value.toString();
     if (str.length > 9) return '28px'; // Ví dụ: 1.000.000.000 (Rất nhỏ)
@@ -158,14 +158,10 @@ export default function Home() {
   return (
     <div className="homepage-body">
       
-      {/* === 1. AVATAR USER (Góc phải) === */}
+      {/* === HEADER === */}
       <div className="profile-avatar" onClick={() => navigate('/profile')}>
         {avatarUrl ? (
-            <img 
-              src={avatarUrl} 
-              alt="Avatar" 
-              className="avatar-img" 
-            />
+            <img src={avatarUrl} alt="Avatar" className="avatar-img" />
         ) : (
             <span className="avatar-placeholder">
               {userName ? userName.charAt(0).toUpperCase() : 'U'}
@@ -173,20 +169,22 @@ export default function Home() {
         )}
       </div>
 
-      {/* === 2. HEADER CHÀO MỪNG === */}
       <div className="home-header">
         <h1>Good morning, {userName}</h1>
         <p>Up for a new adventure today?</p>
       </div>
 
-      {/* === 3. LƯỚI THỐNG KÊ 2x2 === */}
+      {/* === STATS GRID === */}
       <div className="stats-grid">
         <div className="stat-card" onClick={() => navigate('/reward')}>
           <div className="stat-card-header">
             <span className="title">Ecopoints</span>
           </div>
            <img src={ecopointsIcon} alt="leaf" className="middle-leaf-icon" />
-          <div className="value" style={{ fontSize: getFontSize(ecopoints) }}>{ecopoints.toLocaleString('de-DE')}</div>
+           {/* [MERGED] Áp dụng dynamic font size */}
+          <div className="value" style={{ fontSize: getFontSize(ecopoints) }}>
+            {ecopoints.toLocaleString('de-DE')}
+          </div>
         </div>
         <div className="stat-card" onClick={() => navigate('/profile')}>
           <div className="stat-card-header">
@@ -208,7 +206,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === 4. PHẦN TIẾN TRÌNH (PROGRESS) === */}
+      {/* === PROGRESS === */}
       <div className="home-section">
         <div className="section-header">
           <img src={treeIcon} alt="tree" className="progress-icon tree-icon" />
@@ -228,7 +226,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === 5. PHẦN THƯỞNG HÀNG NGÀY === */}
+      {/* === DAILY REWARDS === */}
       <div className="home-section">
         <div className="section-header">
           <img src={sunIcon} alt="sun" className="section-title-icon sun-icon" />
@@ -251,12 +249,14 @@ export default function Home() {
               <span className="points">{reward.points}</span>
               <img src={ecopointsIcon} alt="leaf" className="reward-leaf-icon" />
               <span className="date">{reward.date}</span>
+              
+              {reward.claimed && <div className="check-mark" style={{position: 'absolute', top: '5px', right: '5px', color: 'white', fontSize: '12px'}}>✓</div>}
             </div>
           ))}
         </div>
       </div>
 
-      {/* === 6. THANH ĐIỀU HƯỚNG DƯỚI CÙNG === */}
+      {/* === NAVIGATION === */}
       <nav className="bottom-nav">
         <button className="nav-item" onClick={() => navigate('/reward')}>
           <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
