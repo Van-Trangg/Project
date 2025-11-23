@@ -311,7 +311,7 @@ const loadMapsFallback = () => {
               className = 'chat-bubble'
               onClick={handleChat}
             >
-              <img src = '/src/public/ai.png' className = 'target-icon'></img>
+              <img src = '/src/public/ai.png' className = 'chat-icon'></img>
             </button>
             <button 
               className = 'map-center-bubble'

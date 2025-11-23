@@ -25,51 +25,50 @@ def list_journals_by_poi(
     current_user: User = CurrentUser,
     map_id: int = Query(None),
 ):
-    query = (
-        db.query(Journal)
-        .options(joinedload(Journal.poi))
-        .filter(Journal.author_id == current_user.id)
-    )
-    
+    poi_query = db.query(POI)
     if map_id is not None:
-        query = query.filter(Journal.poi.has(POI.map_id == map_id))
-    
-    journals_by_user = query.order_by(Journal.created_at.desc()).all()
+        poi_query = poi_query.filter(POI.map_id == map_id)
+        
+    all_pois = poi_query.all()
 
-    if not journals_by_user:
+    if not all_pois:
         return []
 
-    pois_map: Dict[int, POI] = {}
-    journals_by_poi_map: Dict[int, List[Journal]] = {}
+    poi_ids = [poi.id for poi in all_pois]
 
+    journals_query = (
+        db.query(Journal)
+        .filter(
+            Journal.author_id == current_user.id,
+            Journal.poi_id.in_(poi_ids)
+        )
+        .order_by(Journal.created_at.desc())
+        .options(joinedload(Journal.poi))
+    )
+    journals_by_user = journals_query.all()
+
+    journals_by_poi_map: Dict[int, List[Journal]] = {}
     for journal in journals_by_user:
         poi_id = journal.poi_id
-
-        if poi_id not in pois_map:
-            pois_map[poi_id] = journal.poi
-
         if poi_id not in journals_by_poi_map:
             journals_by_poi_map[poi_id] = []
-            
         journals_by_poi_map[poi_id].append(journal)
-
+    
     result_list = []
 
-    for poi_id, journals in journals_by_poi_map.items():
-        poi = pois_map[poi_id]
+    for poi in all_pois:
+        journals_for_poi: List[Journal] = journals_by_poi_map.get(poi.id, [])
         
         journals_by_day: Dict[date, List[JournalSummary]] = {}
 
-        for journal in journals:
+        for journal in journals_for_poi:
             journal_date = journal.created_at.date()
-            
-            # Normalize the emotion value to title case
-            normalized_emotion = journal.emotion.title() if journal.emotion else "Neutral"
+            normalized_emotion = journal.emotion.title() if journal.emotion else "Neutral" 
             
             summary = JournalSummary(
                 id=journal.id,
                 time=journal.created_at.strftime("%I:%M %p"), 
-                emotion=normalized_emotion,  # Use the normalized value
+                emotion=normalized_emotion,
                 content=journal.content,
                 images=journal.images,
             )
@@ -90,14 +89,15 @@ def list_journals_by_poi(
         poi_summary = JournalByPOI(
             id=poi.id,
             title=poi.name,
-            description=poi.description[:100] + "...", 
-            longDescription=poi.description, 
+            description=(poi.description[:100] + "...") if poi.description and len(poi.description) > 100 else (poi.description or ""), 
+            longDescription=poi.description or "", 
             image=poi.image or "",
             entries=entries_by_day
         )
         result_list.append(poi_summary)
 
     return result_list
+
 @router.get("/my", response_model=list[JournalOut])
 def list_my_journals(
     db: DbDep,

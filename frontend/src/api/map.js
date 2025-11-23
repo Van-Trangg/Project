@@ -25,3 +25,7 @@ export const percentageChecked = (poi_id) => {
 export const sendMessage = (message) => {
   return api.post('/ai/ai/chat', { message: message });
 };
+
+export const resetChat = () => {
+  return api.post('/ai/ai/reset');
+};

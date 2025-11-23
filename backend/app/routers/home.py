@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
 from app.crud.badge_crud import check_and_award_badges
+from pydantic import BaseModel
+from typing import List
+
 from app.schemas import home_schema
 from app import models
 from app.db.database import get_db
@@ -9,7 +12,38 @@ from app.core.security import get_current_user
 
 router = APIRouter()
 
-# --- HÀM TÍNH DANH HIỆU DỰA TRÊN TỔNG ĐIỂM ---
+# ==========================================
+# 1. CÁC SCHEMA (Định nghĩa dữ liệu input/output)
+# ==========================================
+
+class HistoryItem(BaseModel):
+    id: int
+    title: str
+    amount: int
+    type: str 
+    created_at: datetime
+
+class PromoItem(BaseModel):
+    id: int
+    title: str
+    price: str
+
+class RewardResponse(BaseModel):
+    balance: int
+    history: List[HistoryItem]
+    promotions: List[PromoItem]
+
+class RedeemRequest(BaseModel):
+    title: str
+    price: int
+
+class LocationCheckinRequest(BaseModel):
+    location_name: str 
+
+# ==========================================
+# 2. HÀM LOGIC PHỤ TRỢ
+# ==========================================
+
 def calculate_level(total_points: int):
     if total_points < 100:
         return {"title": "Seedling (Hạt giống)", "max": 100}
@@ -24,7 +58,23 @@ def calculate_level(total_points: int):
     else:
         return {"title": "Earth Hero", "max": 10000}
 
-# --- API 1: NHẬN THƯỞNG ĐIỂM DANH ---
+# ==========================================
+# 3. CÁC API ENDPOINT
+# ==========================================
+
+# --- API 1: LẤY TOÀN BỘ LỊCH SỬ ---
+@router.get("/history", response_model=List[HistoryItem])
+def get_full_history(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    full_history = db.query(models.Transaction)\
+        .filter(models.Transaction.user_id == current_user.id)\
+        .order_by(models.Transaction.created_at.desc())\
+        .all()
+    return full_history
+
+# --- API 2: NHẬN THƯỞNG ĐIỂM DANH ---
 @router.post("/claim-reward")
 def claim_daily_reward(
     db: Session = Depends(get_db),
@@ -32,26 +82,36 @@ def claim_daily_reward(
 ):
     today = date.today()
 
-    # Kiểm tra xem hôm nay đã nhận chưa
     if current_user.last_check_in_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    points_to_add = 200
+    points_to_add = 10000
     
+    # 1. Cộng điểm
     current_user.eco_points += points_to_add
-    
     if current_user.total_eco_points is None:
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
     check_and_award_badges(db, current_user.id, current_user.total_eco_points)
 
+    # 2. Cập nhật ngày và streak
     current_user.last_check_in_date = today
     current_user.check_ins += 1 
+
+    # 3. Lưu Transaction
+    new_trans = models.Transaction(
+        user_id=current_user.id,
+        title="Điểm danh hàng ngày",
+        amount=points_to_add,
+        type="positive"
+    )
+    db.add(new_trans)
 
     db.commit()
     db.refresh(current_user)
 
+    # Tính toán Level mới
     current_total = current_user.total_eco_points
     new_level_info = calculate_level(current_total)
 
@@ -65,50 +125,100 @@ def claim_daily_reward(
         "new_title": new_level_info["title"],
         "new_max": new_level_info["max"],
         "new_badges_cnt": current_user.badges_count,
+        # [QUAN TRỌNG] Trả về streak mới nhất
+        "new_streak": current_user.check_ins,
         "message": "Nhận thưởng thành công!"
     }
 
+# --- API 3: ĐỔI QUÀ ---
+@router.post("/redeem")
+def redeem_reward(
+    request: RedeemRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    if current_user.eco_points < request.price:
+        return {"success": False, "message": "Bạn không đủ điểm!"}
 
-# --- API 2: LẤY DỮ LIỆU TRANG CHỦ ---
-@router.get(
-    "/", 
-    response_model=home_schema.HomeDataResponse
-)
+    current_user.eco_points -= request.price
+
+    new_trans = models.Transaction(
+        user_id=current_user.id,
+        title=f"Đổi quà: {request.title}",
+        amount=request.price,
+        type="negative"
+    )
+    db.add(new_trans)
+
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "success": True, 
+        "new_balance": current_user.eco_points,
+        "message": f"Đổi '{request.title}' thành công!"
+    }
+
+# --- API 4: CHECK-IN ĐỊA ĐIỂM ---
+@router.post("/checkin-location")
+def checkin_at_location(
+    request: LocationCheckinRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    points_reward = 50 
+    
+    current_user.eco_points += points_reward
+    if current_user.total_eco_points is None:
+        current_user.total_eco_points = 0
+    current_user.total_eco_points += points_reward
+
+    new_trans = models.Transaction(
+        user_id=current_user.id,
+        title=f"Check-in: {request.location_name}",
+        amount=points_reward,
+        type="positive" 
+    )
+    db.add(new_trans)
+
+    db.commit()
+    db.refresh(current_user)
+
+    new_level_info = calculate_level(current_user.total_eco_points)
+
+    return {
+        "success": True,
+        "new_ecopoints": current_user.eco_points,
+        "message": f"Check-in thành công tại {request.location_name}! Bạn nhận được {points_reward} điểm.",
+        "new_title": new_level_info["title"]
+    }
+
+# --- API 5: LẤY DỮ LIỆU TRANG CHỦ ---
+@router.get("/", response_model=home_schema.HomeDataResponse)
 def get_real_home_data(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    # 1. Tính Rank (Số người có điểm eco_points cao hơn mình + 1)
     rank = db.query(models.User).filter(models.User.eco_points > current_user.eco_points).count() + 1
     
     current_total = current_user.total_eco_points if current_user.total_eco_points else 0
-    
-    # Gọi hàm tính toán level
     level_info = calculate_level(current_total)
     
     quest = {
         "title": level_info["title"], 
-        "progress": current_total,  
-        "max": level_info["max"]    
+        "progress": current_total, 
+        "max": level_info["max"]
     } 
     
-    # 3. Xử lý Daily Rewards ĐỘNG (Tự động theo ngày thực tế)
     rewards = []
     today = date.today()
-    
-    # Tạo danh sách hiển thị 4 ngày bắt đầu từ hôm qua
     start_date = today - timedelta(days=1) 
 
     for i in range(4):
         loop_date = start_date + timedelta(days=i)
-        
-        # Kiểm tra xem ngày trong vòng lặp có phải hôm nay không
         is_today = (loop_date == today)
-        
-        # Kiểm tra xem ngày này đã nhận thưởng chưa
         is_claimed = False
         if current_user.last_check_in_date:
-            # Nếu ngày đang xét nhỏ hơn hoặc bằng ngày check-in cuối cùng -> Đã nhận
             if loop_date <= current_user.last_check_in_date:
                 is_claimed = True
         
@@ -119,21 +229,42 @@ def get_real_home_data(
             "isToday": is_today
         })
 
-    real_data = {
+    return {
         "userName": current_user.nickname or current_user.full_name,
         "avatarUrl": current_user.avatar_url,
-        "ecopoints": current_user.eco_points, # Điểm tiêu xài hiện tại
+        "ecopoints": current_user.eco_points,
         "badges": current_user.badges_count,
         "rank": rank, 
         "checkIns": current_user.check_ins,
-        
-        # Thông tin thanh Progress Bar (Dùng total_eco_points)
         "currentTitle": quest["title"],
         "progressCurrent": quest["progress"],
         "progressMax": quest["max"],
-        
         "dailyStreak": current_user.check_ins, 
         "dailyRewards": rewards
     }
-    
-    return real_data
+
+# --- API 6: LẤY DỮ LIỆU TRANG REWARD ---
+@router.get("/rewards", response_model=RewardResponse)
+def get_reward_data(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    real_balance = current_user.eco_points
+
+    real_history = db.query(models.Transaction)\
+        .filter(models.Transaction.user_id == current_user.id)\
+        .order_by(models.Transaction.created_at.desc())\
+        .limit(10)\
+        .all()
+
+    fake_promos = [
+        {"id": 1, "title": "Voucher giảm 50% vé tháng", "price": "10.000"},
+        {"id": 2, "title": "Voucher giảm 10% vé xe buýt", "price": "1.000"},
+        {"id": 3, "title": "Ly giữ nhiệt tre ép", "price": "5.000"},
+    ]
+
+    return {
+        "balance": real_balance,
+        "history": real_history,
+        "promotions": fake_promos
+    }
