@@ -3,6 +3,16 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listJournalsByPOI } from '../api/journal' // Assuming this API exists
 import '../styles/Journal.css'
+import rewardOutlineIcon from '../public/reward-outline.png';
+import rewardSolidIcon from '../public/reward-solid.png';
+import homeOutlineIcon from '../public/home-outline.png';
+import homeSolidIcon from '../public/home-solid.png';
+import journalOutlineIcon from '../public/journal-outline.png';
+import journalSolidIcon from '../public/journal-solid.png';
+import mapOutlineIcon from '../public/map-outline.png';
+import mapSolidIcon from '../public/map-solid.png'
+import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
+import leaderboardSolidIcon from '../public/leaderboard-solid.png'
 
 const CITIES = [
   { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172, image: '/src/public/Map/hcmc.png' },
@@ -113,6 +123,33 @@ export default function Journal() {
     return (
       <div className='journal-container'>
         <div className="loading-message">Loading locations...</div>
+        <nav className="bottom-nav">
+          <button className="nav-item" onClick={() => navigate('/reward')}>
+            <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
+            <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
+            <span>Rewards</span>
+          </button>
+          <button className="nav-item active" onClick={() => navigate('/journal')}>
+            <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
+            <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
+            <span>Journal</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/home')}>
+            <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
+            <img src={homeSolidIcon} alt="Home" className="icon-solid" />
+            <span>Home</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/map')}>
+            <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
+            <img src={mapSolidIcon} alt='Map' className='icon-solid' />
+            <span>Map</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/leaderboard')}>
+            <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
+            <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
+            <span>Leaderboard</span>
+          </button>
+        </nav>
       </div>
     );
   }
@@ -122,6 +159,33 @@ export default function Journal() {
     return (
       <div className='journal-container'>
         <div className="error-message">{error}</div>
+        <nav className="bottom-nav">
+          <button className="nav-item" onClick={() => navigate('/reward')}>
+            <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
+            <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
+            <span>Rewards</span>
+          </button>
+          <button className="nav-item active" onClick={() => navigate('/journal')}>
+            <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
+            <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
+            <span>Journal</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/home')}>
+            <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
+            <img src={homeSolidIcon} alt="Home" className="icon-solid" />
+            <span>Home</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/map')}>
+            <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
+            <img src={mapSolidIcon} alt='Map' className='icon-solid' />
+            <span>Map</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/leaderboard')}>
+            <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
+            <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
+            <span>Leaderboard</span>
+          </button>
+        </nav>
       </div>
     );
   }
@@ -153,9 +217,35 @@ export default function Journal() {
               <line x1="8" y1="13" x2="16" y2="13"></line>
               <line x1="8" y1="17" x2="16" y2="17"></line>
             </svg>
-
           </div>
         </div>
+        <nav className="bottom-nav">
+          <button className="nav-item" onClick={() => navigate('/reward')}>
+            <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
+            <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
+            <span>Rewards</span>
+          </button>
+          <button className="nav-item active" onClick={() => navigate('/journal')}>
+            <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
+            <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
+            <span>Journal</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/home')}>
+            <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
+            <img src={homeSolidIcon} alt="Home" className="icon-solid" />
+            <span>Home</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/map')}>
+            <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
+            <img src={mapSolidIcon} alt='Map' className='icon-solid' />
+            <span>Map</span>
+          </button>
+          <button className="nav-item" onClick={() => navigate('/leaderboard')}>
+            <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
+            <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
+            <span>Leaderboard</span>
+          </button>
+        </nav>
       </div>
     );
   }
@@ -237,6 +327,34 @@ export default function Journal() {
           </div>
         </div>
       )}
+      
+      <nav className="bottom-nav">
+        <button className="nav-item" onClick={() => navigate('/reward')}>
+          <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
+          <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
+          <span>Rewards</span>
+        </button>
+        <button className="nav-item active" onClick={() => navigate('/journal')}>
+          <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
+          <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
+          <span>Journal</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/home')}>
+          <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
+          <img src={homeSolidIcon} alt="Home" className="icon-solid" />
+          <span>Home</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/map')}>
+          <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
+          <img src={mapSolidIcon} alt='Map' className='icon-solid' />
+          <span>Map</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/leaderboard')}>
+          <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
+          <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
+          <span>Leaderboard</span>
+        </button>
+      </nav>
     </div>
   );
 }
