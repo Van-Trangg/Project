@@ -16,6 +16,11 @@ import mapSolidIcon from '../public/map-solid.png'
 import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
 import leaderboardSolidIcon from '../public/leaderboard-solid.png'
 
+const CITY_PREVIEWS = {
+  1: 'src/public/Map/hcmc.png',
+  2: 'src/public/Map/pq.png',
+};
+
 function MapController({ onMapReady }) {
   const map = useMap();
 
@@ -286,7 +291,7 @@ export default function Map() {
                 onClick={() => {handleCityChange(city);}}
               >
                 <div className="city-image"
-                  style={{ backgroundImage: `url(${city.image})` }}
+                  style={{ backgroundImage: `url(${CITY_PREVIEWS[city.id]})` }}
                 />
                 <p className="city-name">{city.name}</p>
               </button>
@@ -338,7 +343,7 @@ export default function Map() {
             >
               <Popup>
                 <div style={{ textAlign: 'center', fontWeight: 'bold'}}>
-                  You are here
+                  Bạn đang ở đây
                 </div>
               </Popup>
             </Marker>
@@ -378,20 +383,23 @@ export default function Map() {
           <h3 className="popup-title">{selectedPin.name}</h3>
           <div className="popup-stat">
             {percentLoading ? '...' : percentCache[selectedPin?.id] !== undefined
-            ? `${percentCache[selectedPin.id]}%`: '–'} of users have checked in here
+            ? `${percentCache[selectedPin.id]}%`: '–'} người dùng đã check-in tại đây
           </div>
           <p className="popup-desc">{selectedPin.description}</p>
         </div>
         {checkInCache[selectedPin?.id] ? (
           // User has already checked in → disabled button
-          <button className="checkin-btn-disabled"> Checked in </button>
+          <>
+            <span className="travel-reminder">Bạn đã check-in tại đây</span>
+            <button className="checkin-btn-disabled">Check-in</button>
+          </>
         ) : checkinEgligible ? (
           // User is close enough and hasn't checked in → allow check-in
-          <button className="checkin-btn" onClick={handleCheckIn}> Check-in</button>
+          <button className="checkin-btn" onClick={handleCheckIn}>Check-in</button>
         ) : (
           // User is too far away
           <>
-            <span className="travel-reminder">Travel to location to unlock</span>
+            <span className="travel-reminder">Hãy di chuyển đến địa danh để mở khóa</span>
             <button className="checkin-btn-disabled">Check-in</button>
           </>
         )}

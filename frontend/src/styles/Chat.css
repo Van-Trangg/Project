@@ -93,6 +93,7 @@
     font-family: "Inter", sans-serif;
     font-size: 15px;
     font-weight: 500;
+    width: fit-content;
     max-width: 100%;
     padding: 10px 15px;
     border-radius: 18px;
@@ -104,6 +105,7 @@
     color: white;
     border-bottom-right-radius: 5px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    align-self: flex-end;
 }
 .bot-message {
     background-color: #ffffff;
