@@ -22,19 +22,19 @@ NHIỆM VỤ:
 TRẢ VỀ DẠNG JSON CHUẨN:
 {
   "response_type": "recommend" hoặc "chat",
-  "poi_name": "Tên POI hoặc null",
+  "poi_slug": "slug của POI hoặc null",
   "message": "Câu trả lời hiển thị"
 }
 
-KHÔNG TRẢ VỀ markdown, bullet point, hoặc ký tự đặc biệt.
+LƯU Ý:
+- PHẢI dùng đúng slug trong danh sách JSON.
+- KHÔNG trả về markdown hoặc bullet points.
 """
 
 
 def clean_text(text: str) -> str:
-    """Làm sạch văn bản trước khi trả về frontend."""
     if not text:
         return ""
-
     text = re.sub(r"[*•+\-#]+", " ", text)
     text = " ".join(line.strip() for line in text.split("\n"))
     text = re.sub(r"\s+", " ", text).strip()
@@ -42,16 +42,13 @@ def clean_text(text: str) -> str:
 
 
 def extract_json(raw: str):
-    """Cố gắng tìm JSON bên trong output Gemini."""
     raw = raw.strip()
 
-    # Nếu raw đã là JSON chuẩn
     try:
         return json.loads(raw)
     except:
         pass
 
-    # Tìm JSON bằng regex
     match = re.search(r"\{.*\}", raw, flags=re.DOTALL)
     if match:
         try:
@@ -59,27 +56,24 @@ def extract_json(raw: str):
         except:
             pass
 
-    # fallback
     return {
         "response_type": "chat",
-        "poi_name": None,
+        "poi_slug": None,
         "message": clean_text(raw)
     }
 
 
 def trim_history(history, max_items=10):
-    """Chỉ giữ X message gần nhất để tránh overflow token."""
     if len(history) <= max_items:
         return history
     return history[-max_items:]
 
 
 def generate_reply(history, user_message=None):
-    # trim history
     history = trim_history(history)
 
     full_prompt = SYSTEM_PROMPT + "\n\n"
-    full_prompt += f"Danh sách địa điểm hợp lệ:\n{POI_DATA}\n\n"
+    full_prompt += f"Danh sách địa điểm hợp lệ (lưu ý: phải dùng slug):\n{POI_DATA}\n\n"
 
     for h in history:
         full_prompt += f"{h['role'].upper()}: {h['content']}\n"
@@ -87,24 +81,18 @@ def generate_reply(history, user_message=None):
     if user_message:
         full_prompt += f"USER: {user_message}\n"
 
-    full_prompt += "ASSISTANT (trả JSON): "
+    full_prompt += "ASSISTANT (trả JSON đúng format): "
 
-    # Call Gemini
     result = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=full_prompt
     )
 
     raw = result.text
-
-    # Parse JSON an toàn
     response = extract_json(raw)
 
-    # Clean lại message
     response["message"] = clean_text(response.get("message", ""))
-
-    # Đảm bảo đủ field
     response.setdefault("response_type", "chat")
-    response.setdefault("poi_name", None)
+    response.setdefault("poi_slug", None)
 
     return response
