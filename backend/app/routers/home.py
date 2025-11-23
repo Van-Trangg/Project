@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
+from app.crud.badge_crud import check_and_award_badges
 from pydantic import BaseModel
 from typing import List
 
@@ -92,6 +93,8 @@ def claim_daily_reward(
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
+    check_and_award_badges(db, current_user.id, current_user.total_eco_points)
+
     # 2. Cập nhật ngày và streak
     current_user.last_check_in_date = today
     current_user.check_ins += 1 
@@ -112,12 +115,16 @@ def claim_daily_reward(
     current_total = current_user.total_eco_points
     new_level_info = calculate_level(current_total)
 
+
+
+
     return {
         "success": True, 
         "new_ecopoints": current_user.eco_points,
         "new_progress": current_total,
         "new_title": new_level_info["title"],
         "new_max": new_level_info["max"],
+        "new_badges_cnt": current_user.badges_count,
         # [QUAN TRỌNG] Trả về streak mới nhất
         "new_streak": current_user.check_ins,
         "message": "Nhận thưởng thành công!"
