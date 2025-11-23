@@ -27,7 +27,7 @@ import PlantingTrees from '../pages/PlantingTrees.jsx'
 export default function AppRouter(){
   return (
     <BrowserRouter>
-      <Navbar />
+      {/* <Navbar /> */}
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
