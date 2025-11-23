@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
 from pydantic import BaseModel
 from typing import List
+import random
 
 from app.schemas import home_schema
 from app import models
@@ -11,16 +12,15 @@ from app.core.security import get_current_user
 
 router = APIRouter()
 
-# ==========================================
-# 1. CÁC SCHEMA (Định nghĩa dữ liệu input/output)
-# ==========================================
+# 1. CÁC SCHEMA
 
 class HistoryItem(BaseModel):
     id: int
+    code: str
     title: str
     amount: int
     type: str 
-    created_at: datetime
+    created_at: datetime 
 
 class PromoItem(BaseModel):
     id: int
@@ -36,12 +36,10 @@ class RedeemRequest(BaseModel):
     title: str
     price: int
 
-class LocationCheckinRequest(BaseModel):
-    location_name: str 
-
-# ==========================================
 # 2. HÀM LOGIC PHỤ TRỢ
-# ==========================================
+
+def generate_trans_code():
+    return str(random.randint(100000, 999999))
 
 def calculate_level(total_points: int):
     if total_points < 100:
@@ -57,11 +55,8 @@ def calculate_level(total_points: int):
     else:
         return {"title": "Earth Hero", "max": 10000}
 
-# ==========================================
 # 3. CÁC API ENDPOINT
-# ==========================================
 
-# --- API 1: LẤY TOÀN BỘ LỊCH SỬ ---
 @router.get("/history", response_model=List[HistoryItem])
 def get_full_history(
     db: Session = Depends(get_db),
@@ -73,7 +68,6 @@ def get_full_history(
         .all()
     return full_history
 
-# --- API 2: NHẬN THƯỞNG ĐIỂM DANH ---
 @router.post("/claim-reward")
 def claim_daily_reward(
     db: Session = Depends(get_db),
@@ -81,24 +75,24 @@ def claim_daily_reward(
 ):
     today = date.today()
 
-    if current_user.last_check_in_date == today:
+    # [SỬA TÊN] Kiểm tra ngày nhận thưởng cuối cùng
+    if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    points_to_add = 10000
+    points_to_add = 10 
     
-    # 1. Cộng điểm
+    # Cộng điểm
     current_user.eco_points += points_to_add
     if current_user.total_eco_points is None:
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
-    # 2. Cập nhật ngày và streak
-    current_user.last_check_in_date = today
-    current_user.check_ins += 1 
-
-    # 3. Lưu Transaction
+    current_user.last_daily_reward_date = today
+    
+    # Lưu Transaction
     new_trans = models.Transaction(
         user_id=current_user.id,
+        code=generate_trans_code(),
         title="Điểm danh hàng ngày",
         amount=points_to_add,
         type="positive"
@@ -108,7 +102,6 @@ def claim_daily_reward(
     db.commit()
     db.refresh(current_user)
 
-    # Tính toán Level mới
     current_total = current_user.total_eco_points
     new_level_info = calculate_level(current_total)
 
@@ -118,12 +111,10 @@ def claim_daily_reward(
         "new_progress": current_total,
         "new_title": new_level_info["title"],
         "new_max": new_level_info["max"],
-        # [QUAN TRỌNG] Trả về streak mới nhất
-        "new_streak": current_user.check_ins,
+        "new_streak": 0, 
         "message": "Nhận thưởng thành công!"
     }
 
-# --- API 3: ĐỔI QUÀ ---
 @router.post("/redeem")
 def redeem_reward(
     request: RedeemRequest,
@@ -137,6 +128,7 @@ def redeem_reward(
 
     new_trans = models.Transaction(
         user_id=current_user.id,
+        code=generate_trans_code(),
         title=f"Đổi quà: {request.title}",
         amount=request.price,
         type="negative"
@@ -152,56 +144,16 @@ def redeem_reward(
         "message": f"Đổi '{request.title}' thành công!"
     }
 
-# --- API 4: CHECK-IN ĐỊA ĐIỂM ---
-@router.post("/checkin-location")
-def checkin_at_location(
-    request: LocationCheckinRequest,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    points_reward = 50 
-    
-    current_user.eco_points += points_reward
-    if current_user.total_eco_points is None:
-        current_user.total_eco_points = 0
-    current_user.total_eco_points += points_reward
-
-    new_trans = models.Transaction(
-        user_id=current_user.id,
-        title=f"Check-in: {request.location_name}",
-        amount=points_reward,
-        type="positive" 
-    )
-    db.add(new_trans)
-
-    db.commit()
-    db.refresh(current_user)
-
-    new_level_info = calculate_level(current_user.total_eco_points)
-
-    return {
-        "success": True,
-        "new_ecopoints": current_user.eco_points,
-        "message": f"Check-in thành công tại {request.location_name}! Bạn nhận được {points_reward} điểm.",
-        "new_title": new_level_info["title"]
-    }
-
-# --- API 5: LẤY DỮ LIỆU TRANG CHỦ ---
 @router.get("/", response_model=home_schema.HomeDataResponse)
 def get_real_home_data(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     rank = db.query(models.User).filter(models.User.eco_points > current_user.eco_points).count() + 1
-    
     current_total = current_user.total_eco_points if current_user.total_eco_points else 0
     level_info = calculate_level(current_total)
     
-    quest = {
-        "title": level_info["title"], 
-        "progress": current_total, 
-        "max": level_info["max"]
-    } 
+    quest = {"title": level_info["title"], "progress": current_total, "max": level_info["max"]} 
     
     rewards = []
     today = date.today()
@@ -211,8 +163,9 @@ def get_real_home_data(
         loop_date = start_date + timedelta(days=i)
         is_today = (loop_date == today)
         is_claimed = False
-        if current_user.last_check_in_date:
-            if loop_date <= current_user.last_check_in_date:
+        
+        if current_user.last_daily_reward_date:
+            if loop_date <= current_user.last_daily_reward_date:
                 is_claimed = True
         
         rewards.append({
@@ -232,18 +185,16 @@ def get_real_home_data(
         "currentTitle": quest["title"],
         "progressCurrent": quest["progress"],
         "progressMax": quest["max"],
-        "dailyStreak": current_user.check_ins, 
+        "dailyStreak": 0,
         "dailyRewards": rewards
     }
 
-# --- API 6: LẤY DỮ LIỆU TRANG REWARD ---
 @router.get("/rewards", response_model=RewardResponse)
 def get_reward_data(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     real_balance = current_user.eco_points
-
     real_history = db.query(models.Transaction)\
         .filter(models.Transaction.user_id == current_user.id)\
         .order_by(models.Transaction.created_at.desc())\
