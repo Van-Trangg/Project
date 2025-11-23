@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
-# Import hàm xử lý huy hiệu từ main
-from app.crud.badge_crud import check_and_award_badges
 from pydantic import BaseModel
 from typing import List
 import random
+
+# Import logic xử lý huy hiệu
+from app.crud.badge_crud import check_and_award_badges
 
 from app.schemas import home_schema
 from app import models
@@ -85,26 +86,33 @@ def claim_daily_reward(
     current_user: models.User = Depends(get_current_user)
 ):
     today = date.today()
+    yesterday = today - timedelta(days=1)
 
-    # Kiểm tra ngày nhận thưởng cuối cùng (theo logic mới của nhánh bạn)
+    # 1. Kiểm tra chặt chẽ: Nếu đã nhận hôm nay rồi -> Báo lỗi ngay
     if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    points_to_add = 10 
+    points_to_add = 500 
     
-    # Cộng điểm
+    # 2. Cộng điểm
     current_user.eco_points += points_to_add
     if current_user.total_eco_points is None:
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
-    # Cập nhật ngày nhận thưởng
+    # 3. Xử lý Streak
+    if current_user.last_daily_reward_date == yesterday:
+        current_user.streak += 1
+    else:
+        current_user.streak = 1
+
+    # 4. Cập nhật ngày nhận thưởng (Quan trọng để F5 vẫn đen)
     current_user.last_daily_reward_date = today
     
-    # [MERGED] Thêm tính năng kiểm tra và trao huy hiệu từ nhánh Main
+    # 5. Trao huy hiệu (Nếu có)
     check_and_award_badges(db, current_user.id, current_user.total_eco_points)
-    
-    # Lưu Transaction
+
+    # 6. Lưu Transaction
     new_trans = models.Transaction(
         user_id=current_user.id,
         code=generate_trans_code(),
@@ -113,6 +121,7 @@ def claim_daily_reward(
         type="positive"
     )
     db.add(new_trans)
+    db.add(current_user) 
 
     db.commit()
     db.refresh(current_user)
@@ -126,9 +135,8 @@ def claim_daily_reward(
         "new_progress": current_total,
         "new_title": new_level_info["title"],
         "new_max": new_level_info["max"],
-        # Trả về cả số lượng badge mới cập nhật
         "new_badges_cnt": current_user.badges_count,
-        "new_streak": 0, # Giữ nguyên 0 vì không tính streak ở đây nữa
+        "new_streak": current_user.streak,
         "message": "Nhận thưởng thành công!"
     }
 
@@ -151,6 +159,7 @@ def redeem_reward(
         type="negative"
     )
     db.add(new_trans)
+    db.add(current_user)
 
     db.commit()
     db.refresh(current_user)
@@ -159,43 +168,6 @@ def redeem_reward(
         "success": True, 
         "new_balance": current_user.eco_points,
         "message": f"Đổi '{request.title}' thành công!"
-    }
-
-@router.post("/checkin-location")
-def checkin_at_location(
-    request: LocationCheckinRequest,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    points_reward = 50 
-    current_user.eco_points += points_reward
-    if current_user.total_eco_points is None:
-        current_user.total_eco_points = 0
-    current_user.total_eco_points += points_reward
-
-    # [MERGED] Kiểm tra huy hiệu khi check-in map luôn
-    check_and_award_badges(db, current_user.id, current_user.total_eco_points)
-
-    new_trans = models.Transaction(
-        user_id=current_user.id,
-        code=generate_trans_code(),
-        title=f"Check-in: {request.location_name}",
-        amount=points_reward,
-        type="positive" 
-    )
-    db.add(new_trans)
-
-    db.commit()
-    db.refresh(current_user)
-
-    new_level_info = calculate_level(current_user.total_eco_points)
-
-    return {
-        "success": True,
-        "new_ecopoints": current_user.eco_points,
-        "message": f"Check-in thành công! +{points_reward} điểm.",
-        "new_title": new_level_info["title"],
-        "new_badges_cnt": current_user.badges_count
     }
 
 @router.get("/", response_model=home_schema.HomeDataResponse)
@@ -209,21 +181,32 @@ def get_real_home_data(
     
     quest = {"title": level_info["title"], "progress": current_total, "max": level_info["max"]} 
     
-    rewards = []
     today = date.today()
     start_date = today - timedelta(days=1) 
+    
+    # Lấy danh sách ngày đã nhận từ Transaction 
+    checkin_transactions = db.query(models.Transaction.created_at)\
+        .filter(
+            models.Transaction.user_id == current_user.id,
+            models.Transaction.title == "Điểm danh hàng ngày"
+        ).all()
+    claimed_dates = set(t[0].date() for t in checkin_transactions)
 
+    rewards = []
     for i in range(4):
         loop_date = start_date + timedelta(days=i)
         is_today = (loop_date == today)
+        
         is_claimed = False
-        if current_user.last_daily_reward_date:
-            if loop_date <= current_user.last_daily_reward_date:
-                is_claimed = True
+        
+        if current_user.last_daily_reward_date and loop_date == current_user.last_daily_reward_date:
+            is_claimed = True
+        elif loop_date in claimed_dates:
+            is_claimed = True
         
         rewards.append({
             "date": loop_date.strftime("%d/%m"), 
-            "points": 10,
+            "points": 10, 
             "claimed": is_claimed,
             "isToday": is_today
         })
@@ -238,7 +221,7 @@ def get_real_home_data(
         "currentTitle": quest["title"],
         "progressCurrent": quest["progress"],
         "progressMax": quest["max"],
-        "dailyStreak": 0,
+        "dailyStreak": current_user.streak,
         "dailyRewards": rewards
     }
 

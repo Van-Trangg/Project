@@ -25,3 +25,5 @@ class Transaction(Base):
     
     # Dùng chuỗi "User" để tránh lỗi import
     owner: Mapped["User"] = relationship("User", back_populates="transactions")
+
+    code: Mapped[str] = mapped_column(String(6), unique=True, nullable=False)
