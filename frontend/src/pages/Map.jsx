@@ -1,11 +1,25 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
-import { listPlaces, getPois, percentageChecked, getNearestMap } from '../api/map'
-
+import { listPlaces, getPois, percentageChecked, getNearestMap, checked } from '../api/map'
 import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
-import { customIcon, customIconHere } from '../components/Pin';
+import { checkedInIcon, customIcon, customIconHere } from '../components/Pin';
+import rewardOutlineIcon from '../public/reward-outline.png';
+import rewardSolidIcon from '../public/reward-solid.png';
+import homeOutlineIcon from '../public/home-outline.png';
+import homeSolidIcon from '../public/home-solid.png';
+import journalOutlineIcon from '../public/journal-outline.png';
+import journalSolidIcon from '../public/journal-solid.png';
+import mapOutlineIcon from '../public/map-outline.png';
+import mapSolidIcon from '../public/map-solid.png'
+import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
+import leaderboardSolidIcon from '../public/leaderboard-solid.png'
+
+const CITY_PREVIEWS = {
+  1: 'src/public/Map/hcmc.png',
+  2: 'src/public/Map/pq.png',
+};
 
 function MapController({ onMapReady }) {
   const map = useMap();
@@ -45,7 +59,9 @@ export default function Map() {
   const [loadingMaps, setLoadingMaps] = useState(true);
   const [loadingPois, setLoadingPois] = useState(false);
   const [percentLoading, setPercentLoading] = useState(false);
-  const [percentCache, setPercentCache] = useState({});   // { poiId: percent }
+  const [percentCache, setPercentCache] = useState({});  
+  const [checkInCache, setcheckInCache] = useState({});
+  const [mapZoom, setMapZoom] = useState(13);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
   const navigate = useNavigate();
@@ -103,58 +119,81 @@ export default function Map() {
     );
   }, []);
 
-// Helper: Load maps without geolocation
-const loadMapsFallback = () => {
-  listPlaces()
-    .then(res => {
-      setMaps(res.data);
-      setSelectedMap(res.data[0]);
-    })
-    .catch(err => console.error('Failed to load maps', err))
-    .finally(() => setLoadingMaps(false));
-};
+  // Helper: Load maps without geolocation
+  const loadMapsFallback = () => {
+    listPlaces()
+      .then(res => {
+        setMaps(res.data);
+        setSelectedMap(res.data[0]);
+      })
+      .catch(err => console.error('Failed to load maps', err))
+      .finally(() => setLoadingMaps(false));
+  };
 
-  // Load POIs and their check-in percentages when selectedMap changes
-
+  //Lock scrolling when pin popup is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
   }, [selectedPin]);
-
+  
+  // Load POIs + percentages + user's personal check-in status
   useEffect(() => {
     if (!selectedMap || loadingPois || percentLoading) return;
 
     setLoadingPois(true);
     setPercentLoading(true);
-    setPercentCache({});               // clear cache for the previous city
+    setPercentCache({});
+    setcheckInCache({}); 
 
-    const poisPromise = getPois(selectedMap.id);
+    getPois(selectedMap.id)
+      .then(res => {
+        const poisList = res.data || [];
 
-    const percentagesPromise = poisPromise.then(res => {
-      const list = res.data || [];
-      return Promise.all(
-        list.map(poi =>
-          percentageChecked(poi.id)
-            .then(r => ({ id: poi.id, percent: r.data?.percent ?? 0 }))
-            .catch(() => ({ id: poi.id, percent: 0 }))   // swallow errors
-        )
-      );
-    });
+        // Fetch percentage + personal checked status for each POI in parallel
+        const allPromises = poisList.map(poi => {
+          return Promise.all([
+            percentageChecked(poi.id)
+              .then(r => r.data?.percent ?? 0)
+              .catch(() => 0),
+            checked(poi.id) 
+              .then(r => !!r.data?.checked)
+              .catch(() => false)
+          ]).then(([percent, hasChecked]) => ({
+            poi,
+            percent,
+            hasChecked
+          }));
+        });
 
-    Promise.all([poisPromise, percentagesPromise])
-      .then(([poisRes, percents]) => {
-        setPois(poisRes.data || []);
+        return Promise.all(allPromises).then(results => ({
+          pois: poisList,
+          details: results
+        }));
+      })
+      .then(({ pois, details }) => {
+        setPois(pois);
 
-        const cache = {};
-        percents.forEach(p => (cache[p.id] = p.percent));
-        setPercentCache(cache);
-        console.log('Percent cache updated:', cache);
+        // Build both caches
+        const newPercentCache = {};
+        const newCheckInCache = {};
+
+        details.forEach(({ poi, percent, hasChecked }) => {
+          newPercentCache[poi.id] = percent;
+          newCheckInCache[poi.id] = hasChecked;
+        });
+
+        setPercentCache(newPercentCache);
+        setcheckInCache(newCheckInCache);
+
+        console.log('Updated caches:', { newPercentCache, newCheckInCache });
       })
       .catch(err => {
-        console.error('Failed to load map data', err);
+        console.error('Failed to load map data:', err);
         setPois([]);
+        setPercentCache({});
+        setcheckInCache({});
       })
       .finally(() => {
         setLoadingPois(false);
@@ -163,6 +202,8 @@ const loadMapsFallback = () => {
   }, [selectedMap]);
 
   const handleCityChange = (city) => {
+    if (city.id === 2) setMapZoom(12);
+    else setMapZoom(13);
     setSelectedMap(city)
     setDropdownOpen(false)
   }
@@ -176,7 +217,7 @@ const loadMapsFallback = () => {
 
   const handleChat = () => {
     document.body.classList.add('page-transitioning');
-    navigate(`/chat`); // go to specific check-in page
+    navigate(`/chat`); 
   }
 
   const flyToCityCenter = (e) => {
@@ -202,9 +243,9 @@ const loadMapsFallback = () => {
     // Fly to user location
     mapRef.current.flyTo([lat, lng], 16, {
       duration: 1.5,
-  });
+    });
 
-};
+  };
 
   const validateGPS = (poi) => {
     if (!userLocation) {
@@ -218,6 +259,7 @@ const loadMapsFallback = () => {
     }
     const distance = haversineDistance(userLocation.lat, userLocation.lng, poi.lat, poi.lng) * 1000; // in meters
     console.log(`Distance to POI (${poi.name}): ${distance.toFixed(2)} meters`);
+    console.log(poi.id);
     setCheckinEligible(distance <= 200000);
   };
 
@@ -249,7 +291,7 @@ const loadMapsFallback = () => {
                 onClick={() => {handleCityChange(city);}}
               >
                 <div className="city-image"
-                  style={{ backgroundImage: `url(${city.image})` }}
+                  style={{ backgroundImage: `url(${CITY_PREVIEWS[city.id]})` }}
                 />
                 <p className="city-name">{city.name}</p>
               </button>
@@ -266,7 +308,7 @@ const loadMapsFallback = () => {
         <>
           <MapContainer
             center={[selectedMap.center_lat, selectedMap.center_lng]}
-            zoom={13}                     
+            zoom={mapZoom}                     
             style={{ height: '100%', width: '100%' }}
             scrollWheelZoom={true}
             whenCreated={(map) => { 
@@ -275,15 +317,15 @@ const loadMapsFallback = () => {
             }}
           >
             <TileLayer
-              attribution='&copy; OpenStreetMap &copy; CARTO'
+              attribution='&copy; OpenStreetMap'
               url="http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
             />  
             {pois.map((pin) => (
               <Marker
+                className = 'map-pin'
                 key={pin.id}
                 position={[pin.lat, pin.lng]}
-                
-                icon = {customIcon}
+                icon = {checkInCache[pin.id] ? checkedInIcon : customIcon}
                 eventHandlers={{
                   click: () => {
                     setSelectedPin(pin);
@@ -301,7 +343,7 @@ const loadMapsFallback = () => {
             >
               <Popup>
                 <div style={{ textAlign: 'center', fontWeight: 'bold'}}>
-                  You are here
+                  Bạn đang ở đây
                 </div>
               </Popup>
             </Marker>
@@ -341,21 +383,56 @@ const loadMapsFallback = () => {
           <h3 className="popup-title">{selectedPin.name}</h3>
           <div className="popup-stat">
             {percentLoading ? '...' : percentCache[selectedPin?.id] !== undefined
-            ? `${percentCache[selectedPin.id]}%`: '–'} of users have checked in here
+            ? `${percentCache[selectedPin.id]}%`: '–'} người dùng đã check-in tại đây
           </div>
           <p className="popup-desc">{selectedPin.description}</p>
         </div>
-          {checkinEgligible ? (
-              <button className="checkin-btn" onClick={handleCheckIn}>Check-in</button>
-            ) : (
-              <>
-                <span className ='travel-reminder'> Travel to location to unlock</span>
-                <button className="checkin-btn-disabled">Check-in</button>
-              </>
-            )}
+        {checkInCache[selectedPin?.id] ? (
+          // User has already checked in → disabled button
+          <>
+            <span className="travel-reminder">Bạn đã check-in tại đây</span>
+            <button className="checkin-btn-disabled">Check-in</button>
+          </>
+        ) : checkinEgligible ? (
+          // User is close enough and hasn't checked in → allow check-in
+          <button className="checkin-btn" onClick={handleCheckIn}>Check-in</button>
+        ) : (
+          // User is too far away
+          <>
+            <span className="travel-reminder">Hãy di chuyển đến địa danh để mở khóa</span>
+            <button className="checkin-btn-disabled">Check-in</button>
+          </>
+        )}
       </div>
     </div>
     )}
+    <nav className="bottom-nav">
+      <button className="nav-item" onClick={() => navigate('/reward')}>
+        <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
+        <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
+        <span>Rewards</span>
+      </button>
+      <button className="nav-item" onClick={() => navigate('/journal')}>
+        <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
+        <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
+        <span>Journal</span>
+      </button>
+      <button className="nav-item" onClick={() => navigate('/home')}>
+        <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
+        <img src={homeSolidIcon} alt="Home" className="icon-solid" />
+        <span>Home</span>
+      </button>
+      <button className="nav-item active" onClick={() => navigate('/map')}>
+        <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
+        <img src={mapSolidIcon} alt='Map' className='icon-solid' />
+        <span>Map</span>
+      </button>
+      <button className="nav-item" onClick={() => navigate('/leaderboard')}>
+        <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
+        <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
+        <span>Leaderboard</span>
+      </button>
+    </nav>
   </div>
 );
 }
