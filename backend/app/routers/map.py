@@ -30,7 +30,7 @@ def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 def generate_trans_code():
     return str(random.randint(100000, 999999))
 
-GPS_RADIUS_M = 120.0 
+GPS_RADIUS_M = 12000.0 
 
 # --- Map routes ---
 @router.get("/list", response_model=List[MapOut])
