@@ -13,32 +13,31 @@ router = APIRouter(prefix="/ai", tags=["AI"])
 def chat(payload: ChatRequest,
          db: Session = Depends(get_db),
          current_user=Depends(get_current_user)):
-    
+
     user_id = current_user.id
 
-    # 1️⃣ Lấy lịch sử hội thoại của user (nếu có)
     history_db = get_history(db, user_id)
+    history = [{"role": h.role, "content": h.content} for h in history_db]
 
-    # chuyển lịch sử DB → dạng Gemini hiểu
-    history = [
-        {"role": h.role, "content": h.content}
-        for h in history_db
-    ]
+    ai_response = generate_reply(history, payload.message)
 
-    # 2️⃣ Thêm message hiện tại vào history (rất quan trọng)
-    history.append({
-        "role": "user",
-        "content": payload.message
-    })
-
-    # 3️⃣ Gọi Gemini — truyền cả history
-    answer = generate_reply(history=history)
-
-    # 4️⃣ Lưu user message và assistant message
     add_message(db, user_id, "user", payload.message)
-    add_message(db, user_id, "assistant", answer)
 
-    return ChatResponse(answer=answer)
+    add_message(db, user_id, "assistant", ai_response["message"])
+
+    poi_id = None
+    if ai_response["response_type"] == "recommend" and ai_response["poi_name"]:
+        from app.models.poi import POI
+        db_poi = db.query(POI).filter(POI.name == ai_response["poi_name"]).first()
+        poi_id = db_poi.id if db_poi else None
+
+    return {
+        "response_type": ai_response["response_type"],
+        "poi_name": ai_response["poi_name"],
+        "poi_id": poi_id,
+        "message": ai_response["message"]
+    }
+
 
 
 @router.post("/reset")

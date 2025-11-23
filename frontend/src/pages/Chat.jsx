@@ -17,19 +17,16 @@ export default function Chatbot() {
     const messagesContainerRef = useRef(null);
 
     const scrollToBottom = () => {
-        if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-        }
+        // Add a small delay to ensure DOM is ready
+        setTimeout(() => {
+            if (messagesContainerRef.current) {
+                messagesContainerRef.current.scrollTo({
+                    top: messagesContainerRef.current.scrollHeight,
+                    behavior: 'smooth' 
+                });
+            }
+        }, 100);
     };
-
-    useEffect(() => {
-        document.body.classList.remove('page-transitioning');
-        
-        const pageContent = document.querySelector('.chatbot-page');
-        if (pageContent) {
-        pageContent.classList.add('page-enter');
-        }
-    }, []);
 
     useEffect(() => {
         scrollToBottom();
@@ -66,9 +63,7 @@ export default function Chatbot() {
         }
     };
 
-    // The rest of the component remains the same...
     const handleBackToMap = () => {
-        document.body.classList.add('page-transitioning');
         resetChat();
         navigate('/map');
     };
@@ -110,7 +105,10 @@ export default function Chatbot() {
                     <img src = '/src/public/back.png' width = '18px' height = '18px'/>
                 </button>
                 
-                <span className = 'chat-title'>Navi</span>
+                <div className = 'chat-title'>
+                    <img className = 'chat-title-icon' src = 'src/public/ecopoint.png' height = "25px" width = "25px"></img>
+                    Navi
+                </div>
                 
             </div>
             <div className="chat-window">
@@ -146,7 +144,7 @@ export default function Chatbot() {
                                 <span>Navi</span>
                             </>
                         </div>
-                        <div className='message-content bot-message'>...</div>
+                        <div className='message-content bot-message typing-indicator'></div>
                     </div>}
                     <div className = 'chat-bottom-spacer' ref={messagesEndRef} />
                 </div>

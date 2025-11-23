@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
+# Import hàm xử lý huy hiệu từ main
+from app.crud.badge_crud import check_and_award_badges
 from pydantic import BaseModel
 from typing import List
 import random
@@ -12,7 +14,9 @@ from app.core.security import get_current_user
 
 router = APIRouter()
 
+# ==========================================
 # 1. CÁC SCHEMA
+# ==========================================
 
 class HistoryItem(BaseModel):
     id: int
@@ -36,7 +40,12 @@ class RedeemRequest(BaseModel):
     title: str
     price: int
 
+class LocationCheckinRequest(BaseModel):
+    location_name: str 
+
+# ==========================================
 # 2. HÀM LOGIC PHỤ TRỢ
+# ==========================================
 
 def generate_trans_code():
     return str(random.randint(100000, 999999))
@@ -55,7 +64,9 @@ def calculate_level(total_points: int):
     else:
         return {"title": "Earth Hero", "max": 10000}
 
+# ==========================================
 # 3. CÁC API ENDPOINT
+# ==========================================
 
 @router.get("/history", response_model=List[HistoryItem])
 def get_full_history(
@@ -75,7 +86,7 @@ def claim_daily_reward(
 ):
     today = date.today()
 
-    # [SỬA TÊN] Kiểm tra ngày nhận thưởng cuối cùng
+    # Kiểm tra ngày nhận thưởng cuối cùng (theo logic mới của nhánh bạn)
     if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
@@ -87,7 +98,11 @@ def claim_daily_reward(
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
+    # Cập nhật ngày nhận thưởng
     current_user.last_daily_reward_date = today
+    
+    # [MERGED] Thêm tính năng kiểm tra và trao huy hiệu từ nhánh Main
+    check_and_award_badges(db, current_user.id, current_user.total_eco_points)
     
     # Lưu Transaction
     new_trans = models.Transaction(
@@ -111,7 +126,9 @@ def claim_daily_reward(
         "new_progress": current_total,
         "new_title": new_level_info["title"],
         "new_max": new_level_info["max"],
-        "new_streak": 0, 
+        # Trả về cả số lượng badge mới cập nhật
+        "new_badges_cnt": current_user.badges_count,
+        "new_streak": 0, # Giữ nguyên 0 vì không tính streak ở đây nữa
         "message": "Nhận thưởng thành công!"
     }
 
@@ -144,6 +161,43 @@ def redeem_reward(
         "message": f"Đổi '{request.title}' thành công!"
     }
 
+@router.post("/checkin-location")
+def checkin_at_location(
+    request: LocationCheckinRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    points_reward = 50 
+    current_user.eco_points += points_reward
+    if current_user.total_eco_points is None:
+        current_user.total_eco_points = 0
+    current_user.total_eco_points += points_reward
+
+    # [MERGED] Kiểm tra huy hiệu khi check-in map luôn
+    check_and_award_badges(db, current_user.id, current_user.total_eco_points)
+
+    new_trans = models.Transaction(
+        user_id=current_user.id,
+        code=generate_trans_code(),
+        title=f"Check-in: {request.location_name}",
+        amount=points_reward,
+        type="positive" 
+    )
+    db.add(new_trans)
+
+    db.commit()
+    db.refresh(current_user)
+
+    new_level_info = calculate_level(current_user.total_eco_points)
+
+    return {
+        "success": True,
+        "new_ecopoints": current_user.eco_points,
+        "message": f"Check-in thành công! +{points_reward} điểm.",
+        "new_title": new_level_info["title"],
+        "new_badges_cnt": current_user.badges_count
+    }
+
 @router.get("/", response_model=home_schema.HomeDataResponse)
 def get_real_home_data(
     db: Session = Depends(get_db),
@@ -163,7 +217,6 @@ def get_real_home_data(
         loop_date = start_date + timedelta(days=i)
         is_today = (loop_date == today)
         is_claimed = False
-        
         if current_user.last_daily_reward_date:
             if loop_date <= current_user.last_daily_reward_date:
                 is_claimed = True
