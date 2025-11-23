@@ -35,7 +35,7 @@
 
 .chat-title {
     position: absolute;
-    left: 50%;
+    left: 47%;
     transform: translateX(-50%);
     font-family: "Inter", sans-serif;
     font-weight: bold;
@@ -218,4 +218,53 @@
     height: 25px;
     width: 25px;
     margin-top: 2px;
+}
+
+.recommendation-line {
+    position: relative;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right, 
+        transparent 0%, 
+        rgba(0, 0, 0, 0.1) 20%, 
+        rgba(0, 0, 0, 0.1) 80%, 
+        transparent 100%);
+    box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.5),  /* Highlight below for depth */
+        0 -1px 0 rgba(0, 0, 0, 0.05);       /* Subtle shadow above */
+    margin: 12px 0;
+}
+
+.recommendation-link {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    font-weight: bold;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+.pin-button {
+    border: none;
+    background: transparent;
+    height: 25px;
+    width: 25px;
+}
+.pin-button:hover {
+    transform: scale(1.05);
+}
+.recommendation-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.recommendation-link:active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* For touch devices - adds visual feedback */
+@media (hover: none) {
+    .recommendation-link:active {
+        background-color: rgba(0, 0, 0, 0.12);
+    }
 }

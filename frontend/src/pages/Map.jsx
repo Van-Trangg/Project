@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import { listPlaces, getPois, percentageChecked, getNearestMap, checked } from '../api/map'
 import '../styles/Map.css'
@@ -51,6 +51,9 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 }
 
 export default function Map() {
+  const { state } = useLocation(); 
+  const { r_poi, redirect } = state || {};
+  const [redirectFlag, setRedirectFlag] = useState(redirect);
   const [maps, setMaps] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedMap, setSelectedMap] = useState(null);
@@ -58,6 +61,7 @@ export default function Map() {
   const [checkinEgligible, setCheckinEligible] = useState(false);
   const [loadingMaps, setLoadingMaps] = useState(true);
   const [loadingPois, setLoadingPois] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [percentLoading, setPercentLoading] = useState(false);
   const [percentCache, setPercentCache] = useState({});  
   const [checkInCache, setcheckInCache] = useState({});
@@ -131,12 +135,12 @@ export default function Map() {
   };
 
   //Lock scrolling when pin popup is open
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [selectedPin]);
+  // useEffect(() => {
+  //   document.body.style.overflow = "hidden";
+  //   return () => {
+  //     document.body.style.overflow = "";
+  //   };
+  // }, [selectedPin]);
   
   // Load POIs + percentages + user's personal check-in status
   useEffect(() => {
@@ -174,7 +178,7 @@ export default function Map() {
       })
       .then(({ pois, details }) => {
         setPois(pois);
-
+        console.log(pois);
         // Build both caches
         const newPercentCache = {};
         const newCheckInCache = {};
@@ -188,18 +192,37 @@ export default function Map() {
         setcheckInCache(newCheckInCache);
 
         console.log('Updated caches:', { newPercentCache, newCheckInCache });
+        setInitialLoadComplete(true);
       })
       .catch(err => {
         console.error('Failed to load map data:', err);
         setPois([]);
         setPercentCache({});
         setcheckInCache({});
+        setInitialLoadComplete(true);
       })
       .finally(() => {
         setLoadingPois(false);
         setPercentLoading(false);
       });
   }, [selectedMap]);
+
+  useEffect(() => {
+    if (!redirectFlag || !initialLoadComplete) return;
+    const targetMap = maps.find(m => m.id === r_poi?.map_id);
+    if (targetMap) setSelectedMap(targetMap);
+    else selectedMap(maps[0]);
+    mapRef.current.flyTo([r_poi.lat, r_poi.lng], 14, {
+      duration: 1,
+    });
+    setTimeout(() => {
+      setSelectedPin(r_poi);
+      validateGPS(r_poi);
+    }, 1100);
+    
+    
+    setRedirectFlag(false);
+  }, [maps, redirectFlag, initialLoadComplete]);
 
   const handleCityChange = (city) => {
     if (city.id === 2) setMapZoom(12);
