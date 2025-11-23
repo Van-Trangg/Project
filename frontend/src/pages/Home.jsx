@@ -147,6 +147,13 @@ export default function Home() {
   };
 
   const progressPercent = (progressCurrent / progressMax) * 100;
+  const getFontSize = (value) => {
+    const str = value.toString();
+    if (str.length > 9) return '28px'; // Ví dụ: 1.000.000.000 (Rất nhỏ)
+    if (str.length > 7) return '32px'; // Ví dụ: 10.000.000
+    if (str.length > 5) return '36px'; // Ví dụ: 100.000
+    return '42px'; // Mặc định (<= 5 chữ số)
+  };
 
   return (
     <div className="homepage-body">
@@ -179,7 +186,7 @@ export default function Home() {
             <span className="title">Ecopoints</span>
           </div>
            <img src={ecopointsIcon} alt="leaf" className="middle-leaf-icon" />
-          <div className="value">{ecopoints.toLocaleString('de-DE')}</div>
+          <div className="value" style={{ fontSize: getFontSize(ecopoints) }}>{ecopoints.toLocaleString('de-DE')}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/profile')}>
           <div className="stat-card-header">
