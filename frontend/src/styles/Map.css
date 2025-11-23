@@ -384,6 +384,7 @@
   position: relative;
   text-align: center;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .top-bar {
@@ -472,7 +473,7 @@
   position: relative;
   left: 0;
   bottom: 0;
-  overflow-y: hidden;
+  overflow: hidden;
   align-self: center;
   display: flex;
   flex-direction: column;
