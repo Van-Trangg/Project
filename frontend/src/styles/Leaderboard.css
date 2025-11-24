@@ -169,6 +169,7 @@
   -webkit-overflow-scrolling: touch;
   padding: 0 5px;
   margin-top: 20px;
+  margin-bottom: 80px;
 }
 
 .scroll-section::-webkit-scrollbar {

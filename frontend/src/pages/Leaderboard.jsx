@@ -72,15 +72,6 @@ export default function Leaderboard() {
 
         setRows(leaderboardResponse.data);
         setMyRankData(myRankResponse.data);
-        // If my rank wasn't returned, set a mock rank 11
-          const mockRank11 = {
-            rank: 11,
-            user_name: 'You',
-            points: 0,
-            id: 'me',
-            avatar: '/public/default-avatar.png'
-          };
-          setMyRankData(mockRank11);
         
         console.log('Leaderboard data:', leaderboardResponse.data);
         console.log('My rank data:', myRankResponse.data);
