@@ -83,30 +83,30 @@ export default function Reward() {
     <div className="rewards-page">
       <div className="header-overlay">
           <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
-          <h1>Rewards</h1>
+          <h1>Đổi thưởng</h1>
         </div>
 
       <div className="rewards-main-content">
 
         {/* --- BALANCE CARD --- */}
         <div className="balance-card">
-          <span className="balance-title">Balance</span>
+          <span className="balance-title">Điểm hiện có</span>
           <div className="balance-amount">
             <h2>{balance.toLocaleString('de-DE')}</h2>
             <img src={ecopointsIcon} alt="leaf" className="balance-leaf-icon" />
           </div>
           <div className="action-buttons">
             <button className="btn-secondary">How to earn</button>
-            <button className="btn-primary" onClick={() => navigate('/leaderboard')}>Leaderboard</button>
+            <button className="btn-primary" onClick={() => navigate('/leaderboard')}>Bảng xếp hạng</button>
           </div>
-          <button className="btn-plant" onClick={() => navigate('/planting-trees')}>Planting Trees</button>
+          <button className="btn-plant" onClick={() => navigate('/planting-trees')}>Trồng cây</button>
         </div>
 
         {/* --- HISTORY --- */}
         <div className="history-section">
           <div className="section-header">
-            <h3>History</h3>
-            <span className="see-more" onClick={() => navigate('/history')}>See more</span>
+            <h3>Lịch sử</h3>
+            <span className="see-more" onClick={() => navigate('/history')}>Thêm</span>
           </div>
           <div className="history-list">
             {history.map((item) => (
@@ -130,7 +130,7 @@ export default function Reward() {
         {/* --- PROMOTIONS --- */}
         <div className="promo-section">
           <div className="section-header">
-            <h3>Promotions and Discount</h3>
+            <h3>Khuyến mãi & ưu đãi</h3>
           </div>
           <div className="promo-list">
             {promotions.map((promo) => {

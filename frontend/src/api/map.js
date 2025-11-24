@@ -29,3 +29,37 @@ export const sendMessage = (message) => {
 export const resetChat = () => {
   return api.post('/ai/ai/reset');
 };
+
+// api/map.js or wherever your API functions are
+export const getAllPois = async () => {
+  try {
+    // 1. Get all maps first
+    const mapsResponse = await listPlaces();
+    const maps = mapsResponse.data;
+
+    // 2. Fetch POIs for every map in parallel (fast!)
+    const poisPromises = maps.map(map => 
+      getPois(map.id).then(res => res.data || [])
+    );
+
+    // 3. Wait for all requests to finish
+    const allPoisArrays = await Promise.all(poisPromises);
+
+    // 4. Flatten + concatenate into one big array
+    const allPois = allPoisArrays.flat();
+
+    // Optional: Add map info to each POI so you know where it belongs
+    const allPoisWithMap = allPoisArrays.flatMap((pois, index) => 
+      pois.map(poi => ({
+        ...poi,
+        mapId: maps[index].id,
+        mapName: maps[index].name,
+      }))
+    );
+
+    return allPoisWithMap; // or just `allPois` if you don't need map info
+  } catch (error) {
+    console.error('Failed to load all POIs:', error);
+    return [];
+  }
+};

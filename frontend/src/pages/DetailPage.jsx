@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/DetailPage.css';
 
-// Import icon giống như file Reward.jsx
 import ecopointsIcon from '../public/ecopoint.png';
 
 export default function DetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. Nhận dữ liệu từ trang Reward gửi sang
   const { item } = location.state || {};
   
   const API_BASE_URL = 'http://127.0.0.1:8000'; 
@@ -18,7 +16,6 @@ export default function DetailPage() {
   const [isRedeemed, setIsRedeemed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 2. Nếu user vào thẳng link mà không có item -> Quay về Reward
   useEffect(() => {
     if (!item) {
         navigate('/reward');
@@ -27,11 +24,13 @@ export default function DetailPage() {
 
   if (!item) return null;
 
-  // Tạo dữ liệu hiển thị đầy đủ
+  // --- [MỚI] Ưu tiên dùng dữ liệu từ Backend ---
   const displayItem = {
     ...item,
-    deadline: '31/12/2025',
-    description: `Đây là phần quà "${item.title}" dành riêng cho bạn. Hãy sử dụng Ecopoints tích lũy được để đổi ngay nhé!`,
+    // Nếu backend có deadline thì dùng, không thì dùng mặc định
+    deadline: item.deadline || '31/12/2025', 
+    // Nếu backend có description thì dùng, không thì dùng text mẫu
+    description: item.description || `Đây là phần quà "${item.title}" dành riêng cho bạn. Hãy sử dụng Ecopoints tích lũy được để đổi ngay nhé!`,
   };
 
   const parsePrice = (priceStr) => {
@@ -39,15 +38,12 @@ export default function DetailPage() {
     return parseInt(priceStr.replace(/\./g, ''), 10);
   };
 
-  // --- HÀM GỌI API ĐỔI QUÀ ---
   const handleConfirmRedeem = async () => {
     setIsLoading(true);
     try {
         const token = localStorage.getItem('access_token');
         const priceInt = parsePrice(displayItem.price);
 
-        // Gọi về Backend để trừ điểm
-        // Đảm bảo endpoint khớp với Backend (/home/redeem)
         const response = await fetch(`${API_BASE_URL}/home/redeem`, { 
             method: 'POST',
             headers: { 
@@ -65,8 +61,7 @@ export default function DetailPage() {
         if (data.success) {
             setIsRedeemed(true);
             setShowModal(false);
-            // Thông báo thành công
-            alert(`Thành công! Số dư mới: ${data.new_balance.toLocaleString('de-DE')}`);
+            alert(`Thành công! Số dư mới của bạn là: ${data.new_balance.toLocaleString('de-DE')}`);
         } else {
             alert("Lỗi: " + data.message);
             setShowModal(false);
@@ -83,13 +78,11 @@ export default function DetailPage() {
   return (
     <div className="promo-detail-page">
       
-      {/* Header */}
       <div className="detail-header">
         <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
         <h1>Detail</h1>
       </div>
 
-      {/* Nội dung chính */}
       <div className="detail-main-content">
         <div className="promo-detail-card">
           
@@ -119,7 +112,6 @@ export default function DetailPage() {
           </button>
         </div>
 
-        {/* Gợi ý thêm */}
         <div className="also-like-section">
           <div className="section-header-compact">
             <h3>You might also like</h3>
@@ -127,17 +119,16 @@ export default function DetailPage() {
           <div className="related-promo-list">
              <div className="related-promo-card">
                 <div className="related-promo-icon-placeholder"></div>
-                <span className="related-promo-text">Promotion A</span>
+                <span className="related-promo-text">Ưu đãi di chuyển xanh</span>
              </div>
              <div className="related-promo-card">
                 <div className="related-promo-icon-placeholder"></div>
-                <span className="related-promo-text">Promotion B</span>
+                <span className="related-promo-text">Sản phẩm tái chế</span>
              </div>
           </div>
         </div>
       </div>
 
-      {/* Modal xác nhận */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-box">

@@ -10,7 +10,7 @@ CurrentUser = Depends(get_current_user)
 
 @router.get("", response_model=list[LeaderboardOut])
 def list_leaderboard(db: DbDep) -> list[LeaderboardOut]:
-    r = db.query(User).order_by(User.monthly_points.desc()).limit(10).all()
+    r = db.query(User).order_by(User.monthly_points.desc(), User.email.asc()).limit(10).all()
     return [LeaderboardOut.model_validate({
         "id": user.id,
         "user_name": user.full_name,
@@ -24,11 +24,15 @@ def my_rank(
     db: DbDep,
     current_user: User = CurrentUser,
 ):
-    rank = db.query(User).filter(User.monthly_points > current_user.monthly_points).count() + 1
+    rank = db.query(User).filter(User.monthly_points > current_user.monthly_points).count()
+    rank_2 = db.query(User).filter(
+        User.eco_points == current_user.eco_points,
+        User.email < current_user.email
+    ).count()
     return LeaderboardOut.model_validate({
         "id": current_user.id,
         "user_name": current_user.full_name,
         "points": current_user.monthly_points,
         "avatar": current_user.avatar_url,
-        "rank": rank
+        "rank": rank + rank_2 + 1
     })

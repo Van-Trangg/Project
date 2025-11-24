@@ -8,9 +8,7 @@ export default function HistoryPage() {
   
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // State để quản lý Modal chi tiết
-  const [selectedItem, setSelectedItem] = useState(null); // Lưu món đang được bấm vào
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const API_BASE_URL = 'http://127.0.0.1:8000';
 
@@ -71,7 +69,7 @@ export default function HistoryPage() {
             key={item.id} 
             className="history-item" 
             style={{marginBottom: '10px', cursor: 'pointer'}}
-            onClick={() => setSelectedItem(item)} // Bấm vào thì set item này vào state
+            onClick={() => setSelectedItem(item)}
           >
             <div className="item-icon-placeholder" style={{background: item.type === 'positive' ? '#E8F5E9' : '#FFEBEE'}}>
                 <span style={{fontSize: '20px'}}>
@@ -96,7 +94,7 @@ export default function HistoryPage() {
         ))}
       </div>
 
-      {/* === MODAL POPUP CHI TIẾT === */}
+      {/* === POPUP CHI TIẾT === */}
       {selectedItem && (
         <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
@@ -121,7 +119,15 @@ export default function HistoryPage() {
             <div style={{textAlign: 'left', background: '#f9f9f9', padding: '15px', borderRadius: '10px'}}>
                 <p style={{margin: '5px 0'}}><strong>Nội dung:</strong> {selectedItem.title}</p>
                 <p style={{margin: '5px 0'}}><strong>Thời gian:</strong> {formatDate(selectedItem.created_at)}</p>
-                <p style={{margin: '5px 0'}}><strong>Mã GD:</strong> #{selectedItem.id}</p>
+                
+                {/* [ĐÃ SỬA] Hiển thị CODE thay vì ID */}
+                <p style={{margin: '5px 0'}}>
+                    <strong>Mã GD:</strong> <span style={{fontFamily: 'monospace', fontSize: '16px', letterSpacing: '1px', color: '#333'}}>
+                        #{selectedItem.code || selectedItem.id} 
+                    </span>
+                </p>
+                <p style={{fontSize: '12px', color: '#999'}}>(Vui lòng cung cấp mã này khi cần hỗ trợ)</p>
+
                 <p style={{margin: '5px 0'}}><strong>Trạng thái:</strong> <span style={{color: 'green'}}>Thành công</span></p>
             </div>
 

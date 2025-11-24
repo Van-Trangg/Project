@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import '../styles/Chat.css';
-import { sendMessage, resetChat } from '../api/map';
+import { sendMessage, resetChat, getAllPois } from '../api/map';
 import { getProfile } from '../api/profile';
 
 export default function Chatbot() {
     const navigate = useNavigate();
     const [messages, setMessages] = useState([
-        { id: 1, text: "Xin chào! Tôi là trợ lý ảo Navi. Hôm nay bạn muốn đi đâu?", sender: 'bot' }
+        { id: 1, text: "Xin chào! Tôi là trợ lý ảo Navi. Hôm nay bạn muốn đi đâu?", type: 'chat', p_slug: null, p_id: null, sender: 'bot' }
     ]);
+    const [pois, setPois] = useState([]);
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
@@ -17,28 +18,32 @@ export default function Chatbot() {
     const messagesContainerRef = useRef(null);
 
     const scrollToBottom = () => {
-        if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-        }
+        // Add a small delay to ensure DOM is ready
+        setTimeout(() => {
+            if (messagesContainerRef.current) {
+                messagesContainerRef.current.scrollTo({
+                    top: messagesContainerRef.current.scrollHeight,
+                    behavior: 'smooth' 
+                });
+            }
+        }, 100);
     };
-
-    useEffect(() => {
-        document.body.classList.remove('page-transitioning');
-        
-        const pageContent = document.querySelector('.chatbot-page');
-        if (pageContent) {
-        pageContent.classList.add('page-enter');
-        }
-    }, []);
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
+    useEffect(() => {
+        getAllPois().then(allPois => {
+            setPois(allPois);
+            console.log("All POIs loaded:", allPois);
+        });
+    }, []);
+
     const handleSendMessage = async () => {
         if (inputText.trim() === '' || isLoading) return;
 
-        const userMessage = { id: Date.now(), text: inputText, sender: 'user' };
+        const userMessage = { id: Date.now(), text: inputText, type: 'chat', p_slug: null, p_id: null, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
         const currentInput = inputText;
         setInputText('');
@@ -48,9 +53,13 @@ export default function Chatbot() {
             const response = await sendMessage(currentInput);
             const botMessage = {
                 id: Date.now(),
-                text: response.data.answer,
+                text: response.data.message,
+                type: response.data.response_type,
+                p_slug: response.data.poi_slug,
+                p_id: response.data.poi_id,
                 sender: 'bot'
             };
+            console.log("AI Response:", response.data);
             setMessages(prevMessages => [...prevMessages, botMessage]);
 
         } catch (error) {
@@ -66,13 +75,14 @@ export default function Chatbot() {
         }
     };
 
-    // The rest of the component remains the same...
     const handleBackToMap = () => {
-        document.body.classList.add('page-transitioning');
         resetChat();
         navigate('/map');
     };
-
+    const handleRedirectToPoi = (pin) => {
+        resetChat();
+        navigate('/map', { state: { r_poi: pin, redirect: true} });
+    };
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -110,7 +120,10 @@ export default function Chatbot() {
                     <img src = '/src/public/back.png' width = '18px' height = '18px'/>
                 </button>
                 
-                <span className = 'chat-title'>Navi</span>
+                <div className = 'chat-title'>
+                    <img className = 'chat-title-icon' src = 'src/public/ecopoint.png' height = "25px" width = "25px"></img>
+                    Navi
+                </div>
                 
             </div>
             <div className="chat-window">
@@ -135,6 +148,20 @@ export default function Chatbot() {
                                 className={`message-content ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
                             >
                                 {message.text}
+                                {message.type === 'recommend' && message.sender === 'bot' && (
+                                    <>
+                                        <div className = 'recommendation-line'></div>
+                                        <div className="recommendation-link" onClick={() => handleRedirectToPoi(pois[message.p_id-1])}>
+                                            <button
+                                                className="pin-button"
+                                                onClick={() => handleRedirectToPoi(pois[message.p_id-1])}
+                                            >
+                                                <img src="/src/public/pin.png" width="25px" height="25px" />
+                                            </button>
+                                            <span>{pois[message.p_id-1].name}</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -146,7 +173,7 @@ export default function Chatbot() {
                                 <span>Navi</span>
                             </>
                         </div>
-                        <div className='message-content bot-message'>...</div>
+                        <div className='message-content bot-message typing-indicator'></div>
                     </div>}
                     <div className = 'chat-bottom-spacer' ref={messagesEndRef} />
                 </div>
