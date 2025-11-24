@@ -16,6 +16,9 @@ import mapOutlineIcon from '../public/map-outline.png';
 import mapSolidIcon from '../public/map-solid.png'
 import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
 import leaderboardSolidIcon from '../public/leaderboard-solid.png'
+import badgesIcon from '../public/badges.png';
+import checkInIcon from '../public/check-in.png';
+import rankIcon from '../public/rank.png';
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -190,18 +193,21 @@ export default function Home() {
           <div className="stat-card-header">
             <span className="title">Badges</span>
             </div>
+            <img src={badgesIcon} alt="badges" className="middle-badges-icon" />
           <div className="value">{badges}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/leaderboard')}>
           <div className="stat-card-header">
             <span className="title">Rank</span>
             </div>
+            <img src={rankIcon} alt="rank" className="middle-rank-icon" />
           <div className="value">#{rank}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/journal')}>
           <div className="stat-card-header">
             <span className="title">Check-ins</span>
             </div>
+            <img src={checkInIcon} alt="check-ins" className="middle-check-in-icon" />
           <div className="value">{String(checkIns).padStart(2, '0')}</div>
         </div>
       </div>

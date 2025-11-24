@@ -417,3 +417,33 @@
   object-fit: cover; 
   display: block;
 }
+
+.stat-card .middle-badges-icon {
+  width: 28px;
+  height: 28px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.stat-card .middle-check-in-icon {
+  width: 30px;
+  height: 30px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.stat-card .middle-rank-icon {
+  width: 28px;
+  height: 28px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
+}
