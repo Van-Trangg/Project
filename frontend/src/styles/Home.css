@@ -94,17 +94,17 @@
 
 /* Hoặc: Chỉ dịch title của thẻ THỨ HAI */
 .stats-grid .stat-card:nth-child(2) .title {
-  padding-left: 48px;
+  padding-left: 72px;
 }
 
 /* Hoặc: Chỉ dịch title của thẻ THỨ BA */
 .stats-grid .stat-card:nth-child(3) .title {
-  padding-left: 32px;
+  padding-left: 72px;
 }
 
 /* Hoặc: Chỉ dịch title của thẻ CUỐI CÙNG */
 .stats-grid .stat-card:last-child .title {
-  padding-left: 64px;
+  padding-left: 72px;
 }
 
 .stat-card-header img {
@@ -125,6 +125,8 @@
   text-shadow: 0 1px 0 #C8D6A1;
   text-align: right;
   margin-top: auto;
+
+  white-space: nowrap;
 }
 
 /* === Section chung (cho Progress & Daily Rewards) === */
@@ -382,6 +384,7 @@
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
+  border: 2px solid #fff; 
 }
 .profile-avatar .avatar-placeholder {
   font-size: 28px; /* Kích thước icon */
@@ -401,6 +404,43 @@
 .stat-card .middle-leaf-icon {
   width: 30px;
   height: 30px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  display: block;
+}
+
+.stat-card .middle-badges-icon {
+  width: 28px;
+  height: 28px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.stat-card .middle-check-in-icon {
+  width: 30px;
+  height: 30px;
+  
+  margin-left: 78px;
+  
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.stat-card .middle-rank-icon {
+  width: 28px;
+  height: 28px;
   
   margin-left: 78px;
   

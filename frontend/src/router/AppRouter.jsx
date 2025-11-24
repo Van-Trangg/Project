@@ -58,7 +58,7 @@ export default function AppRouter(){
           <Route path="/chat" element={<Chat/>} />
         </Routes>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </BrowserRouter>
   )
 }
