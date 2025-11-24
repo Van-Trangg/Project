@@ -157,7 +157,7 @@ export default function Badges(){
   }
 
   return (
-    <div className="badges-page">
+    <div className="page-anim badges-page">
 
       <header className="badges-header">
       {/* top-left back button to match other pages */}

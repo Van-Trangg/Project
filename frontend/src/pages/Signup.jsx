@@ -44,7 +44,7 @@ export default function Signup() {
 
     return (
         // Thêm class 'signup-page' để áp dụng style mới
-        <div className="auth-root signup-page">
+        <div className="auth-root signup-page page-anim">
             <div className="auth-top">
                 <div className="auth-circle">
                     {/* Tiêu đề này sẽ bị ẩn bởi CSS và thay bằng tiêu đề mới */}

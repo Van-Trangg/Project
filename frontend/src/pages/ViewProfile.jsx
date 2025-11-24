@@ -67,7 +67,7 @@ export default function ViewProfile(){
   const bioVal = user.bio || user.about || user.description || ''
 
   return (
-    <div className="profile-page">
+    <div className="page-anim profile-page">
       <div className="profile-header">
         <button
           className="back-rect"

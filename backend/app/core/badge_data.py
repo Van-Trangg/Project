@@ -23,7 +23,7 @@
                 },
                 {
                     "id": 103,
-                    "badge": "Đờn Ca Tài Tử",
+                    "badge": "Đàn Ca Tài Tử",
                     "threshold": 200,
                     "image": "03.png",
                     "description": "Phóng khoáng Nam Bộ, vạn sự như ý."

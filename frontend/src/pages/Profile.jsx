@@ -90,7 +90,7 @@ export default function Profile() {
     }
 
     return (
-        <div className="profile-page">
+        <div className="page-anim profile-page">
             {/* HEADER */}
             <div className="profile-header">
                 <button
