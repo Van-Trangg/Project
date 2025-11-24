@@ -125,23 +125,8 @@ export default function DetailPage() {
             {isLoading ? 'Processing...' : (isRedeemed ? 'Redeemed' : 'Redeem')}
           </button>
         </div>
-
-        {/* [MERGED] Giữ lại phần Gợi ý thêm từ nhánh của bạn */}
-        <div className="also-like-section">
-          <div className="section-header-compact">
-            <h3>You might also like</h3>
-          </div>
-          <div className="related-promo-list">
-             <div className="related-promo-card">
-                <div className="related-promo-icon-placeholder"></div>
-                <span className="related-promo-text">Promotion A</span>
-             </div>
-             <div className="related-promo-card">
-                <div className="related-promo-icon-placeholder"></div>
-                <span className="related-promo-text">Promotion B</span>
-             </div>
-          </div>
-        </div>
+        
+        {/* [ĐÃ XÓA] Phần Gợi ý thêm (You might also like) ở đây */}
 
       </div>
 
