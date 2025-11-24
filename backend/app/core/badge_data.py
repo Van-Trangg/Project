@@ -152,6 +152,7 @@
                     "badge": "Trứng Vịt Lộn",
                     "threshold": 2800,
                     "image": "19.png",
+                    "rare":True,
                     "description": "Món ngon bổ dưỡng, thử thách lòng dũng cảm."
                 },
                 {

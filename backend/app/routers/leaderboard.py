@@ -24,7 +24,7 @@ def my_rank(
     db: DbDep,
     current_user: User = CurrentUser,
 ):
-    rank = db.query(User).filter(User.eco_points > current_user.eco_points).count() + 1
+    rank = db.query(User).filter(User.monthly_points > current_user.monthly_points).count() + 1
     return LeaderboardOut.model_validate({
         "id": current_user.id,
         "user_name": current_user.full_name,
