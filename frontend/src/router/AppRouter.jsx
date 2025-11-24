@@ -13,6 +13,7 @@ import EditProfile from '../pages/EditProfile'
 import Reward from '../pages/Reward'
 import Badges from '../pages/Badges'
 import ResetPassword from '../pages/ResetPassword'
+import Onboarding from '../pages/Onboarding'
 import VerifyCode from '../pages/VerifyCode'
 import ResetComplete from '../pages/ResetComplete'
 import SetNewPassword from '../pages/SetNewPassword'
@@ -31,6 +32,7 @@ export default function AppRouter(){
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/onboarding" element={<Onboarding/>} />
           <Route path="/home" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/checkout" element={<Login/>} />
