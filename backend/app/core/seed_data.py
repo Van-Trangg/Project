@@ -3,6 +3,8 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from passlib.context import CryptContext
+import random
+import string
 
 from app.db.database import engine
 from app.models.map import Map
@@ -11,6 +13,7 @@ from app.models.user import User
 from app.models.checkin import Checkin
 from app.core.security import hash_password
 from app.models.journal import Journal
+from app.models.transaction import Transaction
 
 # --- Password Hashing ---
 #pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
@@ -110,9 +113,99 @@ def seed_checkins(checkin_file: str = "app/data/checkins.json"):
         print("🔁 Updated POI.checked_users successfully")
 
 
+
+
+def seed_transactions(
+    checkin_file: str = "app/data/checkins.json",
+    user_file: str = "app/data/users.json",
+    poi_file: str = "app/data/poi.json"
+):
+    # Load JSON files
+    checkins = json.load(open(checkin_file, "r", encoding="utf-8"))
+    users = json.load(open(user_file, "r", encoding="utf-8"))
+    pois = json.load(open(poi_file, "r", encoding="utf-8"))
+
+    # Build POI lookup by ID (index+1 rule)
+    poi_lookup = {i + 1: poi for i, poi in enumerate(pois)}
+
+    with Session(engine) as session:
+
+        # ---------------------------------------------------
+        # 1) Generate Check-in Transactions
+        # ---------------------------------------------------
+        tid = 1
+        for c in checkins:
+            poi_name = poi_lookup.get(c["poi_id"], {}).get("name", "Địa điểm")
+
+            # Check transaction existence (avoid duplicates if seed runs again)
+            exists = session.scalar(
+                select(Transaction).where(
+                    Transaction.code == c["receipt_no"]  # Or choose your duplicate logic
+                )
+            )
+
+            # NOTE: Use receipt_no as code OR separate random code?
+            # You requested random → keep random.
+            if not exists:
+                code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+                # Convert created_at to datetime
+                created_at = datetime.fromisoformat(c["created_at"])
+
+                session.add(Transaction(
+                    id=tid,
+                    title=f"Check-in tại {poi_name}",
+                    amount=100,
+                    type="positive",
+                    created_at=created_at,
+                    user_id=c["user_id"],
+                    code=code
+                ))
+                tid += 1
+
+        # Commit check-ins first
+        session.commit()
+        print("✅ Transactions from Check-ins inserted.")
+
+        # ---------------------------------------------------
+        # 2) Generate Daily Rewards
+        # ---------------------------------------------------
+        for u in users:
+            remain = u["total_eco_points"] - u["check_ins"] * 100
+
+            if remain > 0:
+                reward_amount = remain // 10
+
+                # Prevent duplicates
+                exists = session.scalar(
+                    select(Transaction).where(
+                        Transaction.title == "Daily Reward",
+                        Transaction.user_id == u["id"]
+                    )
+                )
+
+                if not exists:
+                    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+                    session.add(Transaction(
+                        id=tid,
+                        title="Daily Reward",
+                        amount=reward_amount,
+                        type="positive",
+                        created_at=datetime(2025, 11, 12),
+                        user_id=u["id"],
+                        code=code
+                    ))
+                    tid += 1
+
+        session.commit()
+        print("🎁 Daily Rewards inserted.")
+        print("✅ Seed Transaction Completed.")
+
 # --- Main ---
 if __name__ == "__main__":
     seed_maps_and_pois("app/data/map.json", "app/data/poi.json")
     seed_users("app/data/users.json")
     seed_checkins("app/data/checkins.json")
     seed_journals("app/data/journals.json")
+    seed_transactions("app/data/checkins.json", "app/data/users.json", "app/data/poi.json")
