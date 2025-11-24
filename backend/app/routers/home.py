@@ -226,7 +226,7 @@ def get_real_home_data(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    rank = db.query(models.User).filter(models.User.eco_points > current_user.eco_points).count() + 1
+    rank = db.query(models.User).filter(models.User.monthly_points > current_user.monthly_points).count() + 1
     current_total = current_user.total_eco_points if current_user.total_eco_points else 0
     level_info = calculate_level(current_total)
     
@@ -284,7 +284,7 @@ def get_reward_data(
     real_history = db.query(models.Transaction)\
         .filter(models.Transaction.user_id == current_user.id)\
         .order_by(models.Transaction.created_at.desc())\
-        .limit(10)\
+        .limit(3)\
         .all()
 
     raw_promos = [
