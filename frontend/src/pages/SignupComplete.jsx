@@ -21,12 +21,12 @@ export default function SignupComplete(){
           </svg>
         </div>
 
-        <h2 style={{ color: '#556B2F', margin: '8px 0', fontWeight: 900, letterSpacing: 1 }}>YOU'RE ALL SET!</h2>
-        <p style={{ color: '#757575', marginTop: 12, marginBottom: 24 }}>Congratulations!<br/>Account activation complete.</p>
+        <h2 style={{ color: '#556B2F', margin: '8px 0', fontWeight: 900, letterSpacing: 1 }}>Bạn đã hoàn tất!</h2>
+        <p style={{ color: '#757575', marginTop: 12, marginBottom: 24 }}>Chúc mừng!<br/>Kích hoạt tài khoản hoàn tất.</p>
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <button className="auth-btn" onClick={() => navigate('/login')} style={{ minWidth: 260, minHeight: 54, borderRadius: 28 }}>
-            Continue to Login
+            Tiếp tục đăng nhập
           </button>
         </div>
       </div>
