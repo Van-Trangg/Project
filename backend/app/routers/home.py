@@ -2,12 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date 
 from pydantic import BaseModel
-from typing import List, Optional 
+from typing import List, Optional
 import random
-
-# Import logic xử lý huy hiệu (Badge)
 from app.crud.badge_crud import check_and_award_badges
-
 from app.schemas import home_schema
 from app import models
 from app.db.database import get_db
@@ -41,10 +38,6 @@ class RedeemRequest(BaseModel):
     title: str
     price: int
 
-class LocationCheckinRequest(BaseModel):
-    location_name: str 
-
-# [Thêm schema cho API Trồng cây]
 class TreeStatsResponse(BaseModel):
     my_trees: int
     everyone_trees: int
@@ -70,6 +63,7 @@ def calculate_level(total_points: int):
 
 # 3. CÁC API ENDPOINT
 
+# --- API: LẤY TOÀN BỘ LỊCH SỬ ---
 @router.get("/history", response_model=List[HistoryItem])
 def get_full_history(
     db: Session = Depends(get_db),
@@ -81,29 +75,36 @@ def get_full_history(
         .all()
     return full_history
 
+# --- API: NHẬN THƯỞNG ĐIỂM DANH ---
 @router.post("/claim-reward")
 def claim_daily_reward(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     today = date.today()
+    yesterday = today - timedelta(days=1)
 
-    # Giữ nguyên tên biến cũ last_daily_reward_date
     if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    points_to_add = 10000
+    points_to_add = 10000 
     
+    # Cộng điểm
     current_user.eco_points += points_to_add
     if current_user.total_eco_points is None:
         current_user.total_eco_points = 0
     current_user.total_eco_points += points_to_add
 
-    # Giữ nguyên tên biến cũ
+    if current_user.last_daily_reward_date == yesterday:
+        current_user.streak += 1
+    else:
+        current_user.streak = 1
+
     current_user.last_daily_reward_date = today
     
     check_and_award_badges(db, current_user.id, current_user.total_eco_points)
 
+    # Lưu Transaction
     new_trans = models.Transaction(
         user_id=current_user.id,
         code=generate_trans_code(),
@@ -112,6 +113,8 @@ def claim_daily_reward(
         type="positive"
     )
     db.add(new_trans)
+    
+    # Lưu user để update streak và điểm
     db.add(current_user)
 
     db.commit()
@@ -131,6 +134,7 @@ def claim_daily_reward(
         "message": "Nhận thưởng thành công!"
     }
 
+# --- API: ĐỔI QUÀ (Redeem) ---
 @router.post("/redeem")
 def redeem_reward(
     request: RedeemRequest,
@@ -161,6 +165,62 @@ def redeem_reward(
         "message": f"Đổi '{request.title}' thành công!"
     }
 
+# --- API: LẤY THỐNG KÊ CÂY ---
+@router.get("/tree-stats", response_model=TreeStatsResponse)
+def get_tree_stats(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Đếm số cây của user
+    my_trees = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id,
+        models.Transaction.title.contains("Trồng cây")
+    ).count()
+
+    # Đếm tổng số cây
+    base_trees = 15830 
+    total_real_trees = db.query(models.Transaction).filter(
+        models.Transaction.title.contains("Trồng cây")
+    ).count()
+    
+    return {
+        "my_trees": my_trees,
+        "everyone_trees": base_trees + total_real_trees
+    }
+
+# --- API: TRỒNG CÂY ---
+@router.post("/plant-tree")
+def plant_tree_action(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    PRICE_PER_TREE = 1000
+
+    if current_user.eco_points < PRICE_PER_TREE:
+        return {"success": False, "message": f"Bạn cần {PRICE_PER_TREE} điểm để trồng cây!"}
+
+    current_user.eco_points -= PRICE_PER_TREE
+
+    new_trans = models.Transaction(
+        user_id=current_user.id,
+        code=generate_trans_code(),
+        title="Trồng cây xanh (Góp quỹ)",
+        amount=PRICE_PER_TREE,
+        type="negative"
+    )
+    db.add(new_trans)
+    db.add(current_user)
+    
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "success": True, 
+        "new_balance": current_user.eco_points,
+        "message": "Trồng cây thành công! Cảm ơn bạn đã góp xanh cho Trái Đất."
+    }
+
+# API: LẤY DỮ LIỆU TRANG CHỦ (Home) 
 @router.get("/", response_model=home_schema.HomeDataResponse)
 def get_real_home_data(
     db: Session = Depends(get_db),
@@ -180,18 +240,19 @@ def get_real_home_data(
             models.Transaction.user_id == current_user.id,
             models.Transaction.title == "Điểm danh hàng ngày"
         ).all()
-        
     claimed_dates = set(t[0].date() for t in checkin_transactions)
 
     rewards = []
     for i in range(4):
         loop_date = start_date + timedelta(days=i)
         is_today = (loop_date == today)
-        is_claimed = loop_date in claimed_dates
+        is_claimed = False
         
-        if is_today and current_user.last_daily_reward_date == today:
+        if current_user.last_daily_reward_date and loop_date == current_user.last_daily_reward_date:
             is_claimed = True
-
+        elif loop_date in claimed_dates:
+            is_claimed = True
+        
         rewards.append({
             "date": loop_date.strftime("%d/%m"), 
             "points": 10, 
@@ -213,6 +274,7 @@ def get_real_home_data(
         "dailyRewards": rewards
     }
 
+#  API: LẤY DỮ LIỆU TRANG REWARD 
 @router.get("/rewards", response_model=RewardResponse)
 def get_reward_data(
     db: Session = Depends(get_db),
@@ -238,7 +300,7 @@ def get_reward_data(
         },
         {
             "id": 3, "title": "Bộ ống hút tre tự nhiên", "price": "1.500",
-            "description": "Bộ 10 ống hút tre kèm cọ rửa. Thay thế ống hút nhựa, bảo vệ môi trường biển.",
+            "description": "Bộ 5 ống hút tre kèm cọ rửa. Thay thế ống hút nhựa, bảo vệ môi trường biển.",
             "deadline": "31/12/2025"
         },
         {
@@ -248,7 +310,7 @@ def get_reward_data(
         },
         {
             "id": 5, "title": "Sổ tay giấy tái chế", "price": "3.000",
-            "description": "Sổ tay làm từ 100% giấy tái chế. Nơi lưu giữ những ý tưởng xanh của bạn.",
+            "description": "Sổ tay làm từ 100% giấy tái chế, bìa cứng, thiết kế đơn giản tinh tế.",
             "deadline": "31/12/2025"
         },
         {
@@ -275,59 +337,5 @@ def get_reward_data(
     return {
         "balance": real_balance,
         "history": real_history,
-        "promotions": sorted_promos 
-    }
-
-
-
-@router.get("/tree-stats", response_model=TreeStatsResponse)
-def get_tree_stats(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    # Đếm số giao dịch có tiêu đề chứa chữ "Trồng cây"
-    my_trees = db.query(models.Transaction).filter(
-        models.Transaction.user_id == current_user.id,
-        models.Transaction.title.contains("Trồng cây")
-    ).count()
-
-    base_trees = 15830 
-    total_real_trees = db.query(models.Transaction).filter(
-        models.Transaction.title.contains("Trồng cây")
-    ).count()
-    
-    return {
-        "my_trees": my_trees,
-        "everyone_trees": base_trees + total_real_trees
-    }
-
-@router.post("/plant-tree")
-def plant_tree_action(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    PRICE_PER_TREE = 1000
-
-    if current_user.eco_points < PRICE_PER_TREE:
-        return {"success": False, "message": f"Bạn cần {PRICE_PER_TREE} điểm để trồng cây!"}
-
-    current_user.eco_points -= PRICE_PER_TREE
-
-    new_trans = models.Transaction(
-        user_id=current_user.id,
-        code=generate_trans_code(),
-        title="Trồng cây xanh (Góp quỹ)",
-        amount=PRICE_PER_TREE,
-        type="negative"
-    )
-    db.add(new_trans)
-    
-    db.add(current_user)
-    db.commit()
-    db.refresh(current_user)
-
-    return {
-        "success": True, 
-        "new_balance": current_user.eco_points,
-        "message": "Trồng cây thành công! Cảm ơn bạn đã góp xanh cho Trái Đất."
+        "promotions": sorted_promos
     }
