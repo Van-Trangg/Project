@@ -74,7 +74,7 @@ export default function PlantingTrees() {
       {/* === HEADER === */}
       <div className="planting-header">
         <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
-        <h1>Planting Trees</h1>
+        <h1>Trồng cây</h1>
       </div>
 
       {/* === NỘI DUNG CHÍNH === */}
