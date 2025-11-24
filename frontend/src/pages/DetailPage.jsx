@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/DetailPage.css';
 
-// Import icon giống như file Reward.jsx
+// Import icon
 import ecopointsIcon from '../public/ecopoint.png';
 
 export default function DetailPage() {
@@ -18,7 +18,7 @@ export default function DetailPage() {
   const [isRedeemed, setIsRedeemed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  // [MỚI] State để lưu thông tin thành công từ Server (để hiện trong Modal)
+  // State để lưu thông tin thành công từ Server (để hiện trong Modal)
   const [successInfo, setSuccessInfo] = useState(null);
 
   // 2. Nếu user vào thẳng link mà không có item -> Quay về Reward
@@ -66,7 +66,7 @@ export default function DetailPage() {
 
         if (data.success) {
             setIsRedeemed(true);
-            // [THAY ĐỔI] Không đóng Modal ngay, mà lưu data để hiện thông báo đẹp
+            // Không đóng Modal ngay, mà lưu data để hiện thông báo đẹp
             setSuccessInfo(data); 
         } else {
             alert("Lỗi: " + data.message);
@@ -82,7 +82,6 @@ export default function DetailPage() {
     }
   };
 
-  // Hàm đóng Modal sau khi đã xem thông báo thành công
   const handleCloseSuccessModal = () => {
       setShowModal(false);
       setSuccessInfo(null);
@@ -127,7 +126,7 @@ export default function DetailPage() {
           </button>
         </div>
 
-        {/* Gợi ý thêm */}
+        {/* [MERGED] Giữ lại phần Gợi ý thêm từ nhánh của bạn */}
         <div className="also-like-section">
           <div className="section-header-compact">
             <h3>You might also like</h3>
@@ -143,6 +142,7 @@ export default function DetailPage() {
              </div>
           </div>
         </div>
+
       </div>
 
       {/* === MODAL POPUP (XỬ LÝ 2 TRẠNG THÁI) === */}
