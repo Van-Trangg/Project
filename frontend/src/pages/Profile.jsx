@@ -74,7 +74,7 @@ export default function Profile() {
         navigate('/checkout')
     }
     if (error) return <div className="loading">Không tải được profile. Vui lòng thử lại sau.</div>
-    if (!user) return <div className="loading">Loading...</div>
+    if (!user) return <div className="loading">Đang tải...</div>
 
     // normalize fields
     const fullName = user.full_name || user.name || user.display_name || ''
@@ -154,22 +154,22 @@ export default function Profile() {
                 </>
 
                 <div className="stats">
-                    <div><strong>{user.check_ins || 0}</strong><p>Check-ins</p></div>
-                    <div><strong>{user.badges_count || 0}</strong><p>Badges</p></div>
-                    <div><strong>{user.rank || 'N/A'}</strong><p>Rank</p></div>
+                    <div><strong>{user.check_ins || 0}</strong><p>Lượt check-in</p></div>
+                        <div><strong>{user.badges_count || 0}</strong><p>Huy hiệu</p></div>
+                        <div><strong>{user.rank || 'N/A'}</strong><p>Xếp hạng</p></div>
                 </div>
 
                 {/*  */}
                 <div className="section personal-details">
-                    <h3>Personal details</h3>
+                    <h3>Thông tin cá nhân</h3>
                     <div className="info-fields">
                         <div className="info-block">
-                            <span className="info-label">Phone</span>
+                            <span className="info-label">Điện thoại</span>
                             <div className="info-value"><span className="value-text">{phoneVal || '-'}</span></div>
                         </div>
 
                         <div className="info-block">
-                            <span className="info-label">Location</span>
+                            <span className="info-label">Địa chỉ</span>
                             <div className="info-value"><span className="value-text">{addressVal || '-'}</span></div>
                         </div>
 
@@ -182,12 +182,12 @@ export default function Profile() {
             </div>
 
             {/* BADGES */}
-            <div className="badges-section">
+                <div className="badges-section">
                 <div className="badges-header-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                    <h3>Badges</h3>
+                    <h3>Huy hiệu</h3>
                     <img
                         src={viewAllIcon}
-                        alt="View all badges"
+                        alt="Xem tất cả huy hiệu"
                         onClick={() => navigate('/badges')}
                         style={{ width: 30, height: 30, cursor: 'pointer', border: 'none', background: 'transparent', padding: 0, transform: 'translateX(-10px)' }}
                     />

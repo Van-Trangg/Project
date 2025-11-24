@@ -24,7 +24,7 @@ export default function Signup() {
         e.preventDefault()
         setMsg('')
         if (password !== confirm) {
-            setMsg('Passwords do not match')
+            setMsg('Mật khẩu không khớp')
             return
         }
         try {
@@ -37,7 +37,7 @@ export default function Signup() {
             if (typeof detail === 'string') {
                 setMsg(detail)
             } else {
-                setMsg('Invalid data. Please check email or password.')
+                setMsg('Dữ liệu không hợp lệ. Vui lòng kiểm tra email hoặc mật khẩu.')
             }
         }
     }
@@ -60,7 +60,7 @@ export default function Signup() {
             </div>
 
             <form className="auth-form" onSubmit={submit}>
-                <p className="auth-sub">Start your journey today.</p>
+                <p className="auth-sub">Bắt đầu hành trình xanh của bạn ngay hôm nay.</p>
 
                 <label className="field">
                     <div className="field-label">Email</div>
@@ -71,10 +71,10 @@ export default function Signup() {
                 </label>
 
                 <label className="field">
-                    <div className="field-label">Password</div>
+                    <div className="field-label">Mật khẩu</div>
                     <div className="field-input">
                         <img src={lockIcon} alt="lock" className="field-icon" />
-                        <input placeholder="Enter your password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} />
+                        <input placeholder="Nhập mật khẩu" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} />
                         <button
                             type="button"
                             className="icon-eye"
@@ -87,10 +87,10 @@ export default function Signup() {
                 </label>
 
                 <label className="field">
-                    <div className="field-label">Confirm Password</div>
+                    <div className="field-label">Xác nhận mật khẩu</div>
                     <div className="field-input">
                         <img src={lockIcon} alt="lock" className="field-icon" />
-                        <input placeholder="Enter your password" type={showConfirm ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} />
+                        <input placeholder="Nhập lại mật khẩu" type={showConfirm ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} />
                         <button
                             type="button"
                             className="icon-eye"
@@ -102,7 +102,7 @@ export default function Signup() {
                     </div>
                 </label>
 
-                <button className="auth-btn" type="submit">Next</button>
+                <button className="auth-btn" type="submit">Tiếp theo</button>
 
                 {msg && <div className="auth-msg">{msg}</div>}
             </form>
