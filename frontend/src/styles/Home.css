@@ -94,17 +94,17 @@
 
 /* Hoặc: Chỉ dịch title của thẻ THỨ HAI */
 .stats-grid .stat-card:nth-child(2) .title {
-  padding-left: 48px;
+  padding-left: 72px;
 }
 
 /* Hoặc: Chỉ dịch title của thẻ THỨ BA */
 .stats-grid .stat-card:nth-child(3) .title {
-  padding-left: 32px;
+  padding-left: 72px;
 }
 
 /* Hoặc: Chỉ dịch title của thẻ CUỐI CÙNG */
 .stats-grid .stat-card:last-child .title {
-  padding-left: 64px;
+  padding-left: 72px;
 }
 
 .stat-card-header img {

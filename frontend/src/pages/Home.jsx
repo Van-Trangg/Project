@@ -173,8 +173,8 @@ export default function Home() {
       </div>
 
       <div className="home-header">
-        <h1>Good morning, {userName}</h1>
-        <p>Up for a new adventure today?</p>
+        <h1>Chào buổi sáng, {userName}</h1>
+        <p>Sẵn sàng cho cuộc hành hành trình mới cho hôm nay?</p>
       </div>
 
       {/* === STATS GRID === */}
@@ -191,14 +191,14 @@ export default function Home() {
         </div>
         <div className="stat-card" onClick={() => navigate('/profile')}>
           <div className="stat-card-header">
-            <span className="title">Badges</span>
+            <span className="title">Huy hiệu</span>
             </div>
             <img src={badgesIcon} alt="badges" className="middle-badges-icon" />
           <div className="value">{badges}</div>
         </div>
         <div className="stat-card" onClick={() => navigate('/leaderboard')}>
           <div className="stat-card-header">
-            <span className="title">Rank</span>
+            <span className="title">Xếp hạng</span>
             </div>
             <img src={rankIcon} alt="rank" className="middle-rank-icon" />
           <div className="value">#{rank}</div>
@@ -218,7 +218,7 @@ export default function Home() {
           <img src={treeIcon} alt="tree" className="progress-icon tree-icon" />
           <div className="text-content">
             <h3>{currentTitle}</h3>
-            <p>Progress until next title</p>
+            <p>Tiến độ danh hiệu tiếp theo</p>
           </div>
         </div>
         <div className="progress-bar">
@@ -237,8 +237,8 @@ export default function Home() {
         <div className="section-header">
           <img src={sunIcon} alt="sun" className="section-title-icon sun-icon" />
           <div className="text-content">
-            <h3>Daily Rewards</h3>
-            <p>Your current streak: {dailyStreak}</p>
+            <h3>Thưởng hàng ngày</h3>
+            <p>Chuỗi đăng nhập: {dailyStreak}</p>
           </div>
         </div>
         <div className="horizontal-scroll-list">

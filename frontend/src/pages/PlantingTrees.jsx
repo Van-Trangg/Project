@@ -85,7 +85,7 @@ export default function PlantingTrees() {
           
           {/* Cột bên trái */}
           <div className="stat-item">
-            <span className="stat-label">My Trees</span>
+            <span className="stat-label">Cây của tôi</span>
             <span className="stat-value">
                 {loading ? "..." : stats.myTrees}
             </span>
@@ -96,7 +96,7 @@ export default function PlantingTrees() {
 
           {/* Cột bên phải */}
           <div className="stat-item">
-            <span className="stat-label">Everyone's Trees</span>
+            <span className="stat-label">Cây của mọi người</span>
             <span className="stat-value">
                 {loading ? "..." : stats.everyoneTrees.toLocaleString('de-DE')}
             </span>
@@ -106,10 +106,10 @@ export default function PlantingTrees() {
         {/* 2. HÌNH ẢNH CÂY & NÚT BẤM */}
         <div className="tree-image-container">
           <img src={treeImg} alt="Tree" />
-          <p className="tree-planting-text">Plant a tree with 1,000 Ecopoints!</p>
+          <p className="tree-planting-text">Dùng 1000 Ecopoints để trồng cây</p>
           
           <button className="btn-plant-tree" onClick={handlePlantNow}>
-            Plant Now
+            Trồng cây
           </button>
         </div>
 
