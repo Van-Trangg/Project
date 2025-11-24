@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap&subset=vietnamese');
+
 .profile-page {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Noto Sans', 'Poppins', sans-serif;
   background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
   min-height: 100vh;
   color: #344e41;
