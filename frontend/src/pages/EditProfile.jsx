@@ -96,7 +96,7 @@ export default function EditProfile() {
   if (!form) return <div className="loading">Đang tải...</div>
 
   return (
-    <div className="edit-screen">
+    <div className="page-anim edit-screen">
       
       {/* NÚT BACK ĐÃ ĐƯỢC DI CHUYỂN RA ĐÂY */}
       <button
@@ -131,7 +131,7 @@ export default function EditProfile() {
         <div className="edit-avatar">
           <img
             src={preview || form.avatar_url || defaultAva}
-            alt="Avatar"
+            alt="Ảnh đại diện"
             onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultAva }}
             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', display: 'block' }}
           />
@@ -142,7 +142,7 @@ export default function EditProfile() {
           onClick={() => setShowPhotoOptions(true)}
           title="Thay ảnh"
         >
-          <img src={camIcon} alt="Camera" />
+          <img src={camIcon} alt="Máy ảnh" />
         </button>
 
         {/* Hidden file inputs: one for library, one with capture for camera */}
@@ -217,12 +217,12 @@ export default function EditProfile() {
           <div className="pill-input">
             <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="Điện thoại" />
             {}
-            <button 
-               className="eye"
-               type="button"
-               onClick={() => setForm(prev => ({ ...prev, phone_public: !prev.phone_public }))}
-               aria-label={form.phone_public ? 'Public' : 'Private'}
-            >
+                <button 
+                  className="eye"
+                  type="button"
+                  onClick={() => setForm(prev => ({ ...prev, phone_public: !prev.phone_public }))}
+                  aria-label={form.phone_public ? 'Công khai' : 'Riêng tư'}
+                >
             {}
               <img src={form.phone_public ? showIcon : dontEyeIcon} alt={form.phone_public ? 'Ẩn' : 'Hiện'} style={{ width: 20, height: 20 }} />
             </button>
@@ -234,11 +234,11 @@ export default function EditProfile() {
             <div className="pill-input">
             {}
             <input type="text" name="address" value={form.address} onChange={handleChange} placeholder="Địa chỉ" />
-            <button button 
+            <button 
               className="eye" 
               type="button" 
               onClick={() => setForm(prev => ({ ...prev, address_public: !prev.address_public }))} 
-              aria-label={form.address_public ? 'Public' : 'Private'}>
+              aria-label={form.address_public ? 'Công khai' : 'Riêng tư'}>
               {}
               <img src={form.address_public ? showIcon : dontEyeIcon} alt={form.address_public ? 'Ẩn' : 'Hiện'} style={{ width: 20, height: 20 }} />
             </button>
@@ -254,7 +254,7 @@ export default function EditProfile() {
               className="eye" 
               type="button" 
               onClick={() => setForm(prev => ({ ...prev, email_public: !prev.email_public }))} 
-              aria-label={form.email_public ? 'Public' : 'Private'}
+              aria-label={form.email_public ? 'Công khai' : 'Riêng tư'}
               >
               {}
               <img src={form.email_public ? showIcon : dontEyeIcon} alt={form.email_public ? 'Ẩn' : 'Hiện'} style={{ width: 20, height: 20 }} />

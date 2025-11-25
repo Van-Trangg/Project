@@ -44,18 +44,18 @@ export default function Signup() {
 
     return (
         // Thêm class 'signup-page' để áp dụng style mới
-        <div className="auth-root signup-page">
+        <div className="auth-root signup-page page-anim">
             <div className="auth-top">
                 <div className="auth-circle">
                     {/* Tiêu đề này sẽ bị ẩn bởi CSS và thay bằng tiêu đề mới */}
-                    <h1 className="auth-title">SIGN UP</h1>
+                    <h1 className="auth-title">ĐĂNG KÝ</h1>
                 </div>
                 {/* Thêm header mới cho trang signup */}
                                 <div className="auth-header">
                                                             <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
                                                                 <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
                                                             </button>
-                                        <h1 className="auth-title-signup">SIGN UP</h1>
+                                        <h1 className="auth-title-signup">ĐĂNG KÝ </h1>
                                 </div>
             </div>
 

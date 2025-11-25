@@ -24,7 +24,7 @@ def my_rank(
     db: DbDep,
     current_user: User = CurrentUser,
 ):
-    rank = db.query(User).filter(User.eco_points > current_user.eco_points).count()
+    rank = db.query(User).filter(User.monthly_points > current_user.monthly_points).count()
     rank_2 = db.query(User).filter(
         User.eco_points == current_user.eco_points,
         User.email < current_user.email

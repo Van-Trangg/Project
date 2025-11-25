@@ -39,7 +39,7 @@ export default function ResetPassword(){
   }
 
 return (
-    <div className="auth-root">
+  <div className="auth-root page-anim">
         <div className="auth-top">
       <div className="reset-title-wrap">
         <h1 className="auth-title">ĐẶT LẠI MẬT KHẨU</h1>

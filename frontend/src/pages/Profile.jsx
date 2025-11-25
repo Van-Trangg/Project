@@ -90,7 +90,7 @@ export default function Profile() {
     }
 
     return (
-        <div className="profile-page">
+        <div className="page-anim profile-page">
             {/* HEADER */}
             <div className="profile-header">
                 <button
@@ -227,14 +227,14 @@ export default function Profile() {
                         >
                             ✕
                         </button>
-                        <h3 style={{ color: '#556B2F', fontSize: 20, margin: '12px 0 18px', fontWeight: 700 }}>Are you sure you want to log out?</h3>
+                        <h3 style={{ color: '#556B2F', fontSize: 20, margin: '12px 0 18px', fontWeight: 700 }}>Bạn có chắc chắn muốn đăng xuất không?</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
                             <button
                                 type="button"
                                 onClick={handleLogout}
                                 className="btn exit-logout-btn"
                             >
-                                Log out
+                                Đăng xuất
                             </button>
 
                             <button
@@ -242,7 +242,7 @@ export default function Profile() {
                                 onClick={() => setShowExitConfirm(false)}
                                 className="btn btn-secondary exit-back-btn"
                             >
-                                Go back
+                                Quay lại
                             </button>
                         </div>
                     </div>

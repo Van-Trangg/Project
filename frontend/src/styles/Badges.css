@@ -1,9 +1,11 @@
 /* --- Cấu trúc trang chính --- */
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap&subset=vietnamese');
+
 .badges-page {
   padding: 16px;
   /* Match profile background and layout */
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Noto Sans', 'Poppins', sans-serif;
   background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
   min-height: 100vh;
   color: #344e41;
@@ -19,11 +21,11 @@
 /* Match H1 style from Signup page so the title size and color are consistent */
 .badges-header h1 {
   margin: 0;
-  color: #48612F;
+  color: #000;
   font-weight: 900;
   font-size: clamp(28px, 6vw, 40px);
   line-height: 1;
-  transform: translateX(10px);
+  transform: translateX(20px);
   /* shifted right via transform */
 }
 

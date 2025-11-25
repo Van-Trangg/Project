@@ -5,7 +5,7 @@ import backIcon from '../public/back.png'
 export default function ResetComplete(){
   const navigate = useNavigate()
   return (
-    <div className="auth-root">
+    <div className="auth-root page-anim">
       <div className="auth-top">
         <div className="reset-title-wrap">
           <h1 className="auth-title">ĐẶT LẠI MẬT KHẨU</h1>
