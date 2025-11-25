@@ -34,7 +34,7 @@ export default function SetNewPassword(){
 
   const submit = async () => {
     if (!canUpdate) {
-      setMsg('Please make sure passwords match and have at least 8 characters')
+      setMsg('Vui lòng đảm bảo mật khẩu trùng khớp và có ít nhất 8 ký tự')
       return
     }
     setLoading(true)
@@ -43,7 +43,7 @@ export default function SetNewPassword(){
       await setNewPassword({ email, code, password })
       navigate('/reset-complete')
     }catch(err){
-      setMsg(err?.response?.data?.message || 'Could not update password')
+      setMsg(err?.response?.data?.message || 'Không thể cập nhật mật khẩu')
     }finally{ setLoading(false) }
   }
 
@@ -51,7 +51,7 @@ export default function SetNewPassword(){
     <div className="auth-root">
       <div className="auth-top">
         <div className="reset-title-wrap">
-          <h1 className="auth-title">SET A NEW PASSWORD</h1>
+          <h1 className="auth-title">ĐẶT MẬT KHẨU MỚI</h1>
         </div>
         <div className="auth-header">
           <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
@@ -61,10 +61,10 @@ export default function SetNewPassword(){
       </div>
 
       <div className="auth-form" style={{ marginTop: 18 }}>
-        <p style={{ color: '#6b6b6b', marginTop: 0 }}>Create a new password. Ensure it differs from previous ones for security.</p>
+        <p style={{ color: '#6b6b6b', marginTop: 0 }}>Tạo mật khẩu mới. Nên khác mật khẩu trước để bảo mật.</p>
 
         <label className="field">
-          <div className="field-label">New Password</div>
+          <div className="field-label">Mật khẩu mới</div>
           <div className="field-input">
             <img src={lockIcon} alt="lock" className="field-icon" />
             <input
@@ -80,7 +80,7 @@ export default function SetNewPassword(){
         </label>
 
         <label className="field">
-          <div className="field-label">Confirm Password</div>
+          <div className="field-label">Xác nhận mật khẩu</div>
           <div className="field-input">
             <img src={lockIcon} alt="lock" className="field-icon" />
             <input
@@ -98,7 +98,7 @@ export default function SetNewPassword(){
         {msg && <div style={{ color: '#d97a3a', marginTop: 8 }}>{msg}</div>}
 
         <button className="auth-btn" onClick={submit} disabled={!canUpdate} style={{ marginTop: 18, minHeight: 54, borderRadius: 28 }}>
-          {loading ? 'Updating...' : 'Update Password'}
+          {loading ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'}
         </button>
       </div>
     </div>

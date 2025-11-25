@@ -1,9 +1,11 @@
 /* --- Cấu trúc trang chính --- */
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap&subset=vietnamese');
+
 .badges-page {
   padding: 16px;
   /* Match profile background and layout */
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Noto Sans', 'Poppins', sans-serif;
   background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
   min-height: 100vh;
   color: #344e41;
@@ -12,16 +14,19 @@
 .badges-header {
   margin-bottom: 12px;
   /* make room so the title sits below the back button (like signup pages) */
-  padding-top: 48px;
+  /* padding-top: 48px; */
 }
+/* left: 20px; */
 
 /* Match H1 style from Signup page so the title size and color are consistent */
 .badges-header h1 {
   margin: 0;
-  color: #48612F;
+  color: #000;
   font-weight: 900;
   font-size: clamp(28px, 6vw, 40px);
   line-height: 1;
+  transform: translateX(20px);
+  /* shifted right via transform */
 }
 
 .badges-sub {
@@ -278,7 +283,7 @@
 /* Ensure back button in Badges page matches position/size used elsewhere */
 .badges-page .back-btn {
   position: absolute;
-  top: 60px;
+  top: 20px;
   left: 10px;
   width: 20px;
   height: 20px;

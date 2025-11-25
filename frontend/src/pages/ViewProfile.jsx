@@ -55,9 +55,9 @@ export default function ViewProfile(){
       .finally(() => setBadgesLoading(false))
   }, [user])
 
-  if (loading) return <div className="loading">Loading...</div>
-  if (error) return <div className="loading">Could not load profile.</div>
-  if (!user) return <div className="loading">User not found</div>
+  if (loading) return <div className="loading">Đang tải...</div>
+  if (error) return <div className="loading">Không tải được hồ sơ.</div>
+  if (!user) return <div className="loading">Không tìm thấy người dùng</div>
 
   const fullName = user.full_name || user.name || user.display_name || ''
   const nickName = user.nickname || user.username || user.handle || ''
@@ -67,7 +67,7 @@ export default function ViewProfile(){
   const bioVal = user.bio || user.about || user.description || ''
 
   return (
-    <div className="profile-page">
+    <div className="page-anim profile-page">
       <div className="profile-header">
         <button
           className="back-rect"
@@ -102,20 +102,20 @@ export default function ViewProfile(){
         </>
 
         <div className="stats">
-          <div><strong>{user.check_ins || 0}</strong><p>Check-ins</p></div>
-          <div><strong>{user.badges_count || 0}</strong><p>Badges</p></div>
-          <div><strong>{user.rank || 'N/A'}</strong><p>Rank</p></div>
+          <div><strong>{user.check_ins || 0}</strong><p>Lượt check-in</p></div>
+          <div><strong>{user.badges_count || 0}</strong><p>Huy hiệu</p></div>
+          <div><strong>{user.rank || 'N/A'}</strong><p>Xếp hạng</p></div>
         </div>
 
         <div className="section personal-details">
-          <h3>Personal details</h3>
+          <h3>Thông tin cá nhân</h3>
           <div className="info-fields">
             <div className="info-block">
-              <span className="info-label">Phone</span>
+              <span className="info-label">Điện thoại</span>
               <div className="info-value"><span className="value-text">{phoneVal || '-'}</span></div>
             </div>
             <div className="info-block">
-              <span className="info-label">Location</span>
+              <span className="info-label">Địa chỉ</span>
               <div className="info-value"><span className="value-text">{addressVal || '-'}</span></div>
             </div>
             <div className="info-block">
@@ -126,13 +126,13 @@ export default function ViewProfile(){
         </div>
       
         <div className="badges-section">
-          <h3>Badges</h3>
+          <h3>Huy hiệu</h3>
           {badgesLoading ? (
-            <div className="loading">Loading badges...</div>
+            <div className="loading">Đang tải huy hiệu...</div>
           ) : badgesError ? (
-            <div className="loading">Could not load badges.</div>
+            <div className="loading">Không tải được huy hiệu.</div>
           ) : !badgeVersions || badgeVersions.length === 0 ? (
-            <p>No badges available.</p>
+            <p>Không có huy hiệu.</p>
           ) : (
             badgeVersions.map(v => {
               const owned = (v.badges || []).filter(b => !!b.unlocked)

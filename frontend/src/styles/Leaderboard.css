@@ -81,14 +81,51 @@
 
 .top-info .name {
   font-size: 14px;
+  font-weight: 600;
   margin-top: 4px;
   color: #333;
   line-height: 1.2;
   text-align: center;
+  width: 100%; /* match the .podium width by filling its container */
+  box-sizing: border-box;
+  padding: 0 6px; /* small horizontal padding inside the podium */
+  overflow-wrap: anywhere; /* allow long names to break */
+  white-space: normal; /* allow multi-line names */
+  display: block;
+}
+
+/* Badge shown next to the name when this podium entry is the current user */
+.podium .my-badge {
+  display: inline-block;
+  margin-left: 6px;
+  background: #ffffff;
+  color: #8FA31E;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+/* When the podium entry is the current user, make the name stand out with a white background */
+.podium.my-podium .name {
+  background : #ffffff;
+  color: #333;
+  display: block; /* fill the podium width */
   width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  text-align: center;
+}
+
+/* For rows (outside top 3), highlight the name when it's the current user's row */
+.row.my-row .name {
+  color: #333;
+  display: inline-block;
+  border-radius: 12px;
+  font-weight: 700;
 }
 
 .top-info .points {
@@ -132,6 +169,7 @@
   -webkit-overflow-scrolling: touch;
   padding: 0 5px;
   margin-top: 20px;
+  margin-bottom: 80px;
 }
 
 .scroll-section::-webkit-scrollbar {
@@ -206,16 +244,11 @@
 /* My Rank */
 .my-rank {
   position: fixed;
-
-  .link-row {
-    text-decoration: none;
-    color: inherit;
-  }
-
+  bottom: 20%;
   height: 45px;
   width: 95%;
   left: 2.5%;
-  top: 90%;
+  top: 83%;
   display: flex;
   align-items: center;
   background: #8FA31E;

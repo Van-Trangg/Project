@@ -7,16 +7,15 @@
 
 .signup-page .auth-top {
   height: auto;
-  /* keep some padding for the page but allow the title row to visually stick out */
-  /* moved down 30px as requested */
-  padding: 68px 20px 0 20px;
+  /* reduced top padding so title sits closer to the top like the design */
+  padding: 32px 20px 0 20px;
   display: block;
 }
 
 /* back arrow on its own line */
 .signup-page .auth-header {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .signup-page .back-arrow {
@@ -28,8 +27,10 @@
   padding: 6px 8px;
   border-radius: 8px;
   cursor: pointer;
-  /* space below the back button (increased) */
-  margin-bottom: 48px;
+  /* space below the back button (reduced for tighter layout) */
+  margin-bottom: 16px;
+  position: relative;
+  top: 2px; /* slight nudge down */
 }
 
 /* Title row: Signup + subtitle on the same line and protruding left beyond the form */
@@ -37,65 +38,69 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  /* pull the title row left so it visually extends past the centered form */
-  margin-left: -48px;
-  margin-bottom: 8px;
-  /* make sure long titles wrap nicely on very small screens */
+  /* keep title aligned to the left edge of content */
+  margin-left: 0;
+  margin-bottom: 6px;
   flex-wrap: nowrap;
 }
 
 .signup-page .auth-title-signup {
   margin: 0;
-  color: #48612F;
+  color: #355a36;
   font-weight: 900;
-  font-size: clamp(28px, 6vw, 40px);
-  line-height: 1;
+  /* larger but controlled title sizing that scales on mobile */
+  font-size: clamp(34px, 8.5vw, 52px);
+  line-height: 1.05;
+  transform: translate(6px, 50px);
 }
 
 .signup-page .auth-sub {
   color: #7a7a7a;
-  margin: 0;
-  font-size: 16px;
+  /* move subtitle down by ~30px from previous position (was 8px) */
+  margin: 10px 0 0 6px;
+  font-size: 15px;
   font-weight: 600;
   opacity: 0.95;
 }
 
 /* center the form and constrain its width so inputs line up like the mock */
 .signup-page .auth-form {
-  gap: 22px;
-  /* set the requested 30px distance between title/subtitle and the form */
-  margin: 30px auto 0 auto;
-  padding: 0 20px 24px 20px;
-  max-width: 420px;
+  gap: 22px; /* spacing between fields similar to design */
+  /* moved form down by 30px from previous position */
+  margin: 80px auto 0 auto;
+  padding: 0 20px 36px 20px;
+  max-width: 520px; /* allow slightly wider form on large screens */
   width: 100%;
 }
 
 /* make the CTA button sit with generous top spacing and full-form width */
 .signup-page .auth-cta {
-  /* requested 80px gap between the form fields and the Next button */
-  margin-top: 80px;
+  /* reduce gap between fields and CTA for better balance */
+  margin-top: 36px;
   display: flex;
   justify-content: center;
 }
 
+
 /* field spacing inside the form */
 .signup-page .auth-form .field-row {
-  margin-bottom: 6px;
+  margin-bottom: 12px; /* clearer separation per-field */
 }
 
 @media (max-width: 420px) {
-  .signup-page .auth-title-row { margin-left: -24px; gap: 10px; }
-  /* keep the same additional top offset on mobile */
-  .signup-page .auth-top { padding: 58px 16px 0 16px; }
-  /* slightly smaller spacing on narrow screens */
-  .signup-page .back-arrow { margin-bottom: 30px; }
-  .signup-page .auth-form { padding: 0 16px 24px 16px; margin-top: 30px; }
-  .signup-page .auth-cta { margin-top: 80px; }
+  .signup-page .auth-title-row { margin-left: 0; gap: 8px; }
+  .signup-page .auth-top { padding: 28px 16px 0 16px; }
+  .signup-page .back-arrow { margin-bottom: 12px; }
+  .signup-page .auth-form { padding: 0 16px 20px 16px; margin-top: 42px; max-width: 520px }
+  .signup-page .auth-cta { margin-top: 28px; }
 }
 
 .auth-btn{
-  margin-top: 80px;
-  color: #556B2F;
+  margin-top: 24px;
+  color: #3E4E2F;
+  font-size: 20px;
+  padding: 16px 24px;
+  border-radius: 34px;
 }
 
 /* Hover & focus states */

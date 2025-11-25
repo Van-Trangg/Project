@@ -62,33 +62,33 @@ export default function VerifyCode(){
     try{
       await verifyReset({ email, code })
       // on successful verification, branch based on flow
-      if (flow === 'signup') {
-        // for account activation, show the signup complete screen
-        navigate('/signup-complete')
-      } else {
-        // default: password reset flow -> set new password
-        navigate('/set-new-password', { state: { email, code } })
-      }
+        if (flow === 'signup') {
+          // for account activation, show the signup complete screen
+          navigate('/signup-complete')
+        } else {
+          // default: password reset flow -> set new password
+          navigate('/set-new-password', { state: { email, code } })
+        }
     }catch(err){
       setInvalid(true)
-      setMsg(err?.response?.data?.message || 'Invalid code')
+      setMsg(err?.response?.data?.message || 'Mã không hợp lệ')
     }finally{ setLoading(false) }
   }
 
   const resend = async () => {
     try{
       await forgotPassword({ email })
-      setResendMsg('We resent the code to your email')
+      setResendMsg('Chúng tôi đã gửi lại mã vào email của bạn')
     }catch(e){
-      setResendMsg('Could not resend. Try again later.')
+      setResendMsg('Không thể gửi lại. Vui lòng thử lại sau.')
     }
   }
 
   return (
-    <div className="auth-root">
+    <div className="auth-root page-anim">
       <div className="auth-top">
         <div className="reset-title-wrap">
-          <h1 className="auth-title">{flow === 'signup' ? 'ACCOUNT ACTIVATION' : 'CHECK YOUR EMAIL'}</h1>
+          <h1 className="auth-title">{flow === 'signup' ? 'KÍCH HOẠT TÀI KHOẢN' : 'KIỂM TRA EMAIL'}</h1>
         </div>
         <div className="auth-header">
           <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
@@ -98,7 +98,7 @@ export default function VerifyCode(){
       </div>
 
       <div className="auth-form" style={{ marginTop: 12 }}>
-  <p style={{ color: '#6b6b6b', marginTop: 0 }}>{flow === 'signup' ? `We sent an activation code to ${email}. Enter your 4-digit code` : `We sent a reset request to ${email}. Enter your 4-digit code`}</p>
+  <p style={{ color: '#6b6b6b', marginTop: 0 }}>{flow === 'signup' ? `Chúng tôi đã gửi mã kích hoạt tới ${email}. Nhập mã 4 chữ số` : `Chúng tôi đã gửi yêu cầu đặt lại tới ${email}. Nhập mã 4 chữ số`}</p>
 
         {invalid && <div style={{ color: '#d97a3a' }}>{msg}</div>}
 
@@ -118,11 +118,11 @@ export default function VerifyCode(){
         </div>
 
         <button className="auth-btn" onClick={submit} disabled={!canNext} style={{ marginTop: 18, minHeight: 54, borderRadius: 28 }}>
-          {loading ? 'Checking...' : 'Next'}
+          {loading ? 'Đang kiểm tra...' : 'Tiếp theo'}
         </button>
 
         <div style={{ marginTop: 12, color: '#666' }}>
-          Haven't received your email yet? <button className="linkish" onClick={resend}>Resend email</button>
+          Chưa nhận email? <button className="linkish" onClick={resend}>Gửi lại</button>
         </div>
         {resendMsg && <div style={{ marginTop: 8, color: '#666' }}>{resendMsg}</div>}
       </div>

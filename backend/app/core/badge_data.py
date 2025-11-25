@@ -23,7 +23,7 @@
                 },
                 {
                     "id": 103,
-                    "badge": "Đờn Ca Tài Tử",
+                    "badge": "Đàn Ca Tài Tử",
                     "threshold": 200,
                     "image": "03.png",
                     "description": "Phóng khoáng Nam Bộ, vạn sự như ý."
@@ -152,6 +152,7 @@
                     "badge": "Trứng Vịt Lộn",
                     "threshold": 2800,
                     "image": "19.png",
+                    "rare":True,
                     "description": "Món ngon bổ dưỡng, thử thách lòng dũng cảm."
                 },
                 {

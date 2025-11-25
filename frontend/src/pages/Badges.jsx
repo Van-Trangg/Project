@@ -157,7 +157,7 @@ export default function Badges(){
   }
 
   return (
-    <div className="badges-page">
+    <div className="page-anim badges-page">
 
       <header className="badges-header">
       {/* top-left back button to match other pages */}
@@ -168,19 +168,19 @@ export default function Badges(){
         onMouseLeave={() => { setBackHovering(false); setBackActive(false) }}
         onMouseDown={() => setBackActive(true)}
         onMouseUp={() => setBackActive(false)}
-        title="Back"
+        title="Quay lại"
         style={{ zIndex: 1000, transform: backHovering ? 'translateY(-2px) scale(1.03)' : 'none', transition: 'transform .12s ease' }}
       >
-        <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Back" />
+        <img src={(backActive || backHovering) ? newBackIcon : backIcon} alt="Quay lại" />
       </button>
-        <h1>Badges</h1>
-        <p className="badges-sub">Collect badges by reaching milestones. Your current points: <strong>{user ? user.total_eco_points : '—'}</strong></p>
+        <h1>Huy hiệu</h1>
+        <p className="badges-sub">Thu thập huy hiệu bằng cách đạt các mốc. Điểm hiện tại của bạn: <strong>{user ? user.total_eco_points : '—'}</strong></p>
       </header>
 
       <div className="badges-grid">
         {versions.map(v => (
           <section className="badge-version" key={v.version}>
-            <h2 className="version-title">{v.title || `Version ${v.version}`}</h2>
+            <h2 className="version-title">{v.title || `Phiên bản ${v.version}`}</h2>
             <div className="version-list">
               {v.badges.map(b => (
                 <BadgeCard key={b.id} badge={b} unlocked={isUnlocked(b)} onClick={handleClick} />
@@ -225,12 +225,12 @@ export default function Badges(){
             <div className="modal-title-pill">{selected.badge}</div>
             <div className="modal-sub">
               {selected.unlocked && selected.obtained_at ? (
-                  <strong>Obtained on {formatDate(selected.obtained_at)}</strong>
+                <strong>Đã nhận vào {formatDate(selected.obtained_at)}</strong>
               ) : selected.unlocked ? (
-                  // Trường hợp unlocked nhưng là dữ liệu cũ chưa có ngày (migration)
-                  <strong>Unlocked</strong>
+                // Trường hợp unlocked nhưng là dữ liệu cũ chưa có ngày (migration)
+                <strong>Đã mở khóa</strong>
               ) : (
-                  <strong>Locked - Reach {selected.threshold} points</strong>
+                <strong>Chưa mở khóa — đạt {selected.threshold} điểm</strong>
               )}
             </div>
 

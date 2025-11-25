@@ -21,7 +21,7 @@ export default function Login() {
         const emailTrim = email.trim()
         const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailTrim || !emailRe.test(emailTrim)) {
-            setMsg('Please enter a valid email address')
+            setMsg('Vui lòng nhập email hợp lệ')
             return
         }
         try {
@@ -33,12 +33,12 @@ export default function Login() {
             navigate('/home')
         } catch (e) {
             console.error(e)
-            setMsg('Login failed. Please check your credentials.')
+            setMsg('Đăng nhập thất bại. Vui lòng kiểm tra thông tin.')
         }
     }
 
     return (
-        <div className="auth-root">
+        <div className="auth-root page-anim">
             <div className="auth-top">
                 <div className="auth-circle">
                     {/* decorative circle - login image will overlay visually */}
@@ -57,12 +57,12 @@ export default function Login() {
                 </label>
 
                 <label className="field">
-                    <div className="field-label">Password</div>
+                    <div className="field-label">Mật khẩu</div>
                     <div className="field-input">
                         <img src={lockIcon} alt="lock" className="field-icon" />
                         {/* Thêm logic hiện/ẩn mật khẩu */}
                         <input
-                            placeholder="Enter your password"
+                            placeholder="Nhập mật khẩu"
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={e => setPassword(e.target.value)}
@@ -80,12 +80,12 @@ export default function Login() {
 
                 {/* Thêm link điều hướng đến trang reset */}
                 <div className="forgot" role="button" tabIndex={0} onClick={() => navigate('/reset-password')}>
-                    Forgot Password
+                    Quên mật khẩu
                 </div>
 
-                <button className="auth-btn" type="submit">Login</button>
+                <button className="auth-btn" type="submit">Đăng nhập</button>
 
-                <div className="signup">Don't have an account? <a href="/signup">Sign up</a></div>
+                <div className="signup">Bạn chưa có tài khoản? <a href="/signup">Đăng ký</a></div>
 
                 {msg && <div className="auth-msg">{msg}</div>}
             </form>

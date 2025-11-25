@@ -18,7 +18,7 @@ export default function ResetPassword(){
   const valid = emailRe.test(email.trim())
 
   const handleNext = async () => {
-    if (!valid) { setMsg('Please enter a valid email address'); return }
+    if (!valid) { setMsg('Vui lòng nhập địa chỉ email hợp lệ'); return }
     setLoading(true)
     setMsg('')
     setNotFound(false)
@@ -31,34 +31,34 @@ export default function ResetPassword(){
       // if server indicates no account, show the orange message and keep Next disabled
       if (err?.response?.status === 404 || /no account/i.test(serverMsg || '')){
         setNotFound(true)
-        setMsg(serverMsg || 'There is no account linked to the email you provided')
+        setMsg(serverMsg || 'Không tìm thấy tài khoản liên kết với email này')
       }else{
-        setMsg(serverMsg || 'Could not send reset link. Please try again later.')
+        setMsg(serverMsg || 'Không thể gửi liên kết đặt lại. Vui lòng thử lại sau.')
       }
     }finally{ setLoading(false) }
   }
 
 return (
-    <div className="auth-root">
+  <div className="auth-root page-anim">
         <div className="auth-top">
       <div className="reset-title-wrap">
-        <h1 className="auth-title">PASSWORD RESET</h1>
+        <h1 className="auth-title">ĐẶT LẠI MẬT KHẨU</h1>
       </div>
       <div className="auth-header">
                 <button className="back-arrow" onClick={() => navigate(-1)} style={{ width: 20, height: 20, padding: 0, background: 'transparent', border: 'none' }}>
-                  <img src={backIcon} alt="Back" style={{ width: '100%', height: '100%' }} />
+                  <img src={backIcon} alt="Quay lại" style={{ width: '100%', height: '100%' }} />
                 </button>
       </div>
         </div>
 
         <div className="auth-form" style={{ marginTop: 24 }}>
-            <p style={{ color: '#757575', marginTop: 0, fontWeight: 'bold' }}>Please enter your email to reset password</p>
+            <p style={{ color: '#757575', marginTop: 0, fontWeight: 'bold' }}>Vui lòng nhập email để đặt lại mật khẩu</p>
 
             <label className="field">
-                <div className="field-label">Email</div>
+                <div className="field-label">Địa chỉ Email</div>
         <div className="field-input" style={{ borderColor: notFound ? '#d97a3a' : undefined }}>
-                    <img src={emailIcon} alt="email" className="field-icon" />
-          <input placeholder="email@gmail.com" value={email} onChange={e=>{ setEmail(e.target.value); setMsg(''); setNotFound(false) }} />
+                    <img src={emailIcon} alt="Email" className="field-icon" />
+          <input placeholder="ví dụ: email@gmail.com" value={email} onChange={e=>{ setEmail(e.target.value); setMsg(''); setNotFound(false) }} />
         </div>
             </label>
 
@@ -70,7 +70,7 @@ return (
                 disabled={!valid || loading || notFound}
                 style={{ marginTop: 18, minHeight: 54, borderRadius: 28 }}
             >
-                {loading ? 'Sending...' : 'Next'}
+                {loading ? 'Đang gửi...' : 'Tiếp theo'}
             </button>
         </div>
     </div>
