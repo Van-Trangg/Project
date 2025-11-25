@@ -38,7 +38,7 @@ export default function Login() {
     }
 
     return (
-        <div className="auth-root">
+        <div className="auth-root page-anim">
             <div className="auth-top">
                 <div className="auth-circle">
                     {/* decorative circle - login image will overlay visually */}

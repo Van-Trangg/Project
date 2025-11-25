@@ -85,7 +85,7 @@ export default function VerifyCode(){
   }
 
   return (
-    <div className="auth-root">
+    <div className="auth-root page-anim">
       <div className="auth-top">
         <div className="reset-title-wrap">
           <h1 className="auth-title">{flow === 'signup' ? 'KÍCH HOẠT TÀI KHOẢN' : 'KIỂM TRA EMAIL'}</h1>
