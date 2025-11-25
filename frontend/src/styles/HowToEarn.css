@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;900&display=swap&subset=vietnamese');
+
+/* Container bao quanh toàn màn hình */
+.welcome-root {
+  font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  /* Màu nền Gradient giống Onboarding */
+  background: linear-gradient(180deg, #EAF4D7 0%, #C6D870 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  overflow: hidden;
+}
+
+/* Khung nội dung chính */
+.welcome-content {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  justify-content: center; /* Căn giữa dọc */
+  gap: 24px;
+}
+
+/* Hiệu ứng hiện dần */
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- PHẦN CHỮ --- */
+.welcome-text-group {
+  margin-bottom: 10px;
+}
+
+.welcome-subtitle {
+  font-size: clamp(40px, 10vw, 72px);
+  margin: 6px 0;
+  color: #000;
+  font-weight: 800;
+}
+
+.welcome-title {
+  font-size: clamp(32px, 8vw, 56px);
+  margin: 0;
+  color: #556B2F;
+  font-weight: 900;
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  flex-wrap: wrap; 
+}
+
+/* --- PHẦN ẢNH --- */
+.welcome-image-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.welcome-image {
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  object-fit: contain;
+  /* Hiệu ứng bóng đổ nhẹ cho ảnh nổi bật */
+  filter: drop-shadow(0 10px 20px rgba(58, 160, 53, 0.15));
+}
+
+/* --- NÚT BẤM (CTA) --- */
+.welcome-cta-wrap {
+  margin-top: 12px;
+}
+
+.welcome-cta {
+  background: #8BC34A;
+  color: #fff;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 28px;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+
+.welcome-cta:active {
+   transform: scale(0.98); 
+}

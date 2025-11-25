@@ -96,7 +96,7 @@ export default function Reward() {
             <img src={ecopointsIcon} alt="leaf" className="balance-leaf-icon" />
           </div>
           <div className="action-buttons">
-            <button className="btn-secondary">How to earn</button>
+            <button className="btn-secondary" onClick={() => navigate('/how-to-earn')}> How to earn</button>
             <button className="btn-primary" onClick={() => navigate('/leaderboard')}>Bảng xếp hạng</button>
           </div>
           <button className="btn-plant" onClick={() => navigate('/planting-trees')}>Trồng cây</button>
@@ -179,7 +179,7 @@ export default function Reward() {
         </button>
         <button className="nav-item" onClick={() => navigate('/journal')}>
             <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
-            <span>Nhật kí</span>
+            <span>Nhật ký</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/home')}>
             <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
