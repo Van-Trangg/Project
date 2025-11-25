@@ -139,11 +139,11 @@ export default function DetailPage() {
             {!successInfo ? (
                 <>
                     <p className="modal-text">
-                    Use <span className="highlight-text">{displayItem.price} Ecopoints</span> to redeem this reward?
+                    Dùng <span className="highlight-text">{displayItem.price} Ecopoints</span> để đổi phần thưởng?
                     </p>
                     <div className="modal-actions">
                     <button className="btn-modal-no" onClick={() => setShowModal(false)} disabled={isLoading}>
-                        No
+                        Không
                     </button>
                     <button className="btn-modal-yes" onClick={handleConfirmRedeem} disabled={isLoading}>
                         {isLoading ? '...' : 'Yes'}
