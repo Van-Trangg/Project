@@ -175,23 +175,23 @@ export default function Reward() {
       <nav className="bottom-nav">
         <button className="nav-item active" onClick={() => navigate('/reward')}>
             <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
-            <span>Rewards</span>
+            <span>Phần thưởng</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/journal')}>
             <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
-            <span>Journal</span>
+            <span>Nhật kí</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/home')}>
             <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
-            <span>Home</span>
+            <span>Trang chủ</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/map')}>
             <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
-            <span>Map</span>
+            <span>Bản đồ</span>
         </button>
         <button className="nav-item" onClick={() => navigate('/leaderboard')}>
             <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
-            <span>Leaderboard</span>
+            <span>Bảng xếp hạng</span>
         </button>
       </nav>
     </div>
