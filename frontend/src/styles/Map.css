@@ -347,7 +347,7 @@
   height: 60px;
   border-radius: 50%;
   border-color: transparent;
-  background: #7CB342;
+  background: #F5F9F0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.55);
   align-content: center;
 }
@@ -610,7 +610,7 @@
   left: 1%;
   top: 50%;
   transform: translateY(-50%);
-  max-width: 80%;
+  max-width: 98%;
   height: 10px;
   background: #7CB342;
   border-radius: 20px;

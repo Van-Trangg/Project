@@ -99,7 +99,7 @@ export default function Chatbot() {
                 console.error('Failed to load profile', err)
             })
             .finally(setLoadingProfile(false));
-        console.log('User profile loaded in check-in page');
+        console.log('User profile loaded in chat page');
         console.log(user);
     }, [])
 
@@ -116,7 +116,7 @@ export default function Chatbot() {
     return (
         <div className="chatbot-page">
             <div className="chat-header">
-                <button className="back-button" onClick={handleBackToMap}>
+                <button className="back-button-chat" onClick={handleBackToMap}>
                     <img src = '/src/public/back.png' width = '18px' height = '18px'/>
                 </button>
                 
@@ -134,7 +134,7 @@ export default function Chatbot() {
                                 {message.sender == 'user' ? (
                                     <>
                                         <span>{user.full_name}</span>
-                                        <img src = {user.avatar_url} height = "20px" width = "20px"></img>
+                                        <img className ='chat-pfp' src = {user.avatar_url}></img>
                                     </>
                                 ) : (
                                     <>
@@ -181,7 +181,7 @@ export default function Chatbot() {
                     <input
                         type="text"
                         className="chat-input"
-                        placeholder="Type your message..."
+                        placeholder="Tin nhắn của bạn"
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         onKeyPress={handleKeyPress}

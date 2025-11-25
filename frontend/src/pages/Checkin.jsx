@@ -251,7 +251,7 @@ const handleCancel = () => {
                 <span className = 'checkin-score'> {poi.score}</span>
                 <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
               </div>
-              <p className = 'congratulatory'>Tuyệt vời!<br/>Cảm ơn bạn vì đã góp phần giúp môi trường ngày một xanh hơn!</p>
+              <p className = 'congratulatory'>Tuyệt vời!<br/>Cảm ơn bạn vì đã góp phần phát triển du lịch bền vững.</p>
           </div>
           <div className = 'spacer'></div>
           <div className = 'popup-card-receipt'>
