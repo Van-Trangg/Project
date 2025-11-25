@@ -5,6 +5,8 @@ from app.models.leaderboard import Leaderboard
 from app.models.user import User
 from app.schemas.leaderboard_schema import LeaderboardOut
 
+default_avatar_url = "https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg"
+
 router = APIRouter()
 CurrentUser = Depends(get_current_user)
 
@@ -15,7 +17,7 @@ def list_leaderboard(db: DbDep) -> list[LeaderboardOut]:
         "id": user.id,
         "user_name": user.full_name,
         "points": user.monthly_points,
-        "avatar": user.avatar_url,
+        "avatar": get_avatar_url(user.avatar_url),
         "rank": index + 1
     }) for (index, user) in enumerate(r)]
 
@@ -26,13 +28,18 @@ def my_rank(
 ):
     rank = db.query(User).filter(User.monthly_points > current_user.monthly_points).count()
     rank_2 = db.query(User).filter(
-        User.eco_points == current_user.eco_points,
+        User.monthly_points == current_user.monthly_points,
         User.email < current_user.email
     ).count()
     return LeaderboardOut.model_validate({
         "id": current_user.id,
         "user_name": current_user.full_name,
         "points": current_user.monthly_points,
-        "avatar": current_user.avatar_url,
+        "avatar": get_avatar_url(current_user.avatar_url),
         "rank": rank + rank_2 + 1
     })
+
+def get_avatar_url(avatar_url: str | None) -> str:
+    if avatar_url and avatar_url != "" and (not avatar_url.startswith("https://example.com")):
+        return avatar_url
+    return default_avatar_url

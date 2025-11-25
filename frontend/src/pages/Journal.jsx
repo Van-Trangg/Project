@@ -13,6 +13,7 @@ import mapOutlineIcon from '../public/map-outline.png';
 import mapSolidIcon from '../public/map-solid.png'
 import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
 import leaderboardSolidIcon from '../public/leaderboard-solid.png'
+import backIcon from '../public/back.png';
 
 const CITIES = [
   { id: 1, name: 'Ho Chi Minh City', lat: 10.762622, lng: 106.660172, image: '/src/public/Map/hcmc.png' },
@@ -81,7 +82,7 @@ export default function Journal() {
   const handleLocationJournal = () => {
     if (selectedLocation) {
       // Navigate and pass the ENTIRE location object in the state
-      navigate(`/location/${selectedLocation.id}`, { state: { location: selectedLocation } });
+      navigate(`/location/${selectedLocation.id}`, { state: { id: selectedLocation.id } });
     }
   };
 
@@ -195,10 +196,8 @@ export default function Journal() {
     return (
       <div className='journal-container'>
         <div className='location-details'>
-          <button className='back-button' onClick={handleBackToJournals}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
+          <button className='journal-back-button' onClick={handleBackToJournals}>
+            <img src={backIcon} alt="Back" />
           </button>
           <img src={selectedLocation.image} alt={selectedLocation.title} className='journal-location-image' />
           <div id='location-name'>{selectedLocation.title}</div>

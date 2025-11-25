@@ -24,3 +24,8 @@ export const getJournal = (journalId) =>
 
 export const deleteJournal = (journalId) => 
   api.delete(`/journal/${journalId}`);
+
+export const getPoiJournals = (poiId) => {
+  const params = { poi_id: poiId };
+  return api.get('/journal/poi/journals', { params });
+};

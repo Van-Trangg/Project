@@ -181,4 +181,78 @@ def delete_journal(
         raise HTTPException(status_code=403, detail="Not authorized to delete this journal")
     db.delete(journal)
     db.commit()
-    return {"ok": True}
+    return {"ok": True}\
+    
+@router.get("/poi/journals", response_model=JournalByPOI)
+def get_poi_journals(
+    db: DbDep,
+    current_user: User = CurrentUser,
+    poi_id: int = Query(..., description="The ID of the POI to retrieve journals for"),
+):
+    # First verify the user has checked into this POI
+    checkin = db.query(Checkin).filter(
+        Checkin.user_id == current_user.id,
+        Checkin.poi_id == poi_id
+    ).first()
+    
+    if not checkin:
+        raise HTTPException(status_code=404, detail="POI not found or user hasn't checked into this POI")
+    
+    # Get the POI
+    poi = db.get(POI, poi_id)
+    if not poi:
+        # This case is less likely to be hit if the checkin check passes, but it's good practice
+        raise HTTPException(status_code=404, detail="POI not found")
+    
+    # Get all journals for this POI written by the current user
+    journals_query = (
+        db.query(Journal)
+        .filter(
+            Journal.author_id == current_user.id,
+            Journal.poi_id == poi_id
+        )
+        .order_by(Journal.created_at.desc())
+        .options(joinedload(Journal.poi))
+    )
+    journals_for_poi = journals_query.all()
+    
+    # Group journals by day
+    journals_by_day: Dict[date, List[JournalSummary]] = {}
+    
+    for journal in journals_for_poi:
+        journal_date = journal.created_at.date()
+        normalized_emotion = journal.emotion.title() if journal.emotion else "Neutral" 
+        
+        summary = JournalSummary(
+            id=journal.id,
+            time=journal.created_at.strftime("%I:%M %p"), 
+            emotion=normalized_emotion,
+            content=journal.content,
+            images=journal.images,
+        )
+        
+        if journal_date not in journals_by_day:
+            journals_by_day[journal_date] = []
+        
+        journals_by_day[journal_date].append(summary)
+    
+    # Create entries by day
+    entries_by_day = []
+    for day_date in sorted(journals_by_day.keys(), reverse=True):
+        day_entry = JournalByDay(
+            day=day_date.strftime("%Y-%m-%d"), 
+            smallEntries=journals_by_day[day_date]
+        )
+        entries_by_day.append(day_entry)
+    
+    # Create and return the POI summary
+    poi_summary = JournalByPOI(
+        id=poi.id,
+        title=poi.name,
+        description=(poi.description[:100] + "...") if poi.description and len(poi.description) > 100 else (poi.description or ""), 
+        longDescription=poi.description or "", 
+        image=poi.image or "",
+        entries=entries_by_day
+    )
+    
+    return poi_summary
