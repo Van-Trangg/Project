@@ -26,11 +26,11 @@ export default function Onboarding() {
       image: null // Bạn có thể thay bằng ảnh Logo hoặc ảnh bìa khác
     },
     // -------------------------------
-    { title: 'Rewards for', highlight: 'going green', image: img1 },
-    { title: 'Check in at', highlight: 'green hotspots', image: img2 },
-    { title: 'Record your', highlight: 'story', image: img3 },
-    { title: 'Compete with other', highlight: 'enthusiasts', image: img4 },
-    { title: 'Start today.', highlight: '', image: overview1 }
+    { title: 'Phần thưởng từ việc', highlight: 'sống xanh', image: img1 },
+    { title: 'Kiểm tra tại', highlight: 'điểm nóng xanh', image: img2 },
+    { title: 'Ghi lại của bạn', highlight: 'câu chuyện', image: img3 },
+    { title: 'Cạnh tranh với', highlight: 'những người cùng đam mê', image: img4 },
+    { title: '', highlight: 'Bắt đầu ngay', image: overview1 }
   ]
 
   const [index, setIndex] = useState(0)
@@ -43,6 +43,17 @@ export default function Onboarding() {
     setIndex(next)
   }
 
+  // Navigate to home if logged in, otherwise to login
+  function finishOrLogin() {
+    try {
+      const token = localStorage.getItem('access_token')
+      if (token) navigate('/home')
+      else navigate('/login')
+    } catch (err) {
+      navigate('/login')
+    }
+  }
+
   return (
     <div className="onboarding-root">
       
@@ -50,7 +61,7 @@ export default function Onboarding() {
       {index > 0 && (
         <button 
           className="close-btn" 
-          onClick={() => navigate('/home')} /* Hoặc window.location.href = '/home' */
+          onClick={() => finishOrLogin()} /* close -> home if authed, else login */
         >
           ×
         </button>
@@ -74,19 +85,19 @@ export default function Onboarding() {
         {index === 0 && (
           <div className="onboarding-intro-footer">
             <div className="swipe-pill">
-              Swipe to explore
+              Vuốt để khám phá
             </div>
             
             <p className="skip-text">
-              Or click <span className="skip-link" onClick={() => navigate('/home')}>here</span> to skip
+              Hoặc nhấn vào <span className="skip-link" onClick={() => finishOrLogin()}>đây</span> để bỏ qua
             </p>
           </div>
         )}
 
         {/* Nút tham gia chỉ hiện ở slide cuối cùng */}
         {index === slides.length - 1 && (
-          <div className="onboarding-cta-wrap">
-            <button className="onboarding-cta" onClick={() => navigate('/home')}>Tham gia ngay</button>
+            <div className="onboarding-cta-wrap">
+            <button className="onboarding-cta" onClick={() => finishOrLogin()}>Tham gia ngay</button>
           </div>
         )}
       </div>

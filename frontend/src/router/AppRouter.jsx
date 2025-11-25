@@ -31,7 +31,7 @@ export default function AppRouter(){
       {/* <Navbar /> */}
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/onboarding" replace />} />
           <Route path="/onboarding" element={<Onboarding/>} />
           <Route path="/home" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
