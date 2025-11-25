@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;900&display=swap&subset=vietnamese');
 
 .onboarding-root {
+  position: relative;
   font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   background: linear-gradient(180deg, #EAF4D7 0%, #FEF6EF 100%);
   min-height: 100vh;
@@ -19,10 +20,13 @@
   max-width: 600px;
   display: flex;
   flex-direction: column;
+
+  justify-content: flex-start;
+  padding-top: 80px;
+
   align-items: center;
   text-align: center;
   flex-grow: 1; /* Đẩy controls xuống dưới */
-  justify-content: center;
 }
 
 /* Hiệu ứng xuất hiện nhẹ nhàng */
@@ -37,25 +41,27 @@
 
 .onboarding-image-wrap {
   width: 100%;
+  /* Chiếm toàn bộ khoảng trống còn lại giữa chữ và controls */
+  flex-grow: 1; 
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 24px;
+  justify-content: center; /* Căn giữa ngang */
+  align-items: center;     /* Căn giữa dọc */
+  overflow: hidden;
 }
 
 .onboarding-image {
   max-width: 90%;
   height: auto;
-  max-height: 50vh; /* Giới hạn chiều cao ảnh để không bị tràn */
-  border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(20, 40, 10, 0.08);
+  /* Giới hạn chiều cao để nó không chiếm hết màn hình */
+  max-height: 50vh; 
   object-fit: contain;
 }
 
 .onboarding-text {
   width: 100%;
   padding: 0 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px; 
+  flex-grow: 0;
 }
 
 .onboarding-title {
@@ -68,10 +74,13 @@
 .onboarding-highlight {
   font-size: clamp(24px, 6vw, 40px);
   margin: 0;
-  color: #234b28;
+  color: #556B2F;
   font-weight: 900;
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  flex-wrap: wrap; 
 }
-
 .onboarding-cta-wrap {
   margin-top: 12px;
 }
@@ -123,3 +132,81 @@
   transition: all 0.3s;
 }
 .dot.active { background: #3aa035; transform: scale(1.2); }
+
+.onboarding-intro-footer {
+  margin-top: auto; /* Đẩy xuống đáy của content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px; /* Khoảng cách với thanh controls bên dưới */
+}
+
+/* Style cho nút "viên thuốc" */
+.swipe-pill {
+  background-color: #A6BFA0; /* Màu xanh xám giống trong ảnh */
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 32px;
+  border-radius: 50px; /* Bo tròn hoàn toàn */
+  display: inline-block;
+  pointer-events: none; /* Chỉ để trang trí, không cần bấm */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Dòng chữ Skip */
+.skip-text {
+  font-size: 15px;
+  color: #2e4a33;
+  margin: 0;
+}
+
+.skip-link {
+  color: #477a4b; /* Màu xanh đậm hơn cho chữ 'here' */
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.skip-link:hover {
+  color: #2e4a33;
+}
+.is-intro-page .onboarding-text {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;   /* Cách mép trên (cần chỉnh tăng lên 40px-50px nếu bị che bởi tai thỏ điện thoại) */
+  right: 20px; /* Cách mép phải */
+  
+  background: transparent; /* Nền trong suốt */
+  border: none;
+  font-size: 32px; /* Kích thước chữ X */
+  line-height: 1;
+  color: #1f4c2f; /* Màu xanh đậm theo theme */
+  cursor: pointer;
+  padding: 8px; /* Tăng diện tích bấm cho dễ */
+  z-index: 100; /* Đảm bảo nằm trên cùng */
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+  opacity: 1;
+}
+
+/* Style cho icon chiếc lá nằm trong thẻ highlight */
+.highlight-icon {
+  height: 1em; 
+  width: auto; 
+  margin-left: 10px; 
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+}
