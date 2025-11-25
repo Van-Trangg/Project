@@ -120,13 +120,12 @@ export default function HistoryPage() {
                 <p style={{margin: '5px 0'}}><strong>Nội dung:</strong> {selectedItem.title}</p>
                 <p style={{margin: '5px 0'}}><strong>Thời gian:</strong> {formatDate(selectedItem.created_at)}</p>
                 
-                {/* [ĐÃ SỬA] Hiển thị CODE thay vì ID */}
+                {/* Hiển thị Mã Giao Dịch */}
                 <p style={{margin: '5px 0'}}>
                     <strong>Mã GD:</strong> <span style={{fontFamily: 'monospace', fontSize: '16px', letterSpacing: '1px', color: '#333'}}>
                         #{selectedItem.code || selectedItem.id} 
                     </span>
                 </p>
-                <p style={{fontSize: '12px', color: '#999'}}>(Vui lòng cung cấp mã này khi cần hỗ trợ)</p>
 
                 <p style={{margin: '5px 0'}}><strong>Trạng thái:</strong> <span style={{color: 'green'}}>Thành công</span></p>
             </div>

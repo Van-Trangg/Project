@@ -100,7 +100,7 @@ def checkin(
 
     
     # A. Tăng số lượt Check-in Map (Đây mới đúng là nơi tăng biến này!)
-    user.check_ins += 1 
+    #user.check_ins += 1 
 
     # B. Cộng điểm vào Tổng tích lũy (để thanh Level tăng)
     if user.total_eco_points is None:
