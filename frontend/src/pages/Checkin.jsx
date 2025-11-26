@@ -26,6 +26,7 @@ export default function CheckIn() {
   const [receipt, setReceipt] = useState(null)
   const [checkedIn, setCheckedIn] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [maxed, setMaxed] = useState(false);
   
   // Load user profile
   useEffect(() => {
@@ -49,6 +50,8 @@ export default function CheckIn() {
       .then(res => {
         setCurrentProgress(res.data.progressCurrent);
         setMaxProgress(res.data.progressMax);
+        if (res.data.progressCurrent >= res.data.progressMax) setMaxed(true);
+        console.log(maxed);
       })
       .catch(err => {
           console.error('Failed to load progress', err)
@@ -163,7 +166,7 @@ const handleCancel = () => {
               <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
             </div>
             <div className = 'checkin-progress-bar'>
-              <div className = 'prog-title'>Tiến trình đến danh hiệu tiếp theo</div>
+              <div className = 'prog-title'> { !maxed ? 'Tiến trình đến danh hiệu tiếp theo' : 'Bạn đã đạt đến mốc điểm tối đa'}</div>
               <span className = 'track-bar'>
                 <span 
                 className = 'fill-bar'
@@ -174,10 +177,10 @@ const handleCancel = () => {
                   style={{ width: `${((currentProgress + poi.score) / maxProgress) * 100}%` }}
                   ></span>)}
               </span>
-              {!checkedIn ? (
+              {!maxed ? (
                 <div className = 'prog-num'>{currentProgress + '+' + poi.score + '/' + maxProgress}</div>
               ) : (
-                <div className = 'prog-num-disabled'>{currentProgress+ '/' + maxProgress}</div>
+                <div className = 'prog-num-disabled'>{maxProgress}</div>
               )}
             </div>
             {!checkedIn ? (
@@ -251,7 +254,7 @@ const handleCancel = () => {
                 <span className = 'checkin-score'> {poi.score}</span>
                 <img className ='ecopoint-icon' src = '/src/public/ecopoint.png'/>
               </div>
-              <p className = 'congratulatory'>Tuyệt vời!<br/>Cảm ơn bạn vì đã góp phần giúp môi trường ngày một xanh hơn!</p>
+              <p className = 'congratulatory'>Tuyệt vời!<br/>Cảm ơn bạn vì đã góp phần phát triển du lịch bền vững.</p>
           </div>
           <div className = 'spacer'></div>
           <div className = 'popup-card-receipt'>

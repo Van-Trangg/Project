@@ -10,7 +10,9 @@
     touch-action: none; /* Prevent page-level touch scrolling */
 }
 
-.back-button {
+.back-button-chat {
+    background: transparent;
+    border: none;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -267,4 +269,10 @@
     .recommendation-link:active {
         background-color: rgba(0, 0, 0, 0.12);
     }
+}
+
+.chat-pfp {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
 }

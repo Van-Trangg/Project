@@ -376,7 +376,7 @@ export default function Map() {
               className = 'chat-bubble'
               onClick={handleChat}
             >
-              <img src = '/src/public/ai.png' className = 'chat-icon'></img>
+              <img src = '/src/public/chat.png' className = 'chat-icon'></img>
             </button>
             <button 
               className = 'map-center-bubble'
@@ -433,27 +433,27 @@ export default function Map() {
       <button className="nav-item" onClick={() => navigate('/reward')}>
         <img src={rewardOutlineIcon} alt="Rewards" className="icon-outline" />
         <img src={rewardSolidIcon} alt="Rewards" className="icon-solid" />
-        <span>Rewards</span>
+        <span>Phần thuởng</span>
       </button>
       <button className="nav-item" onClick={() => navigate('/journal')}>
         <img src={journalOutlineIcon} alt="Journal" className="icon-outline" />
         <img src={journalSolidIcon} alt="Journal" className="icon-solid" />
-        <span>Journal</span>
+        <span>Nhật ký</span>
       </button>
       <button className="nav-item" onClick={() => navigate('/home')}>
         <img src={homeOutlineIcon} alt="Home" className="icon-outline" />
         <img src={homeSolidIcon} alt="Home" className="icon-solid" />
-        <span>Home</span>
+        <span>Trang chủ</span>
       </button>
       <button className="nav-item active" onClick={() => navigate('/map')}>
         <img src={mapOutlineIcon} alt="Map" className='icon-outline' />
         <img src={mapSolidIcon} alt='Map' className='icon-solid' />
-        <span>Map</span>
+        <span>Bản đồ</span>
       </button>
       <button className="nav-item" onClick={() => navigate('/leaderboard')}>
         <img src={leaderboardOutlineIcon} alt='Leaderboard' className='icon-outline' />
         <img src={leaderboardSolidIcon} alt='Leaderboard' className='icon-solid' />
-        <span>Leaderboard</span>
+        <span>Bảng xếp hạng</span>
       </button>
     </nav>
   </div>

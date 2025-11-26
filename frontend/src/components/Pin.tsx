@@ -3,6 +3,7 @@ import L from "leaflet";
 import pin from "../public/pin.png";   
 import here from "../public/here.png";
 import alr from "../public/already.png";
+import alr2 from "../public/alr3.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 // Fix Leaflet default icon path issue in Webpack/Parcel/Vite
 // delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -35,8 +36,8 @@ export const customIconHere = new L.Icon({
 });
 
 export const checkedInIcon = new L.Icon({
-  iconUrl: alr,               // your custom image
-  iconRetinaUrl: alr,
+  iconUrl: alr2,               // your custom image
+  iconRetinaUrl: alr2,
   iconSize: [35, 35],               // width, height
   iconAnchor: [25, 30],             // point of the icon that corresponds to marker's location
   popupAnchor: [0, -38],            // where the popup opens relative to the iconAnchor
