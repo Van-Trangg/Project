@@ -153,8 +153,8 @@ export default function Home() {
   const getFontSize = (value) => {
     const str = value.toString();
     if (str.length > 8) return '28px'; // Ví dụ: 1.000.000.000 (Rất nhỏ)
-    if (str.length > 6) return '32px'; // Ví dụ: 10.000.000
-    if (str.length > 4) return '36px'; // Ví dụ: 100.000
+    if (str.length > 6) return '32px'; // Ví dụ: 10.000.00
+    if (str.length > 4) return '34px'; // Ví dụ: 100.000
     return '42px'; // Mặc định (<= 5 chữ số)
   };
 
