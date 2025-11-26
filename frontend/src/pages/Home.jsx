@@ -214,7 +214,7 @@ export default function Home() {
           <div className="value">{String(checkIns).padStart(2, '0')}</div>
         </div>
       </div>
-
+      <div className="white-divider"></div>
       {/* === PROGRESS === */}
       <div className="home-section">
         <div className="section-header">
@@ -234,7 +234,7 @@ export default function Home() {
           {progressCurrent}/{progressMax}
         </div>
       </div>
-
+      <div className="white-divider"></div>
       {/* === DAILY REWARDS === */}
       <div className="home-section">
         <div className="section-header">
