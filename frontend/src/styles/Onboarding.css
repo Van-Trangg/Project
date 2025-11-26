@@ -72,7 +72,7 @@
 }
 
 .onboarding-highlight {
-  font-size: clamp(32px, 8vw, 56px);
+  font-size: clamp(44px, 12vw, 80px);
   margin: 0;
   color: #556B2F;
   font-weight: 900;
