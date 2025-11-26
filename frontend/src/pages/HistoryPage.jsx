@@ -53,7 +53,7 @@ export default function HistoryPage() {
       
       <div className="history-header">
         <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
-        <h1>Transaction History</h1>
+        <h1>Lịch sử giao dịch</h1>
       </div>
 
       <div className="history-list-full">
