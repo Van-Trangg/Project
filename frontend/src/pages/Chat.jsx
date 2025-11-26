@@ -66,7 +66,7 @@ export default function Chatbot() {
             console.error("Failed to get response from AI:", error);
             const errorMessage = {
                 id: Date.now(),
-                text: "Sorry, I'm having trouble connecting. Please try again.",
+                text: "Xin lỗi, tôi đang gặp phải trục trặc kỹ thuật. Bạn thử lại nhé.",
                 sender: 'bot'
             };
             setMessages(prevMessages => [...prevMessages, errorMessage]);
