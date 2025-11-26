@@ -55,6 +55,10 @@
   height: 40px;
   background: #eeeeee; /* Màu xám placeholder */
   border-radius: 50%; /* Bo tròn */
+  /*chỉnh sửa để căn giữa icon bên trong*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .item-text {
