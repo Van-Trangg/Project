@@ -13,5 +13,3 @@ class Checkin(Base):
     earned_points = Column(Integer, nullable=False)
     receipt_no = Column(String, nullable=False, unique=True)
 
-# Unique constraint: mỗi user chỉ được check-in 1 lần tại 1 POI
-Index("ux_checkin_user_poi", Checkin.user_id, Checkin.poi_id, unique=True)

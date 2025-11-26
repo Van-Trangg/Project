@@ -53,7 +53,6 @@ def get_pois(
         item = PoiOut.from_orm(p)
         item.visited = p.id in visited_ids
         result.append(item)
-
     return result
 
 @router.get("/nearest", response_model=MapOut)

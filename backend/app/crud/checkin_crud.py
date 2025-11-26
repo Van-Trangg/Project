@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from app.models.checkin import Checkin
@@ -8,13 +9,35 @@ from math import ceil
 from app.crud.badge_crud import check_and_award_badges
 
 def user_has_checked(session: Session, user_id: int, poi_id: int) -> bool:
-    """Kiểm tra xem user đã check-in tại POI chưa"""
-    stmt = select(Checkin.id).where(
-        Checkin.user_id == user_id,
-        Checkin.poi_id == poi_id
+    """Trả về True nếu user đã check-in POI này trong vòng 7 ngày gần nhất"""
+
+    # Lấy check-in gần nhất
+    stmt = (
+        select(Checkin.created_at)
+        .where(
+            Checkin.user_id == user_id,
+            Checkin.poi_id == poi_id
+        )
+        .order_by(Checkin.created_at.desc())
+        .limit(1)
     )
-    result = session.execute(stmt).first()
-    return result is not None
+
+    result = session.execute(stmt).scalar()
+
+    # Chưa từng check-in → cho phép
+    if not result:
+        return False
+
+    # Kiểm tra thời gian
+    last_checkin_time = result
+    now = datetime.utcnow()
+
+    # Nếu thời gian cách nhau < 7 ngày → không cho check-in
+    if now - last_checkin_time < timedelta(days=7):
+        return True  # đã check-in trong tuần này
+
+    # Nếu cách ≥ 7 ngày → được phép check-in
+    return False
 
 def create_checkin(
     session: Session,

@@ -429,7 +429,7 @@
     "created_at": "2025-10-23T10:20:17.297647",
     "distance_m": 69.97,
     "earned_points": 100,
-    "receipt_no": "RC-0D55F435E7"
+    "receipt_no": "RC-0D55F345E7"
   },
   {
     "id": 49,
@@ -438,7 +438,7 @@
     "created_at": "2025-10-30T10:20:17.297722",
     "distance_m": 72.07,
     "earned_points": 100,
-    "receipt_no": "RC-3BE5E52A98"
+    "receipt_no": "RC-3BE0E52A98"
   },
   {
     "id": 50,
@@ -447,7 +447,7 @@
     "created_at": "2025-11-09T10:20:17.297758",
     "distance_m": 53.08,
     "earned_points": 100,
-    "receipt_no": "RC-2A230B1191"
+    "receipt_no": "RC-2A230A1191"
   },
   {
     "id": 51,
@@ -456,7 +456,7 @@
     "created_at": "2025-11-09T10:20:17.297813",
     "distance_m": 104.59,
     "earned_points": 100,
-    "receipt_no": "RC-1D6C3B9AB0"
+    "receipt_no": "RC-1D6C0B9AB0"
   },
   {
     "id": 52,
@@ -465,7 +465,7 @@
     "created_at": "2025-10-20T10:20:17.297858",
     "distance_m": 111.48,
     "earned_points": 100,
-    "receipt_no": "RC-E6D50B4260"
+    "receipt_no": "RC-E6D80B4260"
   },
   {
     "id": 53,
@@ -474,7 +474,7 @@
     "created_at": "2025-11-09T10:20:17.297813",
     "distance_m": 104.59,
     "earned_points": 100,
-    "receipt_no": "RC-1D6C3B9AB0"
+    "receipt_no": "RC-1D6C379AB0"
   },
   {
     "id": 54,
@@ -483,7 +483,7 @@
     "created_at": "2025-10-20T10:20:17.297858",
     "distance_m": 111.48,
     "earned_points": 100,
-    "receipt_no": "RC-E6D50B4260"
+    "receipt_no": "RC-E6D5004260"
   },
   {
     "id": 55,
@@ -492,7 +492,7 @@
     "created_at": "2025-10-14T10:20:17.298577",
     "distance_m": 111.93,
     "earned_points": 100,
-    "receipt_no": "RC-F4F6FDCBCE"
+    "receipt_no": "RC-F4F6FD6BCE"
   },
   {
     "id": 56,
@@ -501,6 +501,6 @@
     "created_at": "2025-10-22T10:20:17.298595",
     "distance_m": 78.16,
     "earned_points": 100,
-    "receipt_no": "RC-CAB3A75455"
+    "receipt_no": "RC-CAB3A75955"
   }
 ]

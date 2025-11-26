@@ -120,12 +120,11 @@ def seed_transactions(
     user_file: str = "app/data/users.json",
     poi_file: str = "app/data/poi.json"
 ):
-    # Load JSON files
     checkins = json.load(open(checkin_file, "r", encoding="utf-8"))
     users = json.load(open(user_file, "r", encoding="utf-8"))
     pois = json.load(open(poi_file, "r", encoding="utf-8"))
 
-    # Build POI lookup by ID (index+1 rule)
+    # POI lookup
     poi_lookup = {i + 1: poi for i, poi in enumerate(pois)}
 
     with Session(engine) as session:
@@ -133,27 +132,19 @@ def seed_transactions(
         # ---------------------------------------------------
         # 1) Generate Check-in Transactions
         # ---------------------------------------------------
-        tid = 1
         for c in checkins:
             poi_name = poi_lookup.get(c["poi_id"], {}).get("name", "Địa điểm")
 
-            # Check transaction existence (avoid duplicates if seed runs again)
+            # Check duplicate by receipt_no (or your code logic)
             exists = session.scalar(
-                select(Transaction).where(
-                    Transaction.code == c["receipt_no"]  # Or choose your duplicate logic
-                )
+                select(Transaction).where(Transaction.code == c["receipt_no"])
             )
 
-            # NOTE: Use receipt_no as code OR separate random code?
-            # You requested random → keep random.
             if not exists:
                 code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
-                # Convert created_at to datetime
                 created_at = datetime.fromisoformat(c["created_at"])
 
                 session.add(Transaction(
-                    id=tid,
                     title=f"Check-in tại {poi_name}",
                     amount=100,
                     type="positive",
@@ -161,9 +152,7 @@ def seed_transactions(
                     user_id=c["user_id"],
                     code=code
                 ))
-                tid += 1
 
-        # Commit check-ins first
         session.commit()
         print("✅ Transactions from Check-ins inserted.")
 
@@ -176,7 +165,6 @@ def seed_transactions(
             if remain > 0:
                 reward_amount = remain // 10
 
-                # Prevent duplicates
                 exists = session.scalar(
                     select(Transaction).where(
                         Transaction.title == "Daily Reward",
@@ -188,7 +176,6 @@ def seed_transactions(
                     code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
                     session.add(Transaction(
-                        id=tid,
                         title="Daily Reward",
                         amount=reward_amount,
                         type="positive",
@@ -196,11 +183,11 @@ def seed_transactions(
                         user_id=u["id"],
                         code=code
                     ))
-                    tid += 1
 
         session.commit()
         print("🎁 Daily Rewards inserted.")
         print("✅ Seed Transaction Completed.")
+
 
 # --- Main ---
 if __name__ == "__main__":
