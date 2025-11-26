@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css'; 
+import defaultAva from '../public/avt.png';
 
 // Import hình ảnh
 import ecopointsIcon from '../public/ecopoint.png';
@@ -163,13 +164,15 @@ export default function Home() {
       
       {/* === HEADER === */}
       <div className="profile-avatar" onClick={() => navigate('/profile')}>
-        {avatarUrl ? (
-            <img src={avatarUrl} alt="Avatar" className="avatar-img" />
-        ) : (
-            <span className="avatar-placeholder">
-              {userName ? userName.charAt(0).toUpperCase() : 'U'}
-            </span> 
-        )}
+        <img 
+            src={(avatarUrl && avatarUrl !== "null") ? avatarUrl : defaultAva}
+            alt="Avatar" 
+            className="avatar-img" 
+            onError={(e) => { 
+                e.target.onerror = null; 
+                e.target.src = defaultAva; 
+            }}
+        />
       </div>
 
       <div className="home-header">
