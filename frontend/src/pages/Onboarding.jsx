@@ -20,15 +20,15 @@ export default function Onboarding() {
       <>
         GreenJourney
         {/* Thêm class để tí nữa chỉnh CSS cho đẹp */}
-        <img src={leafImg} alt="leaf" className="highlight-icon" />
+        {/*<img src={leafImg} alt="leaf" className="highlight-icon" />*/}
       </>
     ),
       image: null // Bạn có thể thay bằng ảnh Logo hoặc ảnh bìa khác
     },
     // -------------------------------
     { title: 'Phần thưởng từ việc', highlight: 'sống xanh', image: img1 },
-    { title: 'Kiểm tra tại', highlight: 'điểm nóng xanh', image: img2 },
-    { title: 'Ghi lại của bạn', highlight: 'câu chuyện', image: img3 },
+    { title: 'Check-in tại', highlight: 'điểm du lịch xanh', image: img2 },
+    { title: 'Ghi lại', highlight: 'câu chuyện của bạn', image: img3 },
     { title: 'Cạnh tranh với', highlight: 'những người cùng đam mê', image: img4 },
     { title: '', highlight: 'Bắt đầu ngay', image: overview1 }
   ]
