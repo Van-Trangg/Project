@@ -124,18 +124,16 @@ def seed_transactions(
     users = json.load(open(user_file, "r", encoding="utf-8"))
     pois = json.load(open(poi_file, "r", encoding="utf-8"))
 
-    # POI lookup
     poi_lookup = {i + 1: poi for i, poi in enumerate(pois)}
 
     with Session(engine) as session:
-
         # ---------------------------------------------------
         # 1) Generate Check-in Transactions
         # ---------------------------------------------------
         for c in checkins:
             poi_name = poi_lookup.get(c["poi_id"], {}).get("name", "Địa điểm")
 
-            # Check duplicate by receipt_no (or your code logic)
+            # Check duplicate
             exists = session.scalar(
                 select(Transaction).where(Transaction.code == c["receipt_no"])
             )
@@ -157,29 +155,32 @@ def seed_transactions(
         print("✅ Transactions from Check-ins inserted.")
 
         # ---------------------------------------------------
-        # 2) Generate Daily Rewards
+        # 2) Generate Daily Reward Transactions
         # ---------------------------------------------------
         for u in users:
             remain = u["total_eco_points"] - u["check_ins"] * 100
 
-            if remain > 0:
-                reward_amount = remain // 10
+            # Mỗi daily reward = 10 điểm
+            num_rewards = remain // 10 if remain > 0 else 0
 
-                exists = session.scalar(
-                    select(Transaction).where(
-                        Transaction.title == "Daily Reward",
-                        Transaction.user_id == u["id"]
-                    )
-                )
+            if num_rewards > 0:
+                for _ in range(num_rewards):
+                    # Sinh ngày ngẫu nhiên trong 3 tháng (9, 10, 11) trước ngày 20/11
+                    month = random.choice([9, 10, 11])
+                    if month == 11:
+                        day = random.randint(1, 19)
+                    else:
+                        day = random.randint(1, 28)  # tránh lỗi ngày 30/31 không hợp lệ
 
-                if not exists:
+                    created_at = datetime(2025, month, day)
+
                     code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
                     session.add(Transaction(
-                        title="Daily Reward",
-                        amount=reward_amount,
+                        title="Điểm danh hàng ngày",
+                        amount=10,
                         type="positive",
-                        created_at=datetime(2025, 11, 12),
+                        created_at=created_at,
                         user_id=u["id"],
                         code=code
                     ))
