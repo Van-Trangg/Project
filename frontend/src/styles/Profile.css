@@ -2,7 +2,7 @@
 
 .profile-page {
   font-family: 'Noto Sans', 'Poppins', sans-serif;
-  background: linear-gradient(#ffffff 40%, #d9e6a3 80%, #ACC729 100%);
+  background: linear-gradient(#ffffff 55%, #d9e6a3 80%);
   min-height: 100vh;
   color: #344e41;
   overflow-x: hidden;
@@ -194,10 +194,10 @@
 
 /* Dòng chữ nhỏ bên dưới */
 .stats p {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #BAD050; /* màu chữ chính (vàng xanh nhạt) */
-  -webkit-text-stroke: 0.8px #556B2F; /* viền xung quanh chữ */
+  -webkit-text-stroke: 0.8px #739042; /* viền xung quanh chữ */
   text-stroke: 0.8px #556B2F; /* cho trình duyệt hỗ trợ */
   text-shadow: none; /* bỏ bóng cũ */
   margin-top: 4px;
@@ -212,7 +212,7 @@
 .badges-section h3 {
   font-size: 20px;
   font-weight: 700;
-  color: #2f4f2f;
+  color: #5f8a5f;
   margin: 18px auto 10px;
   display: block;
   width: 92%;
