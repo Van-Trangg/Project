@@ -110,16 +110,22 @@
 }
 
 .onboarding-arrow {
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 12px 16px;
-  border-radius: 12px;
+  /* make button transparent and image-only */
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: all 0.2s;
+  box-shadow: none;
+  transition: transform 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.onboarding-arrow:hover:not(:disabled) { background: #f0fdf0; }
-.onboarding-arrow:disabled { opacity: 0.4; cursor: not-allowed; background: transparent; box-shadow: none; }
+/* .onboarding-arrow:hover:not(:disabled) { background: #f0fdf0; } */
+.onboarding-arrow:disabled { opacity: 0.45; cursor: not-allowed; background: transparent; box-shadow: none; }
+
+.onboarding-arrow:focus { outline: none; }
 
 .onboarding-dots { display: flex; gap: 8px; align-items: center; }
 .dot {
@@ -133,6 +139,10 @@
 }
 .dot.active { background: #3aa035; transform: scale(1.2); }
 
+/* Arrow image sizing + flip for left arrow */
+.onboarding-arrow-img { width: 26px; height: auto; display: block }
+.onboarding-arrow-img.left { transform: scaleX(-1) }
+
 .onboarding-intro-footer {
   margin-top: auto; /* Đẩy xuống đáy của content */
   display: flex;
@@ -145,7 +155,7 @@
 /* Style cho nút "viên thuốc" */
 .swipe-pill {
   background-color: #A6BFA0; /* Màu xanh xám giống trong ảnh */
-  color: #fff;
+  /* color: #fff; */
   font-weight: 600;
   font-size: 16px;
   padding: 12px 32px;

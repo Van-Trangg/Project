@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Onboarding.css'
+import arrowImg from '../public/arrow-right.png'
 
 import img1 from '../public/Onboarding-1.png'
 import img2 from '../public/Onboarding-2.png'
@@ -109,7 +110,7 @@ export default function Onboarding() {
           onClick={() => go(index - 1)} 
           disabled={index === 0}
         >
-          ❮
+          <img src={arrowImg} alt="Trước" className="onboarding-arrow-img left" />
         </button>
 
         <div className="onboarding-dots">
@@ -127,7 +128,7 @@ export default function Onboarding() {
           onClick={() => go(index + 1)} 
           disabled={index === slides.length - 1}
         >
-          ❯
+          <img src={arrowImg} alt="Tiếp" className="onboarding-arrow-img" />
         </button>
       </div>
     </div>
