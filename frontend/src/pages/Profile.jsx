@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProfile } from '../api/profile' 
 import BadgeCard from '../components/BadgeCard'
+import { baseURL } from '../api/apiClient'
 import { listBadgesForUser,listBadges } from '../api/reward'
 import editIcon from '../public/edit.png'
 import newEditIcon from '../public/new_edit.png'
@@ -11,7 +12,7 @@ import exitIcon from '../public/exit.png'
 import newExitIcon from '../public/new_exit.png'
 import viewAllIcon from '../public/view_all.png'
 import defaultAva from '../public/avt.png'
-import coverImg from '../public/ảnh bìa.jpg'
+import coverImg from '../public/ảnh bìa.png'
 import '../styles/Profile.css'
 
 export default function Profile() {
@@ -36,6 +37,7 @@ export default function Profile() {
 
     // fetch small preview of badges (sync with /reward/me)
     const [previewBadges, setPreviewBadges] = useState([])
+    const [selectedBadge, setSelectedBadge] = useState(null)
     useEffect(() => {
             listBadgesForUser().then(r => {
                 const payload = r.data || { versions: [] }
@@ -201,7 +203,7 @@ export default function Profile() {
                             </>
                         ) : (
                             previewBadges.map(b => (
-                                <BadgeCard key={b.id} badge={b} unlocked={b.unlocked} className="profile-badge-small" onClick={() => navigate('/badges')} />
+                                <BadgeCard key={b.id} badge={b} unlocked={b.unlocked} className="profile-badge-small" onClick={(badge) => setSelectedBadge(badge)} />
                             ))
                         )}
                     </div>
@@ -209,26 +211,18 @@ export default function Profile() {
 
             {/* */}
             {showExitConfirm && (
-                <div
-                    className="exit-confirm-overlay"
-                    onClick={() => setShowExitConfirm(false)}
-                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }}
-                >
-                    <div
-                        className="exit-confirm"
-                        onClick={(e) => e.stopPropagation()}
-                        style={{ background: '#EFF5D2', padding: 28, borderRadius: 30, width: '88%', maxWidth: 320, textAlign: 'center', boxShadow: '0 8px 30px rgba(0,0,0,0.25)' }}
-                    >
+                <div className="exit-confirm-overlay" onClick={() => setShowExitConfirm(false)}>
+                    <div className="exit-confirm" onClick={(e) => e.stopPropagation()}>
                         <button
                             type="button"
                             onClick={() => setShowExitConfirm(false)}
                             aria-label="Close"
-                            style={{ position: 'absolute', right: 22, top: 18, background: 'transparent', border: 'none', fontSize: 20, cursor: 'pointer' }}
+                            className="exit-close-btn"
                         >
                             ✕
                         </button>
-                        <h3 style={{ color: '#556B2F', fontSize: 20, margin: '12px 0 18px', fontWeight: 700 }}>Bạn có chắc chắn muốn đăng xuất không?</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+                        <h3 className="exit-confirm-title">Bạn có chắc chắn muốn đăng xuất không?</h3>
+                        <div className="exit-confirm-actions">
                             <button
                                 type="button"
                                 onClick={handleLogout}
@@ -245,6 +239,40 @@ export default function Profile() {
                                 Quay lại
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Badge detail modal (centered, fixed) */}
+            {selectedBadge && (
+                <div
+                    className="badge-modal-overlay"
+                    onClick={() => setSelectedBadge(null)}
+                >
+                    <div
+                        className="badge-modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <img
+                            src={
+                                selectedBadge.image
+                                    ? (selectedBadge.image.startsWith('http') ? selectedBadge.image : `${baseURL}/badges/${selectedBadge.image}`)
+                                    : (selectedBadge.image_url || '')
+                            }
+                            alt={selectedBadge.name || selectedBadge.badge}
+                            className="badge-modal-img"
+                        />
+
+                        <h3 className="badge-modal-title">{selectedBadge.name || selectedBadge.badge}</h3>
+
+                        <p className="badge-modal-desc">{selectedBadge.description || 'Huy hiệu văn hóa đặc biệt'}</p>
+
+                        {selectedBadge.unlocked_at && (
+                            <small style={{ color: '#A9BC96' }}>
+                                Đạt được: {new Date(selectedBadge.unlocked_at).toLocaleDateString()}
+                            </small>
+                        )}
+
+                        <button className="badge-close-btn" onClick={() => setSelectedBadge(null)}>Đóng</button>
                     </div>
                 </div>
             )}
