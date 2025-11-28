@@ -37,7 +37,7 @@
   border-radius: 999px;
   padding: 5px 20px;
   backdrop-filter: blur(10px);
-  animation: fadeInUp 0.6s ease-out;
+  animation: fadeInDown 0.6s ease-out;
 }
 .location-box.dropdown {
   background: transparent;
@@ -344,7 +344,7 @@
   bottom: 10dvh;
   z-index: 1000;
   gap: 15px;
-  animation: fadeInUp 0.6s ease-out;
+  
 }
 
 .chat-bubble {
@@ -867,7 +867,7 @@
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  animation: fadeInUp 0.6s ease-out 0.2s both;
+  animation: fadeInUp 0.4s ease-out 0.1s both;
 }
 
 .filter-button {

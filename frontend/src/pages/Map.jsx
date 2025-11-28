@@ -327,13 +327,13 @@ export default function Map() {
             className={`filter-button ${nearbyFilter ? 'active' : ''}`}
             onClick={() => setNearbyFilter(!nearbyFilter)}
           >
-            Nearby
+            Nội thành
           </button>
           <button 
             className={`filter-button ${budgetFilter ? 'active' : ''}`}
             onClick={() => setBudgetFilter(!budgetFilter)}
           >
-            Budget
+            Tiết kiệm
           </button>
         </div>)}
     </div>
