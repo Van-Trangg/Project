@@ -79,7 +79,7 @@ export default function HistoryPage() {
             
             <div style={{flex: 1, paddingRight: '10px'}}>
                 <span className="item-text" style={{display: 'block'}}>{item.title}</span>
-                <span style={{fontSize: '12px', color: '#888'}}>
+                <span style={{fontSize: '12px', color: '#888', marginLeft: '12.5px'}}>
                     {formatDate(item.created_at)}
                 </span>
             </div>

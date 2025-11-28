@@ -143,7 +143,7 @@ def seed_transactions(
                 created_at = datetime.fromisoformat(c["created_at"])
 
                 session.add(Transaction(
-                    title=f"Check-in tại {poi_name}",
+                    title=f"Check-in: {poi_name}",
                     amount=100,
                     type="positive",
                     created_at=created_at,

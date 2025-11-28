@@ -33,7 +33,7 @@ def get_all_monthly_points(db: Session, user_id: int):
                 "transactions_count": 0
             }
 
-        if "checkin" in t.title.lower():
+        if "check" in t.title.lower():
             grouped[key]["checkin_points"] += t.amount
         elif "hàng ngày" in t.title.lower() or "reward" in t.title.lower():
             grouped[key]["daily_reward_points"] += t.amount

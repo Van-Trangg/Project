@@ -93,7 +93,7 @@ export default function DetailPage() {
       {/* Header */}
       <div className="detail-header">
         <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
-        <h1>Detail</h1>
+        <h1>Thông tin</h1>
       </div>
 
       {/* Nội dung chính */}
