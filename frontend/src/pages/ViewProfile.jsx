@@ -5,7 +5,7 @@ import '../styles/Profile.css'
 import defaultAva from '../public/avt.png'
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
-import coverImg from '../public/ảnh bìa.jpg'
+import coverImg from '../public/ảnh bìa.png'
 import BadgeCard from '../components/BadgeCard'
 import { listBadges } from '../api/reward'
 

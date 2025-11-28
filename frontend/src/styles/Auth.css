@@ -63,9 +63,9 @@ overflow-x: hidden;
   position: absolute;
   /* moved up 20px and right 20px from the previous placement */
   top: 58px; /* 78 - 20 */
-  left: calc(50% + 90px); /* shifted right by additional 20px */
+  left: calc(50% + 40px); /* shifted right by additional 10px (moved left 10px) */
   transform: translateX(-50%);
-  width: 440px; /* doubled from 220px */
+  width: 520px; /* increased to make the login image larger */
   height: auto;
   z-index: 1001; /* above circle */
   pointer-events: none;
@@ -74,9 +74,9 @@ overflow-x: hidden;
 
 @media (max-width: 480px) {
   .auth-top .login-pic {
-    width: 280px; /* doubled from 140px */
+    width: 320px; /* increased for mobile */
     top: 42px; /* 62 - 20 */
-  left: calc(50% + 60px); /* shifted right by additional 20px */
+    left: calc(50% + 40px); /* moved left 10px on mobile */
   }
 }
 
@@ -241,9 +241,9 @@ overflow-x: hidden;
 @media (max-width: 480px) {
   .auth-circle {
    width: 500px;
-   height: 500px;
+   height: 600px;
    top: -340px;
-   padding-bottom: 80px;
+   padding-bottom: 90px;
   }
 
   .auth-title {
