@@ -291,6 +291,7 @@ export default function Map() {
 
   const filteredPois = pois.filter(poi => {
     let include = true;
+    if (checkInCache[poi.id]) return true;
     
     // Apply nearby filter if enabled
     if (nearbyFilter && userLocation) {
