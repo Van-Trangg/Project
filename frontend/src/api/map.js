@@ -27,7 +27,7 @@ export const sendMessage = (message) => {
 };
 
 export const resetChat = () => {
-  return api.get('/ai/ai/reset');
+  return api.post('/ai/ai/reset');
 };
 
 export const getStats = () => {
