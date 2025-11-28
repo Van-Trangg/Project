@@ -1,0 +1,184 @@
+.stats-page {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(#C6D870 25%, #F5F9F0 100%);
+  max-width: 600px; /* Constrain width for readability on larger screens */
+  margin: 0 auto;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  align-items: center;
+  height: 13%;
+}
+
+.back-button-stats {
+    background: transparent;
+    border: none;
+    position: absolute;
+    left: 5%;
+}
+
+.page-header h1 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Main Content */
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Space between sections */
+}
+
+/* Summary Cards */
+.general-section {
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  margin-right: 30px;
+  background-color: rgb(85,104,47,80%);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  align-content: center;
+  justify-content: center;
+}
+
+.general-section h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 25px;
+  font-weight: 600;
+  color: white;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 600px; /* Adjust based on your design */
+  margin: 0 auto;
+}
+
+.general-stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+  backdrop-filter: blur(1px);
+  padding: 20px;
+  border-radius: 30px;
+  max-width: 200px;
+  aspect-ratio: 1/1;
+}
+
+.stat-card:hover {
+  background-color: #f3f4f6;
+}
+
+.stat-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #1B5E20;
+}
+
+.stat-value {
+  font-family: "Inter", sans-serif;
+  align-self: flex-end;
+
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #1B5E20;
+  
+  text-align: right;
+  margin-top: auto;
+}
+
+
+/* Chart Section */
+.chart-section {
+  margin-left: 30px;
+  margin-right: 30px;
+  background-color: rgb(255, 255, 255, 90%);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.chart-section *:focus {
+  outline: none; /* This removes the default browser border */
+  border: none;
+}
+
+.chart-section h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 25px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.chart-section:hover {
+  transform: scale(1.02);
+}
+
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.chart-header h2 {
+  margin: 0;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.year-selector label {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: white;
+}
+
+.year-selector select {
+  position: static;
+  padding: 0.5rem 2rem 0.5rem 0.75rem; 
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgb(85,104,47,100%);
+  background-color: white;
+  border: none;
+  border-radius: 8px;
+  appearance: none; /* Remove default arrow */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.year-selector select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}

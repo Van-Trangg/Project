@@ -124,7 +124,6 @@ export default function Chatbot() {
                     <img className = 'chat-title-icon' src = 'src/public/ecopoint.png' height = "25px" width = "25px"></img>
                     Navi
                 </div>
-                
             </div>
             <div className="chat-window">
                 <div className="messages-container" ref={messagesContainerRef}>

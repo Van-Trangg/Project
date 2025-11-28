@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
-import { listPlaces, getPois, percentageChecked, getNearestMap, checked } from '../api/map'
+import { listPlaces, getPois, percentageChecked, getNearestMap, checked} from '../api/map'
 import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
 import { checkedInIcon, customIcon, customIconHere } from '../components/Pin';
