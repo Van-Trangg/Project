@@ -27,11 +27,11 @@ export default function Onboarding() {
       image: null // Bạn có thể thay bằng ảnh Logo hoặc ảnh bìa khác
     },
     // -------------------------------
-    { title: 'Phần thưởng từ việc', highlight: 'sống xanh', image: img1 },
-    { title: 'Check-in tại', highlight: 'điểm du lịch xanh', image: img2 },
-    { title: 'Ghi lại', highlight: 'câu chuyện của bạn', image: img3 },
-    { title: 'Cạnh tranh với', highlight: 'những người cùng đam mê', image: img4 },
-    { title: '', highlight: 'Bắt đầu ngay', image: overview1 }
+    { title: 'Du lịch xanh', highlight: 'quà theo nhanh', image: img1 },
+    { title: 'Check-in cực nhanh', highlight: 'tại điểm du lịch xanh', image: img2 },
+    { title: 'Biến khoảnh khắc', highlight: 'thành câu chuyện bất tận', image: img3 },
+    { title: 'So tài đỉnh cao', highlight: 'cùng hội đam mê', image: img4 },
+    { title: 'Không bây giờ thì bao giờ?', highlight: 'BẮT ĐẦU THÔI', image: overview1 }
   ]
 
   const [index, setIndex] = useState(0)

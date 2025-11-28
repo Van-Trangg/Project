@@ -159,7 +159,7 @@
   width: 100%;
   max-width: 720px;
   margin: 24px auto;
-  color: #556B2F;
+  color: #A9BC96;
 }
 
 .stats div {
@@ -187,7 +187,7 @@
   display: block;
   font-size: 24px;
   font-weight: 800;
-  color: #556B2F;
+  color: #789349;
   text-shadow: 0 1px 0 #C8D6A1;
   line-height: 1.2;
 }
@@ -196,8 +196,8 @@
 .stats p {
   font-size: 16px;
   font-weight: 700;
-  color: #BAD050; /* màu chữ chính (vàng xanh nhạt) */
-  -webkit-text-stroke: 0.8px #739042; /* viền xung quanh chữ */
+  color: #A9BC96; /* màu chữ chính (vàng xanh nhạt) */
+  -webkit-text-stroke: 0.8px #afc090; /* viền xung quanh chữ */
   text-stroke: 0.8px #556B2F; /* cho trình duyệt hỗ trợ */
   text-shadow: none; /* bỏ bóng cũ */
   margin-top: 4px;
@@ -303,7 +303,7 @@
 
 .info-label {
   font-size: 16px;
-  color: #A9BC96; 
+  color: #000000; 
   font-weight: 600;
   text-align: left;
 }
@@ -563,6 +563,117 @@
     0 14px 28px rgba(0,0,0,0.3),
     0 6px 12px rgba(85,107,47,0.08),
     inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* Centered exit confirm overlay (anchors to viewport) */
+.exit-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 20000;
+}
+
+.exit-confirm {
+  background: #f2f8e8;
+  padding: 28px;
+  border-radius: 24px;
+  width: min(92%, 360px);
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 22px 50px rgba(0,0,0,0.35);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exit-close-btn {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.exit-confirm-title {
+  color: #556B2F;
+  font-size: 20px;
+  margin: 6px 0 4px;
+  font-weight: 800;
+}
+
+.exit-confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.exit-confirm .exit-logout-btn,
+.exit-confirm .exit-back-btn {
+  padding: 14px 28px;
+  border-radius: 28px;
+  width: 80%;
+  margin: 0 auto;
+  font-size: 18px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+}
+
+@media (max-width: 480px) {
+  .exit-confirm { padding: 20px; width: 92% }
+  .exit-confirm .exit-logout-btn,
+  .exit-confirm .exit-back-btn { width: 100% }
+}
+
+/* --- Badge modal: fixed, centered in viewport --- */
+.badge-modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 12000;
+  backdrop-filter: blur(3px);
+}
+
+.badge-modal-content {
+  background: #f1f7ec;
+  padding: 26px 20px;
+  border-radius: 20px;
+  width: min(92%, 360px);
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge-modal-img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.2));
+  border-radius: 12px;
+}
+
+.badge-modal-title { color: #556B2F; font-size: 20px; font-weight: 800; margin: 0 }
+.badge-modal-desc { color: #6b7b4f; font-size: 15px; text-align: center }
+.badge-close-btn { margin-top: 6px; background: #556B2F; color: #fff; border: none; padding: 10px 20px; border-radius: 18px; cursor: pointer }
+
+@media (max-width: 480px) {
+  .badge-modal-img { width: 110px; height: 110px }
+  .badge-modal-content { padding: 18px 14px; width: 92% }
 }
 .edit-name { text-align:center; margin-top:10px; display:flex; flex-direction:column; gap:6px; align-items:center; color: #556B2F}
 .edit-name input:first-child{font-size:20px; font-weight:700; text-align:center; border:none; background:transparent; color: #556B2F}
