@@ -99,6 +99,7 @@ export default function Reward() {
             <button className="btn-secondary" onClick={() => navigate('/how-to-earn')}> Cách nhận điểm</button>
             <button className="btn-primary" onClick={() => navigate('/leaderboard')}>Bảng xếp hạng</button>
           </div>
+          <button className="btn-plant" onClick={() => navigate('/stats')}>Xem thống kê</button>
           <button className="btn-plant" onClick={() => navigate('/planting-trees')}>Trồng cây</button>
         </div>
 

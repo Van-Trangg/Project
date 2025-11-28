@@ -27,7 +27,11 @@ export const sendMessage = (message) => {
 };
 
 export const resetChat = () => {
-  return api.post('/ai/ai/reset');
+  return api.get('/ai/ai/reset');
+};
+
+export const getStats = () => {
+  return api.get('/statistic/statistic/monthly/all');
 };
 
 // api/map.js or wherever your API functions are
