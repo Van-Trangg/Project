@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, Float, ForeignKey
 from app.db.database import Base
 from sqlalchemy.orm import relationship
 
@@ -18,5 +18,6 @@ class POI(Base):
     score = Column(Integer, default=10)
     checked_users = Column(Integer, default=0)
     category = Column(String, nullable=True)  # cafe xanh, giao thông xanh...
-
+    money_required = Column(Boolean, default=False)
+    cost = Column(Integer, default=0)
     journals = relationship("Journal", back_populates="poi")

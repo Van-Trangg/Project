@@ -23,7 +23,9 @@ class PoiOut(BaseModel):
     rating: Optional[float] = None           
     category: Optional[str] = None           
     image: Optional[str] = None              
-    visited: bool = False                   
+    visited: bool = False
+    money_required: bool = False
+    cost: int = 0                   
 
     class Config:
         from_attributes = True  
