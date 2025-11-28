@@ -42,7 +42,6 @@ const Stats = () => {
     return filteredChartData.reduce((acc, curr) => acc + curr.transactions_count, 0);
   }, [filteredChartData]);
 
-  // Load stats data on component mount
   useEffect(() => {
     setLoadingData(true);
 
@@ -73,8 +72,6 @@ const Stats = () => {
   const handleBackRewards = () => {
     navigate('/reward');
   };
-
-  // Show loading state
 
   return (
     <div className="stats-page">
