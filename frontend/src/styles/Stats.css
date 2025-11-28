@@ -1,13 +1,6 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(#C6D870 25%, #F5F9F0 100%);
-  color: #1f2937; /* Dark gray text */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 .stats-page {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(#C6D870 25%, #F5F9F0 100%);
   max-width: 600px; /* Constrain width for readability on larger screens */
   margin: 0 auto;
   height: 100dvh;
