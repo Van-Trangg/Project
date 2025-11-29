@@ -6,7 +6,7 @@ from app.db.database import get_db
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.routers import (
-    auth, file, home, leaderboard, journal, ai, statistic,
+    auth, file, home, leaderboard, journal, ai, statistic, 
     map as map_router, profile, reward, users, badges
 )
 
@@ -41,6 +41,7 @@ app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(badges.router, prefix="/api/badges", tags=["badges"])
 app.include_router(ai.router, prefix="/ai", tags=["ai"])
 app.include_router(statistic.router, prefix="/statistic", tags=["statistic"])
+
 
 # ─────────────────────────────────────────────
 # ⭐ STARTUP EVENT – chạy init_db + recompute_scores
