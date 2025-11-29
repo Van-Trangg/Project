@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { getProfile } from '../api/profile' 
 import BadgeCard from '../components/BadgeCard'
@@ -38,6 +39,14 @@ export default function Profile() {
     // fetch small preview of badges (sync with /reward/me)
     const [previewBadges, setPreviewBadges] = useState([])
     const [selectedBadge, setSelectedBadge] = useState(null)
+    // prevent background scroll when badge modal open
+    useEffect(() => {
+        if (typeof document === 'undefined') return
+        const prev = document.body.style.overflow
+        if (selectedBadge) document.body.style.overflow = 'hidden'
+        else document.body.style.overflow = prev
+        return () => { document.body.style.overflow = prev }
+    }, [selectedBadge])
     useEffect(() => {
             listBadgesForUser().then(r => {
                 const payload = r.data || { versions: [] }
@@ -243,15 +252,9 @@ export default function Profile() {
                 </div>
             )}
             {/* Badge detail modal (centered, fixed) */}
-            {selectedBadge && (
-                <div
-                    className="badge-modal-overlay"
-                    onClick={() => setSelectedBadge(null)}
-                >
-                    <div
-                        className="badge-modal-content"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+            {selectedBadge && (typeof document !== 'undefined' ? createPortal(
+                <div className="badge-modal-overlay" onClick={() => setSelectedBadge(null)}>
+                    <div className="badge-modal-content" onClick={(e) => e.stopPropagation()}>
                         <img
                             src={
                                 selectedBadge.image
@@ -274,8 +277,7 @@ export default function Profile() {
 
                         <button className="badge-close-btn" onClick={() => setSelectedBadge(null)}>Đóng</button>
                     </div>
-                </div>
-            )}
+                </div>, document.body) : null)}
         </div>
     )
 }
