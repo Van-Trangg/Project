@@ -27,10 +27,19 @@ export default function BadgeCard({ badge, unlocked, onClick, className = '' }) 
     const handleClick = () => {
         if (movedRef.current) return
 
-        if (unlocked) {
-            if (onClick) onClick(badge)
+        // If a click handler is provided, always call it so parent can decide
+        // whether to show details or a locked message. Otherwise, fallback to
+        // the old behaviour of shaking when clicking a locked badge.
+        if (onClick) {
+            onClick(badge)
             return
         }
+
+        if (unlocked) {
+            // no handler provided but unlocked - nothing else to do
+            return
+        }
+
         try {
             setShaking(true)
             setTimeout(() => setShaking(false), 420)
