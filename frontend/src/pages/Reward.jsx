@@ -155,7 +155,10 @@ export default function Reward() {
                     backgroundColor: isAffordable ? '#fff' : '#f9f9f9'
                   }}
                 >
-                  <div className="promo-icon-placeholder" style={{ filter: isAffordable ? 'none' : 'grayscale(100%)' }}>
+                  <div className="promo-icon-placeholder" style={{ filter: isAffordable ? 'none' : 'grayscale(100%)',display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{fontSize: '25px'}}>
+                      📥
+                    </span>
                   </div>
                   <div className="promo-info">
                       <span className="promo-text" style={{ color: isAffordable ? '#333' : '#999' }}>{promo.title}</span>
