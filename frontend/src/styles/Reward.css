@@ -18,6 +18,8 @@
   align-items: center;
   color: #000000; /* Chữ trắng */
   width: 100%;
+  /* xích xuống 1 chút để không sát viền trên */
+  padding: 24px 0;
 }
 
 .header-overlay .back-arrow {
