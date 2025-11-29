@@ -28,8 +28,14 @@
   margin-left: 18px;
 }
 
+.header-overlay .back-arrow-img {
+  background: none;
+  width: 20px;
+  height: 20px;
+}
+
 .header-overlay h1 {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   margin: 0;
 }

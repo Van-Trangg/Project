@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/HistoryPage.css'; 
 import ecopointsIcon from '../public/ecopoint.png';
+import backArrowImg from '../public/back.png';
 
 export default function HistoryPage() {
   const navigate = useNavigate();
@@ -52,7 +53,9 @@ export default function HistoryPage() {
     <div className="history-page" style={{position: 'relative'}}>
       
       <div className="history-header">
-        <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
+        <span className="back-arrow-img" onClick={() => navigate(-1)}>
+            <img src={backArrowImg} alt="Back" className="back-arrow" />
+        </span>
         <h1>Lịch sử giao dịch</h1>
       </div>
 
