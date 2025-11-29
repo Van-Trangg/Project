@@ -67,7 +67,7 @@ const StatsChart = ({ data }) => {
           wrapperStyle={{ paddingTop: '10px', marginLeft: '10px', textAlign: 'center' }}
           iconType="circ"
         />
-        <Bar dataKey="daily_reward_points" stackId="a" fill="#e0a8b5ff" name="Thuởng đăng nhập" />
+        <Bar dataKey="daily_reward_points" stackId="a" fill="#e391a4ff" name="Thuởng đăng nhập" />
         <Bar dataKey="checkin_points" stackId="a" fill="#eacdd5ff" name="Thưởng Check-in" />
       </BarChart>
     </ResponsiveContainer>

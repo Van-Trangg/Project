@@ -10,10 +10,12 @@
 /* Header */
 .page-header {
   display: flex;
+  position: relative;
   flex-direction: row;
   text-align: center;
   align-items: center;
   height: 13%;
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .back-button-stats {
@@ -52,6 +54,7 @@ main {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   align-content: center;
   justify-content: center;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
 .general-section h2 {
@@ -69,6 +72,7 @@ main {
   width: 100%;
   max-width: 600px; /* Adjust based on your design */
   margin: 0 auto;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
 }
 
 .general-stat-card {
@@ -117,6 +121,8 @@ main {
   border-radius: 30px;
   padding: 30px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .chart-section *:focus {
@@ -151,6 +157,7 @@ main {
 .year-selector {
   display: flex;
   align-items: center;
+  position: relative;
   gap: 0.5rem;
 }
 
@@ -161,7 +168,7 @@ main {
 }
 
 .year-selector select {
-  position: static;
+  position: relative;
   padding: 0.5rem 2rem 0.5rem 0.75rem; 
   font-size: 0.9rem;
   font-weight: 600;
@@ -181,4 +188,37 @@ main {
 .year-selector select:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/*Loading animations*/
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Apply to cards while loading */
+.general-stat-card.loading .stat-value,
+.general-stat-card.loading .stat-title {
+  color: transparent;
+  position: relative;
+}
+
+.general-stat-card.loading .stat-value:after,
+.general-stat-card.loading .stat-title:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 4px;
 }

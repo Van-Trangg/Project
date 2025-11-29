@@ -63,6 +63,7 @@ const Stats = () => {
         console.error('Failed to load user stats', err);
         // Use mock data as fallback
         setStatData(mockUserData);
+        console.log(statData);
       })
       .finally(() => {
         setLoadingData(false);
