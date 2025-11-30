@@ -116,13 +116,13 @@ export default function DetailPage() {
           <p className="promo-description">{displayItem.description}</p>
           
           <button 
-            className={`btn-redeem ${isRedeemed ? 'redeemed' : ''}`}
+            className={`btn-redeem ${isRedeemed ? 'Đã đổi' : ''}`}
             onClick={() => {
               if (!isRedeemed) setShowModal(true); 
             }}
             disabled={isRedeemed || isLoading} 
           >
-            {isLoading ? 'Processing...' : (isRedeemed ? 'Redeemed' : 'Redeem')}
+            {isLoading ? 'Đang xử lý...' : (isRedeemed ? 'Dã đổi' : 'Đổi thưởng')}
           </button>
         </div>
         
