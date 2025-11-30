@@ -25,15 +25,15 @@ import hcmclogoImg from '../public/hcmclogo.png';
 import bokittrongcayImg from '../public/bokittrongcay.png';
 
 const imageMap = {
-  "/logo-bus.png": logobusImg,
-  "/coffelogo.png": coffelogoImg,
-  "/onghuttre.png": onghuttreImg,
-  "/tuivai.png": tuivaiImg,
-  "/binhnuoc.png": binhnuocImg,
-  "/sotay.png": sotayImg,
-  "/hcmclogo.png": hcmclogoImg,
-  "/bokittrongcay.png": bokittrongcayImg
-};
+  "logo-bus": logobusImg,
+  "coffelogo": coffelogoImg,
+  "onghuttre": onghuttreImg,
+  "tuivai": tuivaiImg,
+  "binhnuoc": binhnuocImg,
+  "sotay": sotayImg,
+  "hcmclogo": hcmclogoImg,
+  "bokittrongcay": bokittrongcayImg
+}
 
 export default function Reward() {
   const navigate = useNavigate();
@@ -161,6 +161,10 @@ export default function Reward() {
           </div>
           <div className="promo-list">
             {promotions.map((promo) => {
+              const cleanKey = promo.image
+                  ? promo.image.replace('/', '').replace('.png', '').trim()
+                  : "";
+              const realImage = imageMap[cleanKey];
               const price = parsePrice(promo.price);
               const isAffordable = balance >= price;
               console.log("Server gửi:", promo.image, " | Map tìm thấy:", imageMap[promo.image]);
@@ -179,12 +183,7 @@ export default function Reward() {
                     className="promo-icon-placeholder" 
                     style={{ filter: isAffordable ? 'none' : 'grayscale(100%)' }} // Chỉ giữ lại logic đổi màu xám
                   >
-                      <img 
-                          // Lấy ảnh từ map dựa vào tên backend gửi về. 
-                          // Nếu không tìm thấy thì dùng ảnh defaultImg
-                          src={imageMap[promo.image]} 
-                          alt={promo.title} 
-                      />
+                      <img src={realImage} alt={promo.title} />
                   </div>
                   <div className="promo-info">
                       <span className="promo-text" style={{ color: isAffordable ? '#333' : '#999' }}>{promo.title}</span>
