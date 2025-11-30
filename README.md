@@ -6,8 +6,8 @@ pip install -q -U google-genai
 ### Frontend - Updated 
 ```bash
 cd frontend
-npm install
 npm install leaflet react-leaflet@4 
+npm install recharts
 npm run dev -- --host
 
 ## Cách chạy lần đầu (setup lần đầu tiên)

@@ -4,7 +4,7 @@ import { getProfile, updateProfile, updateProfileMultipart } from '../api/profil
 import backIcon from '../public/back.png'
 import newBackIcon from '../public/new_back.png'
 import camIcon from '../public/camera.png'
-import coverImg from '../public/ảnh bìa.jpg'
+import coverImg from '../public/ảnh bìa.png'
 import defaultAva from '../public/avt.png'
 import showIcon from "../public/show.png"
 import dontEyeIcon from "../public/don't_eye.png"

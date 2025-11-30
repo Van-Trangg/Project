@@ -41,19 +41,51 @@ def get_maps(db: Session = Depends(get_db)):
 def get_pois(
     map_id: int,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    time_only: bool = Query(False),
+    budget_only: bool = Query(False),
+    user_lat: float | None = Query(None),
+    user_lng: float | None = Query(None),
 ):
     pois = map_crud.list_pois_by_map(db, map_id)
+
+    # TIME ONLY FILTER
+    if time_only:
+        if user_lat is None or user_lng is None:
+            raise HTTPException(status_code=400, detail="Thiếu user_lat/user_lng.")
+        
+        MAX_DISTANCE = 30000
+        filtered = []
+        for p in pois:
+            dist = haversine_m(user_lat, user_lng, p.lat, p.lng)
+            if dist <= MAX_DISTANCE:
+                p.distance_m = dist
+                filtered.append(p)
+
+        pois = filtered
+
+    # BUDGET ONLY FILTER
+    if budget_only:
+        MIN_COST = 0
+        MAX_COST = 60000  
+        pois = [
+            p for p in pois
+            if p.cost is not None and MIN_COST <= p.cost <= MAX_COST
+        ]
+
+    # VISITED FLAG
     visited_ids = set(
         [cid for (cid,) in db.query(Checkin.poi_id).filter(Checkin.user_id == user.id).all()]
     )
 
-    result = []
+    results = []
     for p in pois:
         item = PoiOut.from_orm(p)
         item.visited = p.id in visited_ids
-        result.append(item)
-    return result
+        results.append(item)
+
+    return results
+
 
 @router.get("/nearest", response_model=MapOut)
 def get_nearest_map(

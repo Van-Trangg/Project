@@ -30,6 +30,10 @@ export const resetChat = () => {
   return api.post('/ai/ai/reset');
 };
 
+export const getStats = () => {
+  return api.get('/statistic/statistic/monthly/all');
+};
+
 // api/map.js or wherever your API functions are
 export const getAllPois = async () => {
   try {

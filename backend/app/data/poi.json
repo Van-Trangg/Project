@@ -9,6 +9,8 @@
     "lng": 106.69248495652977,
     "map_id": 1,
     "score": 100,
+    "money_required": false,
+    "cost": 0,
     "category": "green",
     "slug": "cong-vien-tao-dan"
   },
@@ -22,6 +24,8 @@
     "lng": 106.70560913503951,
     "map_id": 1,
     "score": 100,
+    "money_required": true,
+    "cost": 60000,
     "category": "green",
     "slug": "thao-cam-vien"
   },
@@ -35,6 +39,8 @@
     "lng": 106.69392780887249,
     "map_id": 1,
     "score": 100,
+    "money_required": false,
+    "cost": 0,
     "category": "green",
     "slug": "cong-vien-239"
   },
@@ -49,7 +55,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-le-van-tam"
+    "slug": "cong-vien-le-van-tam",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Công viên 30/4",
@@ -62,7 +70,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-304"
+    "slug": "cong-vien-304",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Chùa Vĩnh Nghiêm",
@@ -75,7 +85,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "chua-vinh-nghiem"
+    "slug": "chua-vinh-nghiem",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Bến Bạch Đằng",
@@ -88,7 +100,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "ben-bach-dang"
+    "slug": "ben-bach-dang",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Thư quán Công Viên Văn Lang",
@@ -101,7 +115,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "thu-quan-cong-vien-van-lang"
+    "slug": "thu-quan-cong-vien-van-lang",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Công viên Lê Thị Riêng",
@@ -114,7 +130,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-le-thi-rieng"
+    "slug": "cong-vien-le-thi-rieng",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Việt Nam Quốc Tự",
@@ -127,7 +145,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "viet-nam-quoc-tu"
+    "slug": "viet-nam-quoc-tu",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Khu du lịch sinh thái Vàm Sát",
@@ -140,7 +160,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "khu-du-lich-sinh-thai-vam-sat"
+    "slug": "khu-du-lich-sinh-thai-vam-sat",
+    "cost": 105000,
+    "money_required": true
   },
   {
     "name": "Công viên du lịch sinh thái Hóc Môn",
@@ -153,7 +175,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-du-lich-sinh-thai-hoc-mon"
+    "slug": "cong-vien-du-lich-sinh-thai-hoc-mon",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Nông Trang Xanh (Green Noen)",
@@ -166,7 +190,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "nong-trang-xanh-green-noen"
+    "slug": "nong-trang-xanh-green-noen",
+    "cost": 50000,
+    "money_required": true
   },
   {
     "name": "Khu du lịch Bến Xưa",
@@ -179,7 +205,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "khu-du-lich-ben-xua"
+    "slug": "khu-du-lich-ben-xua",
+    "cost": 328000,
+    "money_required": true
   },
   {
     "name": "Làng sinh thái Fosaco",
@@ -192,7 +220,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "lang-sinh-thai-fosaco"
+    "slug": "lang-sinh-thai-fosaco",
+    "cost": 30000,
+    "money_required": true
   },
   {
     "name": "Công Viên Văn Hóa Đầm Sen",
@@ -205,7 +235,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-van-hoa-dam-sen"
+    "slug": "cong-vien-van-hoa-dam-sen",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Vinhomes Central Park",
@@ -218,7 +250,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "vinhomes-central-park"
+    "slug": "vinhomes-central-park",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Bờ Kè Thanh Đa",
@@ -231,7 +265,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "bo-ke-thanh-da"
+    "slug": "bo-ke-thanh-da",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Khu Du Lịch Bình Quới 1",
@@ -244,7 +280,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "khu-du-lich-binh-quoi-1"
+    "slug": "khu-du-lich-binh-quoi-1",
+    "cost": 340000,
+    "money_required": true
   },
   {
     "name": "Khu Du Lịch Bình Quới 2",
@@ -257,7 +295,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "khu-du-lich-binh-quoi-2"
+    "slug": "khu-du-lich-binh-quoi-2",
+    "cost": 340000,
+    "money_required": true
   },
   {
     "name": "Công Viên Gia Định",
@@ -270,7 +310,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-gia-dinh"
+    "slug": "cong-vien-gia-dinh",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Công Viên Hoàng Văn Thụ",
@@ -283,7 +325,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-hoang-van-thu"
+    "slug": "cong-vien-hoang-van-thu",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Khu Du Lịch Văn Thánh",
@@ -296,7 +340,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "khu-du-lich-van-thanh"
+    "slug": "khu-du-lich-van-thanh",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Công Viên D9",
@@ -309,7 +355,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "cong-vien-d9"
+    "slug": "cong-vien-d9",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Chùa Giác Lâm",
@@ -322,7 +370,9 @@
     "map_id": 1,
     "score": 100,
     "category": "green",
-    "slug": "chua-giac-lam"
+    "slug": "chua-giac-lam",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Khu du lịch Suối Tranh",
@@ -335,7 +385,9 @@
     "map_id": 2,
     "score": 100,
     "category": "green",
-    "slug": "khu-du-lich-suoi-tranh"
+    "slug": "khu-du-lich-suoi-tranh",
+    "cost": 30000,
+    "money_required": true
   },
   {
     "name": "Suối Đá Bàn",
@@ -348,7 +400,9 @@
     "map_id": 2,
     "score": 100,
     "category": "green",
-    "slug": "suoi-da-ban"
+    "slug": "suoi-da-ban",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Khu bảo tồn chó xoáy Phú Quốc - Trang trại Thanh Nga",
@@ -361,7 +415,9 @@
     "map_id": 2,
     "score": 100,
     "category": "green",
-    "slug": "khu-bao-ton-cho-xoay-phu-quoc---trang-trai-thanh-nga"
+    "slug": "khu-bao-ton-cho-xoay-phu-quoc---trang-trai-thanh-nga",
+    "cost": 40000,
+    "money_required": true
   },
   {
     "name": "Vườn Quốc gia Phú Quốc",
@@ -374,7 +430,9 @@
     "map_id": 2,
     "score": 100,
     "category": "green",
-    "slug": "vuon-quoc-gia-phu-quoc"
+    "slug": "vuon-quoc-gia-phu-quoc",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Mũi Hàm Rồng",
@@ -387,7 +445,9 @@
     "map_id": 2,
     "score": 100,
     "category": "green",
-    "slug": "mui-ham-rong"
+    "slug": "mui-ham-rong",
+    "cost": 0,
+    "money_required": false
   },
   {
     "name": "Vườn tiêu Phú Quốc",
@@ -400,6 +460,8 @@
     "map_id": 2,
     "score": 100,
     "category": "green",
-    "slug": "vuon-tieu-phu-quoc"
+    "slug": "vuon-tieu-phu-quoc",
+    "cost": 0,
+    "money_required": false
   }
 ]

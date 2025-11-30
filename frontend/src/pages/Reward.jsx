@@ -99,9 +99,10 @@ export default function Reward() {
             <img src={ecopointsIcon} alt="leaf" className="balance-leaf-icon" />
           </div>
           <div className="action-buttons">
-            <button className="btn-secondary" onClick={() => navigate('/how-to-earn')}> Cách để nhận</button>
+            <button className="btn-secondary" onClick={() => navigate('/how-to-earn')}> Cách nhận điểm</button>
             <button className="btn-primary" onClick={() => navigate('/leaderboard')}>Bảng xếp hạng</button>
           </div>
+          <button className="btn-plant" onClick={() => navigate('/stats')}>Xem thống kê</button>
           <button className="btn-plant" onClick={() => navigate('/planting-trees')}>Trồng cây</button>
         </div>
 

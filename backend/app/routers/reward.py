@@ -73,9 +73,10 @@ def redeem_reward(
         owner=current_user # Tự động gán user_id
     )
     db.add(new_transaction)
-
+        
     db.commit()
     db.refresh(current_user)
+
     
     return {
         "message": f"Đổi '{reward.name}' thành công!",

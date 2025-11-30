@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { listBadgesForUser, listBadges } from '../api/reward'
 import BadgeCard from '../components/BadgeCard'
@@ -147,7 +148,24 @@ export default function Badges(){
     setSelected(badge)
   }
 
-  const closeModal = () => setSelected(null)
+  const closeModal = () => {
+    stopModalInertia()
+    if (modalDraggingRef.current) {
+      modalDraggingRef.current = false
+      window.removeEventListener('pointermove', onModalPointerMove)
+      window.removeEventListener('pointerup', onModalPointerUp)
+    }
+    setSelected(null)
+  }
+
+  // lock background scroll while modal open so viewport centering stays visible
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const prev = document.body.style.overflow
+    if (selected) document.body.style.overflow = 'hidden'
+    else document.body.style.overflow = prev
+    return () => { document.body.style.overflow = prev }
+  }, [selected])
 
   // If backend returned unlocked flags we prefer them; otherwise fall back to comparing points
   const isUnlocked = (badge) => {
@@ -190,7 +208,7 @@ export default function Badges(){
         ))}
       </div>
 
-      {selected && (
+      {selected && (typeof document !== 'undefined' ? createPortal(
         <div className="badge-modal" onClick={closeModal}>
           <div className="badge-modal-inner" onClick={e=>e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}>✕</button>
@@ -236,8 +254,7 @@ export default function Badges(){
 
             <div className="modal-desc">{selected.description}</div>
           </div>
-        </div>
-      )}
+        </div>, document.body) : null)}
     </div>
   )
 }

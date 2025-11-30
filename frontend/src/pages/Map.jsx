@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
-import { listPlaces, getPois, percentageChecked, getNearestMap, checked } from '../api/map'
+import { listPlaces, getPois, percentageChecked, getNearestMap, checked} from '../api/map'
 import '../styles/Map.css'
 import 'leaflet/dist/leaflet.css';
 import { checkedInIcon, customIcon, customIconHere } from '../components/Pin';
@@ -68,6 +68,9 @@ export default function Map() {
   const [mapZoom, setMapZoom] = useState(13);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
+  const [budgetFilter, setBudgetFilter] = useState(false);
+  const [nearbyFilter, setNearbyFilter] = useState(false);
+
   const navigate = useNavigate();
   const mapRef = useRef(null);
 
@@ -286,10 +289,28 @@ export default function Map() {
     setCheckinEligible(distance <= 200000);
   };
 
+  const filteredPois = pois.filter(poi => {
+    let include = true;
+    if (checkInCache[poi.id]) return true;
+    
+    // Apply nearby filter if enabled
+    if (nearbyFilter && userLocation) {
+      const distance = haversineDistance(userLocation.lat, userLocation.lng, poi.lat, poi.lng);
+      include = include && distance <= 30; // 30km radius
+    }
+    
+    // Apply budget filter if enabled
+    if (budgetFilter) {
+      if (poi.money_required) include = include && poi.money <= 60000;
+    }
+    
+    return include;
+  });
+
   return (
   <div className="map-page">
     <div className="location-bar">
-      <div className="spacer"></div>
+      <div className='spacer'></div>
       <div className = {`location-box ${dropdownOpen ? 'dropdown' : ''}`}>
         <span className="location-text">{selectedMap?.name || 'Loading...'}</span>
         <button 
@@ -301,7 +322,21 @@ export default function Map() {
           </svg>
         </button>
       </div>
-      <div className="spacer"></div>
+      
+      {!dropdownOpen && (<div className = 'filter-bar'>
+          <button 
+            className={`filter-button ${nearbyFilter ? 'active' : ''}`}
+            onClick={() => setNearbyFilter(!nearbyFilter)}
+          >
+            Nội thành
+          </button>
+          <button 
+            className={`filter-button ${budgetFilter ? 'active' : ''}`}
+            onClick={() => setBudgetFilter(!budgetFilter)}
+          >
+            Tiết kiệm
+          </button>
+        </div>)}
     </div>
     {dropdownOpen && ( 
       <div className="city-fullscreen-overlay">
@@ -343,7 +378,7 @@ export default function Map() {
               attribution='&copy; OpenStreetMap'
               url="http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
             />  
-            {pois.map((pin) => (
+            {filteredPois.map((pin) => (
               <Marker
                 className = 'map-pin'
                 key={pin.id}
