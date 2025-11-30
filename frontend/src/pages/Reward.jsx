@@ -15,6 +15,25 @@ import mapSolidIcon from '../public/map-solid.png';
 import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
 import leaderboardSolidIcon from '../public/leaderboard-solid.png';
 import backArrowImg from '../public/back.png';
+import logobusImg from '../public/logo-bus.png';
+import coffelogoImg from '../public/coffelogo.png';
+import onghuttreImg from '../public/onghuttre.png';
+import tuivaiImg from '../public/tuivai.png';
+import binhnuocImg from '../public/binhnuoc.png';
+import sotayImg from '../public/sotay.png';
+import hcmclogoImg from '../public/hcmclogo.png';
+import bokittrongcayImg from '../public/bokittrongcay.png';
+
+const imageMap = {
+  "/logo-bus.png": logobusImg,
+  "/coffelogo.png": coffelogoImg,
+  "/onghuttre.png": onghuttreImg,
+  "/tuivai.png": tuivaiImg,
+  "/binhnuoc.png": binhnuocImg,
+  "/sotay.png": sotayImg,
+  "/hcmclogo.png": hcmclogoImg,
+  "/bokittrongcay.png": bokittrongcayImg
+};
 
 export default function Reward() {
   const navigate = useNavigate();
@@ -144,7 +163,7 @@ export default function Reward() {
             {promotions.map((promo) => {
               const price = parsePrice(promo.price);
               const isAffordable = balance >= price;
-
+              console.log("Server gửi:", promo.image, " | Map tìm thấy:", imageMap[promo.image]);
               return (
                 <div 
                   key={promo.id} 
@@ -160,7 +179,12 @@ export default function Reward() {
                     className="promo-icon-placeholder" 
                     style={{ filter: isAffordable ? 'none' : 'grayscale(100%)' }} // Chỉ giữ lại logic đổi màu xám
                   >
-                      <img src={promo.image} alt={promo.title} />
+                      <img 
+                          // Lấy ảnh từ map dựa vào tên backend gửi về. 
+                          // Nếu không tìm thấy thì dùng ảnh defaultImg
+                          src={imageMap[promo.image]} 
+                          alt={promo.title} 
+                      />
                   </div>
                   <div className="promo-info">
                       <span className="promo-text" style={{ color: isAffordable ? '#333' : '#999' }}>{promo.title}</span>
