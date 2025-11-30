@@ -88,7 +88,7 @@ def claim_daily_reward(
     if current_user.last_daily_reward_date == today:
         return {"success": False, "message": "Hôm nay bạn đã nhận rồi!"}
 
-    points_to_add = 10000 
+    points_to_add = 10 
     
     # Cộng điểm
     current_user.eco_points += points_to_add
