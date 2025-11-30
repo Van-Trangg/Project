@@ -328,7 +328,7 @@ export default function Map() {
             className={`filter-button ${nearbyFilter ? 'active' : ''}`}
             onClick={() => setNearbyFilter(!nearbyFilter)}
           >
-            Nội thành
+            Gần đây
           </button>
           <button 
             className={`filter-button ${budgetFilter ? 'active' : ''}`}
