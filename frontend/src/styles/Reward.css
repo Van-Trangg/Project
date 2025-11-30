@@ -18,6 +18,8 @@
   align-items: center;
   color: #000000; /* Chữ trắng */
   width: 100%;
+  /* xích xuống 1 chút để không sát viền trên */
+  padding: 24px 0;
 }
 
 .header-overlay .back-arrow {
@@ -28,8 +30,14 @@
   margin-left: 18px;
 }
 
+.header-overlay .back-arrow-img {
+  background: none;
+  width: 20px;
+  height: 20px;
+}
+
 .header-overlay h1 {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   margin: 0;
 }

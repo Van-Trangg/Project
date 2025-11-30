@@ -176,7 +176,7 @@ export default function Home() {
       </div>
 
       <div className="home-header">
-        <h1>Chào buổi sáng, {userName}</h1>
+        <h1>Xin chào, {userName}</h1>
         <p>Sẵn sàng cho cuộc hành hành trình mới cho hôm nay?</p>
       </div>
 
@@ -192,7 +192,7 @@ export default function Home() {
             {ecopoints.toLocaleString('de-DE')}
           </div>
         </div>
-        <div className="stat-card" onClick={() => navigate('/profile')}>
+        <div className="stat-card" onClick={() => navigate('/badges')}>
           <div className="stat-card-header">
             <span className="title">Huy hiệu</span>
             </div>

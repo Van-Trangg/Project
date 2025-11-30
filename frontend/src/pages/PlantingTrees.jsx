@@ -5,6 +5,7 @@ import '../styles/PlantingTrees.css';
 // --- [SỬA LỖI ẢNH] Dùng import để đảm bảo hiện ảnh đúng cấu trúc của bạn ---
 import treeImg from '../public/tree.png'; 
 import ecopointsIcon from '../public/ecopoint.png'; // Import thêm icon lá cho Modal
+import backArrowImg from '../public/back.png';
 
 export default function PlantingTrees() {
   const navigate = useNavigate();
@@ -109,7 +110,9 @@ export default function PlantingTrees() {
       
       {/* === HEADER === */}
       <div className="planting-header">
-        <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
+        <span className="back-arrow" onClick={() => navigate(-1)}>
+           <img src={backArrowImg} alt="Back" className="back-arrow-img" />
+        </span>
         <h1>Trồng cây</h1>
       </div>
 

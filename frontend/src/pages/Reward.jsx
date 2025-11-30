@@ -14,6 +14,7 @@ import mapOutlineIcon from '../public/map-outline.png';
 import mapSolidIcon from '../public/map-solid.png';
 import leaderboardOutlineIcon from '../public/leaderboard-outline.png';
 import leaderboardSolidIcon from '../public/leaderboard-solid.png';
+import backArrowImg from '../public/back.png';
 
 export default function Reward() {
   const navigate = useNavigate();
@@ -82,7 +83,9 @@ export default function Reward() {
   return (
     <div className="rewards-page">
       <div className="header-overlay">
-          <span className="back-arrow" onClick={() => navigate(-1)}>&lt;</span>
+          <span className="back-arrow" onClick={() => navigate(-1)}>
+            <img src={backArrowImg} alt="Back" className="back-arrow-img" />
+          </span>
           <h1>Đổi thưởng</h1>
         </div>
 
@@ -111,7 +114,11 @@ export default function Reward() {
           <div className="history-list">
             {history.map((item) => (
               <div key={item.id} className="history-item">
-                <div className="item-icon-placeholder"></div>
+                <div className="item-icon-placeholder" style={{background: item.type === 'positive' ? '#E8F5E9' : '#FFEBEE'}}>
+                  <span style={{fontSize: '20px'}}>
+                    {item.type === 'positive' ? '📥' : '📤'}
+                  </span>
+                </div>
                 <span className="item-text">{item.title}</span>
                 
                 {/* --- [ĐÃ SỬA] THÊM DẤU TRỪ Ở ĐÂY --- */}
@@ -148,7 +155,12 @@ export default function Reward() {
                     backgroundColor: isAffordable ? '#fff' : '#f9f9f9'
                   }}
                 >
-                  <div className="promo-icon-placeholder" style={{ filter: isAffordable ? 'none' : 'grayscale(100%)' }}></div>
+                  <div 
+                    className="promo-icon-placeholder" 
+                    style={{ filter: isAffordable ? 'none' : 'grayscale(100%)' }} // Chỉ giữ lại logic đổi màu xám
+                  >
+                      <img src={promo.image} alt={promo.title} />
+                  </div>
                   <div className="promo-info">
                       <span className="promo-text" style={{ color: isAffordable ? '#333' : '#999' }}>{promo.title}</span>
                       <span className="promo-price" style={{ color: isAffordable ? '#556B2F' : '#999' }}>

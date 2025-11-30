@@ -28,6 +28,7 @@ class PromoItem(BaseModel):
     price: str
     description: Optional[str] = None
     deadline: Optional[str] = None
+    image: Optional[str] = None
 
 class RewardResponse(BaseModel):
     balance: int
@@ -291,41 +292,49 @@ def get_reward_data(
         {
             "id": 1, "title": "Vé xe buýt nội thành (1 lượt)", "price": "300", 
             "description": "Miễn phí 100% vé xe buýt cho 1 lượt đi bất kỳ trong nội thành. Đi lại xanh chưa bao giờ dễ dàng thế!",
+            "image":"/logo-bus.png",
             "deadline": "31/12/2025"
         },
         {
             "id": 2, "title": "Voucher Phúc Long / Highlands 20k", "price": "1.000",
             "description": "Giảm ngay 20.000đ cho hóa đơn đồ uống. Tự thưởng cho bản thân sau những hành trình xanh.",
+            "image":"/coffelogo.png",
             "deadline": "30/06/2025"
         },
         {
             "id": 3, "title": "Bộ ống hút tre tự nhiên", "price": "1.500",
             "description": "Bộ 5 ống hút tre kèm cọ rửa. Thay thế ống hút nhựa, bảo vệ môi trường biển.",
+            "image":"/onghuttre.png",
             "deadline": "31/12/2025"
         },
         {
             "id": 4, "title": "Túi vải Canvas GreenJourney", "price": "2.500",
             "description": "Túi Tote thời trang, bền đẹp. Người bạn đồng hành hoàn hảo để nói không với túi nilon.",
+            "image":"/tuivai.png",
             "deadline": "31/12/2025"
         },
         {
             "id": 5, "title": "Sổ tay giấy tái chế", "price": "3.000",
             "description": "Sổ tay làm từ 100% giấy tái chế, bìa cứng, thiết kế đơn giản tinh tế.",
+            "image":"/sotay.png",
             "deadline": "31/12/2025"
         },
         {
             "id": 6, "title": "Ly giữ nhiệt vỏ tre cao cấp", "price": "6.000",
             "description": "Ly giữ nhiệt khắc tên, vỏ tre sang trọng. Giữ nóng/lạnh 8 tiếng. Quà tặng đẳng cấp cho Green User.",
+            "image":"/binhnuoc.png",
             "deadline": "31/12/2025"
         },
         {
             "id": 7, "title": "Voucher giảm 50% vé tháng Metro", "price": "8.000",
             "description": "Giảm 50% khi mua vé tháng tàu điện Metro. Tiết kiệm chi phí đi lại cực lớn.",
+            "image":"/hcmclogo.png",
             "deadline": "31/12/2025"
         },
         {
             "id": 8, "title": "Bộ Kit Trồng Cây Mini tại nhà", "price": "10.000",
             "description": "Gồm chậu, đất nén, hạt giống và hướng dẫn. Mang mảng xanh vào góc làm việc của bạn.",
+            "image":"/bokittrongcay.png",
             "deadline": "31/12/2025"
         }
     ]
