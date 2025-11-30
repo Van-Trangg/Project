@@ -9,7 +9,6 @@ from app.schemas import home_schema
 from app import models
 from app.db.database import get_db
 from app.core.security import get_current_user
-from app.core.third_party_client import send_to_mock
 
 router = APIRouter()
 
@@ -156,17 +155,6 @@ def redeem_reward(
         type="negative"
     )
     db.add(new_trans)
-    db.commit()
-    db.refresh(new_trans)  
-
-    try:
-        send_to_mock(
-            user_id=current_user.id,
-            promotion_title=request.title,
-            code=new_trans.code  
-        )
-    except Exception as e:
-        print("Mock API error:", e)
     db.add(current_user)
 
     db.commit()
