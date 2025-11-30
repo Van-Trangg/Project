@@ -146,7 +146,7 @@ export default function DetailPage() {
                         Không
                     </button>
                     <button className="btn-modal-yes" onClick={handleConfirmRedeem} disabled={isLoading}>
-                        {isLoading ? '...' : 'Yes'}
+                        {isLoading ? '...' : 'Có'}
                     </button>
                     </div>
                 </>
