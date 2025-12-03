@@ -176,7 +176,7 @@
     display: flex;
     padding: 10px;
     align-items: center;
-    pointer-events: none; /* Allow clicks to pass through the container */
+    /* pointer-events: none; Allow clicks to pass through the container */
     z-index: 10001;
 }
 
