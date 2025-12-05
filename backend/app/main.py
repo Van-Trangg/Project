@@ -6,10 +6,9 @@ from app.db.database import get_db
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.routers import (
-    auth, file, home, leaderboard, journal, ai, statistic, 
+    auth, file, home, leaderboard, journal, ai, statistic, recap,
     map as map_router, profile, reward, users, badges
 )
-
 from app.db.database import init_db, SessionLocal
 from app.crud.checkin_crud import recompute_scores   # ✔ bạn import CRUD scoring vào đây
 from app.crud.badge_crud import check_and_award_badges,sync_all_user_badge_counts
@@ -41,7 +40,7 @@ app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(badges.router, prefix="/api/badges", tags=["badges"])
 app.include_router(ai.router, prefix="/ai", tags=["ai"])
 app.include_router(statistic.router, prefix="/statistic", tags=["statistic"])
-
+app.include_router(recap.router, prefix="/recap", tags=["recap"])
 
 # ─────────────────────────────────────────────
 # ⭐ STARTUP EVENT – chạy init_db + recompute_scores
