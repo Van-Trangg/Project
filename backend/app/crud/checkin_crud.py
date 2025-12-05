@@ -166,3 +166,6 @@ def recompute_for_poi(session, poi_id: int):
     
 
     session.commit()
+
+
+    
