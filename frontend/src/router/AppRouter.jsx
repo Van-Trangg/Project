@@ -26,6 +26,7 @@ import DetailPage from '../pages/DetailPage'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import PlantingTrees from '../pages/PlantingTrees.jsx'
 import Stats from '../pages/Stats.jsx'
+import Share from '../pages/Share.jsx'
 
 export default function AppRouter(){
   return (
@@ -60,6 +61,7 @@ export default function AppRouter(){
           <Route path="/location/:id" element={<LocationJournal/>} />
           <Route path="/chat" element={<Chat/>} />
           <Route path="/stats" element={<Stats/>} />
+          <Route path="/share" element={<Share/>} />
         </Routes>
       </div>
       {/* <Footer /> */}
