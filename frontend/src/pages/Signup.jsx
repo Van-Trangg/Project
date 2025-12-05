@@ -10,6 +10,7 @@ import emailIcon from '../public/email.png'
 import lockIcon from '../public/lock.png'
 import showIcon from "../public/don't_eye.png"
 import dontEyeIcon from '../public/show.png'
+import giftIcon from '../public/gift.png'
 
 export default function Signup() {
     const [email, setEmail] = useState('')
@@ -17,6 +18,7 @@ export default function Signup() {
     const [showPassword, setShowPassword] = useState(false)
     const [confirm, setConfirm] = useState('')
     const [showConfirm, setShowConfirm] = useState(false)
+    const [inviteCode, setInviteCode] = useState('')
     const [msg, setMsg] = useState('')
     const navigate = useNavigate()
 
@@ -28,7 +30,7 @@ export default function Signup() {
             return
         }
         try {
-            await register({ email, password })
+            await register({ email, password, invite_code: inviteCode })
             navigate('/verify-code', { state: { email: email.trim(), flow: 'signup' } })
 
         } catch (err) {
@@ -99,6 +101,14 @@ export default function Signup() {
                         >
                             <img src={showConfirm ? dontEyeIcon : showIcon} alt={showConfirm ? 'Hide' : 'Show'} style={{ width: 20, height: 20 }} />
                         </button>
+                    </div>
+                </label>
+
+                <label className="field">
+                    <div className="field-label">Mã mời (tùy chọn)</div>
+                    <div className="field-input">
+                        <img src={giftIcon} alt="gift" className="field-icon" />
+                        <input placeholder="Nhập mã mời nếu có" value={inviteCode} onChange={e => setInviteCode(e.target.value)} />
                     </div>
                 </label>
 
