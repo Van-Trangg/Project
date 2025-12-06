@@ -79,6 +79,17 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
+    if user.referral_code is None:
+        while True:
+            new_code = generate_unique_code()
+            # Kiểm tra trùng lặp
+            if not db.query(User).filter(User.referral_code == new_code).first():
+                user.referral_code = new_code
+                break
+        
+        db.add(user)
+        db.commit()
+        db.refresh(user)
     token = create_access_token(str(user.id))
     return {"access_token": token, "token_type": "bearer", "user": {"id": user.id, "email": user.email, "full_name": user.full_name}}
 
@@ -94,10 +105,12 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
     send_otp_email(payload.email, code)
     return {"message": "Reset code sent to email"}
 
+
 @router.post("/verify-reset")
 def verify_reset_code(payload: VerifyCodeRequest, db: Session = Depends(get_db)): 
     stored_data = reset_codes.get(payload.email)
     
+    # 1. Validate OTP
     if not stored_data or stored_data["code"] != payload.code:
          raise HTTPException(status_code=400, detail="Mã không hợp lệ hoặc đã hết hạn")
 
@@ -105,20 +118,29 @@ def verify_reset_code(payload: VerifyCodeRequest, db: Session = Depends(get_db))
     if not user:
          raise HTTPException(status_code=404, detail="User not found")
 
-    # Kiểm tra xem user này đã có mã mời chưa (Nếu chưa -> Kích hoạt lần đầu hoặc User cũ chưa migrate)
-    if user.referral_code is None:       
-        # 1. Sinh mã mời unique
+    # 2. Logic sinh mã mời (nếu chưa có)
+    if not user.referral_code:       
         while True:
             new_code = generate_unique_code()
             if not db.query(User).filter(User.referral_code == new_code).first():
                 user.referral_code = new_code
                 break
+        db.add(user) # Add vào session để chuẩn bị commit
+    
+    # 3. LOGIC TRẢ THƯỞNG (Đã tách ra khỏi khối if ở trên)
+    # Kiểm tra: Có người giới thiệu KHÔNG?
+    if user.referred_by_id:
         
-        # 2. Xử lý trả thưởng (Chỉ chạy nếu có người giới thiệu)
-        if user.referred_by_id:
+        # Kiểm tra quan trọng: Đã từng nhận thưởng "Quà tân thủ" chưa? (Chống cộng điểm 2 lần)
+        existing_reward = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.title == "Quà tân thủ (Nhập mã giới thiệu)"
+        ).first()
+
+        if not existing_reward: # Chỉ cộng nếu chưa từng nhận
             referrer = db.get(User, user.referred_by_id)
             if referrer:
-                BONUS = 500 # [FIX] Đã sửa từ 50 thành 500 để khớp với hiển thị
+                BONUS = 50 
                 
                 # Cộng điểm
                 user.eco_points += BONUS
@@ -146,15 +168,14 @@ def verify_reset_code(payload: VerifyCodeRequest, db: Session = Depends(get_db))
                 
                 db.add(t1)
                 db.add(t2)
-                db.add(referrer) # Đánh dấu referrer cần update
+                db.add(referrer)
                 
-                # Check badge (Lưu ý: hàm này nên tự xử lý logic không crash nếu session đang active)
+                # Check badge
                 check_and_award_badges(db, referrer.id, referrer.total_eco_points)  
                 check_and_award_badges(db, user.id, user.total_eco_points)
 
-        # 3. Commit TẤT CẢ thay đổi cùng lúc (Atomic Transaction)
-        db.add(user) 
-        db.commit() 
+    # 4. Commit cuối cùng
+    db.commit()
 
     return {"message": "Code verified & Account activated"}
 

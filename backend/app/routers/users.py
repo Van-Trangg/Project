@@ -1,9 +1,9 @@
 # app/routers/users.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.db.database import DbDep
 from app.models.user import User
 from app.core.security import get_current_user
-from app.schemas.user_schema import InvitePageResponse
+from app.schemas.user_schema import InvitePageResponse, UserOut
 
 router = APIRouter()
 
@@ -24,7 +24,9 @@ def get_invite_info(
         
         invitee_list.append({
             "id": inv.id,
-            "full_name": display_name or "Unknown User", 
+            "full_name": inv.full_name, 
+            "nickname": inv.nickname,    
+            "email": inv.email,                   
             "avatar_url": inv.avatar_url,
             "joined_at": None 
         })
@@ -35,3 +37,21 @@ def get_invite_info(
         "total_earned": earned,
         "invitees": invitee_list
     }
+
+@router.get("/{user_id}", response_model=UserOut)
+def get_user_profile(user_id: int, db: DbDep):
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
+
+    
+    if not user.email_public:
+        user.email = None 
+        
+    if not user.phone_public:
+        user.phone = None 
+        
+    if not user.address_public:
+        user.address = None
+
+    return user
