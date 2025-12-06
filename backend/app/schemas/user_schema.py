@@ -1,9 +1,12 @@
 from pydantic import BaseModel, EmailStr, Field
+from typing import List, Optional
+from datetime import datetime
 
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=72)
     full_name: str | None = None
+    referral_code: str | None = None 
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -50,3 +53,15 @@ class UserUpdate(BaseModel):
     phone_public: bool | None = None
     address_public: bool | None = None
     email_public: bool | None = None
+
+class InviteeInfo(BaseModel):
+    id: int
+    full_name: str
+    avatar_url: str | None
+    joined_at: datetime | None = None
+
+class InvitePageResponse(BaseModel):
+    my_referral_code: str | None
+    referral_count: int
+    total_earned: int
+    invitees: List[InviteeInfo]

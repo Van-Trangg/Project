@@ -15,6 +15,7 @@ import viewAllIcon from '../public/view_all.png'
 import defaultAva from '../public/avt.png'
 import coverImg from '../public/ảnh bìa.png'
 import '../styles/Profile.css'
+import gift from '../public/gift.png'
 
 export default function Profile() {
     const [user, setUser] = useState(null)
@@ -24,6 +25,8 @@ export default function Profile() {
     const [backActive, setBackActive] = useState(false)
     const [exitHovering, setExitHovering] = useState(false)
     const [exitActive, setExitActive] = useState(false)
+    const [giftHovering, setGiftHovering] = useState(false)
+    const [giftActive, setGiftActive] = useState(false)
     const [showExitConfirm, setShowExitConfirm] = useState(false)
     const navigate = useNavigate()
 
@@ -128,6 +131,20 @@ export default function Profile() {
                     <img
                         src={exitHovering ? newExitIcon : exitIcon}
                         alt="Exit"
+                    />
+                </button>
+
+                <button
+                    className="gift-rect"
+                    onClick={() => { setGiftActive(true); navigate('/invite') }}
+                    onMouseEnter={() => setGiftHovering(true)}
+                    onMouseLeave={() => setGiftHovering(false)}
+                    title="Mã mời"
+                    style={{ zIndex: 1000 }}
+                >
+                    <img
+                        src={giftHovering ? gift : gift}
+                        alt="Gift"
                     />
                 </button>
 

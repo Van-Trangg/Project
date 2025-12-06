@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Boolean, Date
+from sqlalchemy import Integer, String, Boolean, Date, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.database import Base
 from datetime import date
@@ -23,7 +23,8 @@ class User(Base):
     phone_public: Mapped[bool] = mapped_column(Boolean, default=True)
     address_public: Mapped[bool] = mapped_column(Boolean, default=True)
     email_public: Mapped[bool] = mapped_column(Boolean, default=True)
-    
+    referral_code: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=True)
+    referred_by_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
     last_daily_reward_date: Mapped[date] = mapped_column(Date, nullable=True)
     streak: Mapped[int] = mapped_column(Integer, default=0)
 
