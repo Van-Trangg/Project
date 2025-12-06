@@ -34,6 +34,10 @@ export const getStats = () => {
   return api.get('/statistic/statistic/monthly/all');
 };
 
+export const getRecap = () => {
+  return api.get('/recap/monthly');
+};
+
 // api/map.js or wherever your API functions are
 export const getAllPois = async () => {
   try {
