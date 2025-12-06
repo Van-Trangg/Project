@@ -29,6 +29,7 @@ def get_all_monthly_points(db: Session, user_id: int):
                 "year": year,
                 "checkin_points": 0,
                 "daily_reward_points": 0,
+                "other_points": 0,
                 "total_points": 0,
                 "transactions_count": 0
             }
@@ -37,7 +38,8 @@ def get_all_monthly_points(db: Session, user_id: int):
             grouped[key]["checkin_points"] += t.amount
         elif "hàng ngày" in t.title.lower() or "reward" in t.title.lower():
             grouped[key]["daily_reward_points"] += t.amount
-
+        else:
+            grouped[key]["other_points"] += t.amount
         grouped[key]["total_points"] += t.amount
         grouped[key]["transactions_count"] += 1
 

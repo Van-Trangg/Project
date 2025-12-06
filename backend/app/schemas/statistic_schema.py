@@ -7,6 +7,7 @@ class MonthlyStatistic(BaseModel):
     year: int
     checkin_points: int
     daily_reward_points: int
+    other_points: int
     total_points: int
     transactions_count: int
 
