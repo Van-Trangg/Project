@@ -70,9 +70,9 @@ const colorPalettes = [
 const Share = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  // const [userRank, setRank] = useState(null);
+  const [userRank, setRank] = useState(null);
   // const [userTrees, setUserTrees] = useState(null);
-  // const [userProfile, setUserProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [userData, setUserData] = useState(null);
   const [rankDisplay, setRankDisplay] = useState(null);
   const [currentTheme, setCurrentTheme] = useState({
@@ -93,40 +93,38 @@ const Share = () => {
     if (loading) return;
     setLoading(true);
     
-    // Promise.all([
-    //   getProfile(),
-    //   getTrees(),
-    //   getMyRank()
-    // ])
-    // .then(([profileRes, treesRes, rankRes]) => {
-    //   console.log('Profile:', profileRes.data);
-    //   console.log('Trees:', treesRes.data);
-    //   console.log('Rank:', rankRes.data);
-      
-    //   setUserProfile(profileRes.data);
-    //   setUserTrees(treesRes.data);
-    //   setRank(rankRes.data);
-    //   // Move this here, after rank is set
-    //   setRankDisplay(getRankDisplay(rankRes.data.rank));
-    // })
-    // .catch(err => {
-    //   console.error('Failed to load data', err);
-    // })
-    // .finally(() => {
-    //   setLoading(false);
-    // });
+    Promise.all([
+      getProfile(),
+      getRecap(),
+      getMyRank()
+    ])
+    .then(([profileRes, recapRes, rankRes]) => {
+      console.log('Profile:', profileRes.data);
+      console.log('Recap:', recapRes.data);
+      console.log('Rank:', rankRes.data);
+      setUserProfile(profileRes.data);
+      setUserData(recapRes.data);
+      setRank(rankRes.data);
+      setRankDisplay(getRankDisplay(recapRes.data.rank));
+    })
+    .catch(err => {
+      console.error('Failed to load data', err);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
 
-    getRecap()
-      .then(res => {
-        setUserData(res.data);
-        setRankDisplay(getRankDisplay(res.data.rank));
-      })
-        .catch(err => {
-        console.error('Failed to load data', err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  //   getRecap()
+  //     .then(res => {
+  //       setUserData(res.data);
+  //       setRankDisplay(getRankDisplay(res.data.rank));
+  //     })
+  //       .catch(err => {
+  //       console.error('Failed to load data', err);
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
   }, []);
 
 
@@ -204,10 +202,10 @@ const Share = () => {
       >
         {/* Profile Section */}
         <header className="brag-header">
-          <img src={userData?.avatarUrl || "https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg"} alt={`Profile picture`} className="brag-profile-pic" />
+          <img src={userRank?.avatar || "https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg"} className="brag-profile-pic" />
           <h1 className="brag-user-name">{userData?.full_name || "User"}</h1>
-          <p className="brag-user-handle">{`@${userData?.nickname}` || "user"}</p>
-          <p className="brag-user-location">{`${userData?.address}` || "Ho Chi Minh"}</p>
+          <p className="brag-user-handle">{`@${userProfile?.nickname}` || "user"}</p>
+          <p className="brag-user-location">{`${userProfile?.address}` || "Ho Chi Minh"}</p>
         </header>
 
         {/* Main Stats Section */}
