@@ -26,6 +26,8 @@ function Podium({ user_name, points, rank, color, id, avatar, isMyRank }) {
     }
   };
 
+
+
   return (
     <div className={`podium ${isMyRank ? 'my-podium' : ''}`}>
       <div className="top-info">
@@ -106,8 +108,15 @@ export default function Leaderboard() {
   // Check if my rank is in top 10
   const isInTop10 = myRankData && myRankData.rank <= 10;
 
+  const handleShare = () => {
+    navigate(`/share`);
+  };
+
   return (
     <div className="leaderboard-container">
+      <button className="leaderboard-share-btn" onClick = {handleShare}>
+        <img src="/src/public/share.png" width="25px" height="25px" alt="Download" />
+      </button>
       {/* Fixed Header + Podium */}
       <div className="fixed-top">
         <h1 rank="title">Bảng xếp hạng</h1>

@@ -9,6 +9,7 @@
 
 /* Header */
 .page-header {
+  width: 100%;
   display: flex;
   position: relative;
   flex-direction: row;

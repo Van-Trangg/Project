@@ -32,11 +32,13 @@
   font-size: 2rem;
   font-weight: 700;
   color: #000;
+  
 }
 
 /* ------------------------------------------------------------------ */
 /* Podium area – 3 pillars side-by-side */
 .podium-area {
+  margin-top: 20px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -332,4 +334,12 @@
 
 .my-row {
   background-color: rgba(108, 167, 25, 0.5);
+}
+
+.leaderboard-share-btn {
+  background: transparent;
+  border: none;
+  position: absolute;
+  right: 7%;
+  top: 40px;
 }
