@@ -27,6 +27,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import PlantingTrees from '../pages/PlantingTrees.jsx'
 import Stats from '../pages/Stats.jsx'
 import Share from '../pages/Share.jsx'
+import Invite from '../pages/Invite'
 
 export default function AppRouter(){
   return (
@@ -57,6 +58,7 @@ export default function AppRouter(){
           <Route path="/history" element={<HistoryPage/>} />
           <Route path="/detail" element={<DetailPage/>} />
           <Route path="/badges" element={<Badges/>} />
+          <Route path="/invite" element={<Invite/>} />
           <Route path="/planting-trees" element={<PlantingTrees/>} />
           <Route path="/location/:id" element={<LocationJournal/>} />
           <Route path="/chat" element={<Chat/>} />

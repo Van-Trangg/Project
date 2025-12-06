@@ -1,32 +1,37 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.models.user import User
-from app.schemas.user_schema import UserOut 
+# app/routers/users.py
+from fastapi import APIRouter, Depends
 from app.db.database import DbDep
+from app.models.user import User
+from app.core.security import get_current_user
+from app.schemas.user_schema import InvitePageResponse
 
 router = APIRouter()
 
-@router.get("/{id}", response_model=UserOut)
-def get_public_user_profile(
-    id: int, 
-    db: DbDep
+@router.get("/invite-info", response_model=InvitePageResponse)
+def get_invite_info(
+    db: DbDep,
+    current_user: User = Depends(get_current_user)
 ):
-    user = db.get(User, id)
+    invitees = db.query(User).filter(User.referred_by_id == current_user.id).all()
 
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    earned = len(invitees) * 50
 
-    rank = db.query(User).filter(User.monthly_points > user.monthly_points).count() + 1
-    user_response = UserOut.model_validate(user)
-    
-    user_response.rank = rank
-    
-    if not user.phone_public:
-        user_response.phone = None
+    invitee_list = []
+    for inv in invitees:
+        display_name = inv.full_name
+        if not display_name and inv.email:
+             display_name = inv.email.split('@')[0]
         
-    if not user.address_public:
-        user_response.address = None
-        
-    if not user.email_public:
-        user_response.email = None
-        
-    return user_response
+        invitee_list.append({
+            "id": inv.id,
+            "full_name": display_name or "Unknown User", 
+            "avatar_url": inv.avatar_url,
+            "joined_at": None 
+        })
+
+    return {
+        "my_referral_code": current_user.referral_code,
+        "referral_count": len(invitees),
+        "total_earned": earned,
+        "invitees": invitee_list
+    }
