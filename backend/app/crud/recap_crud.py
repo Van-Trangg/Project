@@ -22,15 +22,7 @@ def get_user_tree_stats(db: Session, current_user: User):
         Transaction.title.contains("Trồng cây")
     ).count()
 
-    base_trees = 15830
-    total_real_trees = db.query(Transaction).filter(
-        Transaction.title.contains("Trồng cây")
-    ).count()
-
-    return {
-        "my_trees": my_trees,
-        "everyone_trees": base_trees + total_real_trees
-    }
+    return { "my_trees": my_trees    }
 
 
 def get_checkin_count(db: Session, current_user: User, month: int, year: int):
