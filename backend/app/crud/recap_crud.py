@@ -28,8 +28,8 @@ def get_user_tree_stats(db: Session, current_user: User):
 def get_checkin_count(db: Session, current_user: User, month: int, year: int):
     return db.query(Checkin).filter(
         Checkin.user_id == current_user.id,
-        func.extract("month", Checkin.timestamp) == month,
-        func.extract("year", Checkin.timestamp) == year
+        func.extract("month", Checkin.created_at) == month,
+        func.extract("year", Checkin.created_at) == year
     ).count()
 
 
