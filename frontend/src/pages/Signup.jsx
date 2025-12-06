@@ -30,7 +30,7 @@ export default function Signup() {
             return
         }
         try {
-            await register({ email, password, invite_code: inviteCode })
+            await register({ email, password, referral_code: inviteCode })
             navigate('/verify-code', { state: { email: email.trim(), flow: 'signup' } })
 
         } catch (err) {

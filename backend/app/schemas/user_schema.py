@@ -29,8 +29,10 @@ class UserOut(BaseModel):
     address_public: bool
     email_public: bool
     rank: int | None = None
+    referral_code: str | None = None
     class Config:
         from_attributes = True
+
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
@@ -56,7 +58,9 @@ class UserUpdate(BaseModel):
 
 class InviteeInfo(BaseModel):
     id: int
-    full_name: str
+    full_name: str | None
+    nickname: str | None
+    email: str | None
     avatar_url: str | None
     joined_at: datetime | None = None
 
