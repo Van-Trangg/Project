@@ -74,7 +74,7 @@
 
 .brag-user-name {
   font-family: "Inter", sans-serif;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
   margin: 0.5rem 0;
 }
@@ -146,11 +146,18 @@
 
 .brag-rank-desc {
   position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   transform: translateY(-34px);
   text-align: left;
   left: 5px;
   font-weight: 700;
   color: var(--subtext-color, currentColor);
+}
+
+.brag-rank-right {
+  transform: translateX(-8px);
 }
 
 .brag-rank-display {

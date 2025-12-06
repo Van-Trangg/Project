@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getMyRank } from '../api/leaderboard'
 import { getTrees } from '../api/reward'
 import { getProfile } from '../api/profile';
+import { getRecap } from '../api/map';
 import html2canvas from "html2canvas";
 
 const userBragData = {
@@ -69,9 +70,10 @@ const colorPalettes = [
 const Share = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [userRank, setRank] = useState(null);
-  const [userTrees, setUserTrees] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
+  // const [userRank, setRank] = useState(null);
+  // const [userTrees, setUserTrees] = useState(null);
+  // const [userProfile, setUserProfile] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [rankDisplay, setRankDisplay] = useState(null);
   const [currentTheme, setCurrentTheme] = useState({
     gradient: colorPalettes[0].gradient,
@@ -91,33 +93,43 @@ const Share = () => {
     if (loading) return;
     setLoading(true);
     
-    Promise.all([
-      getProfile(),
-      getTrees(),
-      getMyRank()
-    ])
-    .then(([profileRes, treesRes, rankRes]) => {
-      console.log('Profile:', profileRes.data);
-      console.log('Trees:', treesRes.data);
-      console.log('Rank:', rankRes.data);
+    // Promise.all([
+    //   getProfile(),
+    //   getTrees(),
+    //   getMyRank()
+    // ])
+    // .then(([profileRes, treesRes, rankRes]) => {
+    //   console.log('Profile:', profileRes.data);
+    //   console.log('Trees:', treesRes.data);
+    //   console.log('Rank:', rankRes.data);
       
-      setUserProfile(profileRes.data);
-      setUserTrees(treesRes.data);
-      setRank(rankRes.data);
-      // Move this here, after rank is set
-      setRankDisplay(getRankDisplay(rankRes.data.rank));
-    })
-    .catch(err => {
-      console.error('Failed to load data', err);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
-  }, []); // Keep empty array for mount only
+    //   setUserProfile(profileRes.data);
+    //   setUserTrees(treesRes.data);
+    //   setRank(rankRes.data);
+    //   // Move this here, after rank is set
+    //   setRankDisplay(getRankDisplay(rankRes.data.rank));
+    // })
+    // .catch(err => {
+    //   console.error('Failed to load data', err);
+    // })
+    // .finally(() => {
+    //   setLoading(false);
+    // });
 
-  // if (loading || !userProfile || !userTrees || !rankDisplay) {
-  //   return <div className="brag-page-container">Loading...</div>;
-  // }
+    getRecap()
+      .then(res => {
+        setUserData(res.data);
+        setRankDisplay(getRankDisplay(res.data.rank));
+      })
+        .catch(err => {
+        console.error('Failed to load data', err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+
 
   const downloadBragCard = async () => {
     if (!bragRef.current) return;
@@ -192,16 +204,19 @@ const Share = () => {
       >
         {/* Profile Section */}
         <header className="brag-header">
-          <img src={userRank?.avatar || "https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg"} alt={`Profile picture`} className="brag-profile-pic" />
-          <h1 className="brag-user-name">{userProfile?.full_name || "User"}</h1>
-          <p className="brag-user-handle">{`@${userProfile?.nickname}` || "user"}</p>
-          <p className="brag-user-location">{`${userProfile?.address}` || "Ho Chi Minh"}</p>
+          <img src={userData?.avatarUrl || "https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg"} alt={`Profile picture`} className="brag-profile-pic" />
+          <h1 className="brag-user-name">{userData?.full_name || "User"}</h1>
+          <p className="brag-user-handle">{`@${userData?.nickname}` || "user"}</p>
+          <p className="brag-user-location">{`${userData?.address}` || "Ho Chi Minh"}</p>
         </header>
 
         {/* Main Stats Section */}
         <section className="brag-stats">
           {/* Rank Display */}
-          <span className = 'brag-rank-desc'>Hạng </span>
+          <div className = 'brag-rank-desc'> 
+            <span className ='brag-rank-left'>Hạng</span>
+            <span className ='brag-rank-right'>Tháng {userData?.month || 1} - {userData?.year || 2025}</span>
+          </div>
           <div className={`brag-rank-display ${rankDisplay?.class}`}>
             <div className = 'left-comp'>
               {/* <span className="brag-rank-icon">{rankDisplay?.icon || "🏆"}</span> */}
@@ -209,7 +224,7 @@ const Share = () => {
               <span className="brag-rank-text">{rankDisplay?.text || "#1"}</span>
             </div>
             <div className = 'right-comp'>
-              <span className="brag-rank-score">{userRank?.points || 200}</span>
+              <span className="brag-rank-score">{userData?.monthly_points || 200}</span>
               <img className = 'ecopoint-share' src = '/src/public/ecopoint.png'></img>
             </div>
           </div>
@@ -218,12 +233,12 @@ const Share = () => {
           <div className="brag-other-stats">
             <div className="brag-stat-item">
               <img src="/src/public/pin.png" className="brag-stat-icon"></img>
-              <span className="brag-stat-value">{userProfile?.check_ins || 50}</span>
+              <span className="brag-stat-value">{userData?.checkins || 50}</span>
               <span className="brag-stat-label">Lượt<br></br>Check-in</span>
             </div>
             <div className="brag-stat-item">
               <img src="/src/public/sprout.png" className="brag-stat-icon"></img>
-              <span className="brag-stat-value">{userTrees?.my_trees || 50}</span>
+              <span className="brag-stat-value">{userData?.trees || 50}</span>
               <span className="brag-stat-label">SỐ CÂY<br></br>ĐÃ TRỒNG</span>
             </div>
           </div>
