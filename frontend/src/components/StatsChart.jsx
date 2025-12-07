@@ -63,8 +63,10 @@ const StatsChart = ({ data }) => {
             color: '#f3f4f6'
           }}
         />
+        <Bar dataKey="checkin_points" stackId="a" fill="#d56a8aff" name="Thưởng Check-in" />
         <Bar dataKey="daily_reward_points" stackId="a" fill="#e391a4ff" name="Thuởng đăng nhập" />
-        <Bar dataKey="checkin_points" stackId="a" fill="#eacdd5ff" name="Thưởng Check-in" />
+        <Bar dataKey="other_points" stackId="a" fill="#eacdd5ff" name="Mã đổi thưởng" />
+        
       </BarChart>
     </ResponsiveContainer>
   );

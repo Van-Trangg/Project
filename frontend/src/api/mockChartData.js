@@ -2,10 +2,10 @@
 
 export const mockUserData = [
   // Data for 2023
-  { month: 9, year: 2023, checkin_points: 200, daily_reward_points: 140, total_points: 1200, transactions_count: 8 },
-  { month: 10, year: 2023, checkin_points: 350, daily_reward_points: 200, total_points: 1850, transactions_count: 10 },
-  { month: 11, year: 2023, checkin_points: 450, daily_reward_points: 280, total_points: 2290, transactions_count: 12 },
-  { month: 12, year: 2023, checkin_points: 520, daily_reward_points: 320, total_points: 2800, transactions_count: 14 },
+  { month: 9, year: 2023, checkin_points: 200, daily_reward_points: 140, total_points: 1200, other_points: 1200, transactions_count: 8 },
+  { month: 10, year: 2023, checkin_points: 350, daily_reward_points: 200, total_points: 1850, other_points: 1200, transactions_count: 10 },
+  { month: 11, year: 2023, checkin_points: 450, daily_reward_points: 280, total_points: 2290, other_points: 1200, transactions_count: 12 },
+  { month: 12, year: 2023, checkin_points: 520, daily_reward_points: 320, total_points: 2800, other_points: 1200, transactions_count: 14 },
   // Data for 2024
   { month: 1, year: 2024, checkin_points: 400, daily_reward_points: 240, total_points: 2400, transactions_count: 12 },
   { month: 2, year: 2024, checkin_points: 300, daily_reward_points: 139, total_points: 2210, transactions_count: 8 },
