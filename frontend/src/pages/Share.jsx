@@ -222,7 +222,7 @@ const Share = () => {
               <span className="brag-rank-text">{rankDisplay?.text || "#1"}</span>
             </div>
             <div className = 'right-comp'>
-              <span className="brag-rank-score">{userData?.monthly_points || 200}</span>
+              <span className="brag-rank-score">{userData?.monthly_points ?? 0}</span>
               <img className = 'ecopoint-share' src = '/src/public/ecopoint.png'></img>
             </div>
           </div>
@@ -231,12 +231,12 @@ const Share = () => {
           <div className="brag-other-stats">
             <div className="brag-stat-item">
               <img src="/src/public/pin.png" className="brag-stat-icon"></img>
-              <span className="brag-stat-value">{userData?.checkins || 50}</span>
+              <span className="brag-stat-value">{userData?.checkins ?? 0}</span>
               <span className="brag-stat-label">Lượt<br></br>Check-in</span>
             </div>
             <div className="brag-stat-item">
               <img src="/src/public/sprout.png" className="brag-stat-icon"></img>
-              <span className="brag-stat-value">{userData?.trees || 50}</span>
+              <span className="brag-stat-value">{userData?.trees ?? 0}</span>
               <span className="brag-stat-label">SỐ CÂY<br></br>ĐÃ TRỒNG</span>
             </div>
           </div>
