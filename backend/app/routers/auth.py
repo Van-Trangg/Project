@@ -13,7 +13,7 @@ from app.models.user import User
 import random
 from datetime import datetime, timedelta
 from app.models.transaction import Transaction 
-from app.core.utils import generate_unique_code 
+from app.core.utils import generate_unique_code, get_display_name
 from app.crud.badge_crud import check_and_award_badges
 
 router = APIRouter()
@@ -150,17 +150,22 @@ def verify_reset_code(payload: VerifyCodeRequest, db: Session = Depends(get_db))
                 referrer.total_eco_points += BONUS
                 
                 # Tạo Transaction
+                user_name_display = get_display_name(user)       
+                referrer_name_display = get_display_name(referrer) 
+
+                # Transaction cho User mới
                 t1 = Transaction(
                     user_id=user.id,
-                    title="Quà tân thủ (Nhập mã giới thiệu)",
+                    title=f"Quà tân thủ từ: {referrer_name_display}", 
                     amount=BONUS,
                     type="positive",
                     code=generate_unique_code()
                 )
                 
+                # Transaction cho Referrer (Người mời)
                 t2 = Transaction(
                     user_id=referrer.id,
-                    title=f"Mời thành công: {user.full_name or user.email}",
+                    title=f"Mời thành công: {user_name_display}", 
                     amount=BONUS,
                     type="positive",
                     code=generate_unique_code()

@@ -43,7 +43,9 @@ def get_user_profile(user_id: int, db: DbDep):
     user = db.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")
-
+    rank = db.query(User).filter(User.monthly_points > user.monthly_points).count() + 1
+    
+    user.rank = rank
     
     if not user.email_public:
         user.email = None 
