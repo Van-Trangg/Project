@@ -30,7 +30,7 @@ def get_checkin_count(db: Session, current_user: User, month: int, year: int):
         Checkin.user_id == current_user.id,
         func.extract("month", Checkin.created_at) == month,
         func.extract("year", Checkin.created_at) == year
-    ).count()
+    ).count() 
 
 
 def get_monthly_recap(db: Session, current_user: User):
@@ -38,8 +38,9 @@ def get_monthly_recap(db: Session, current_user: User):
     now = datetime.now()
     month = now.month
     year = now.year
-
-    tree_stats = get_user_tree_stats(db, current_user)
+    rank = get_user_rank(db, current_user) or 0
+    checkin = get_checkin_count(db, current_user, month, year) or 0
+    tree_stats = get_user_tree_stats(db, current_user) or {"my_trees": 0}
 
     return {
         "user_id": current_user.id,
@@ -47,8 +48,8 @@ def get_monthly_recap(db: Session, current_user: User):
         "avatarUrl": current_user.avatar_url,
         "month": month,
         "year": year,
-        "rank": get_user_rank(db, current_user),
-        "checkins": get_checkin_count(db, current_user, month, year),
+        "rank": rank,
+        "checkins": checkin,
         "trees": tree_stats["my_trees"],
         "monthly_points": current_user.monthly_points
     }
